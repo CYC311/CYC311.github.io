@@ -1,10 +1,10 @@
 <head>
     <meta charset="UTF-8">
-    <title>我的遊戲計算機</title>
+    <title>測試</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>深淵計算機</h1>
+    <h1>計算機</h1>
     <div class="calculator">
         <input type="number" id="attr1" placeholder="輸入屬性 A">
         <button onclick="calculate()">計算結果</button>
@@ -13,14 +13,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-body { background-color: #1a1a1a; color: white; font-family: sans-serif; text-align: center; }
-.calculator { border: 2px solid #444; padding: 20px; display: inline-block; border-radius: 10px; }
-button { background: #f39c12; border: none; padding: 10px; cursor: pointer; }
-
-function calculate() {
-    const inputVal = document.getElementById('attr1').value;
-    const finalScore = inputVal * 1.5; // 假設公式是乘以 1.5
-    document.getElementById('result').innerText = finalScore;
-}
-
