@@ -1,55 +1,432 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <!-- 元數據 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="專業網站設計與開發服務">
-    <meta name="keywords" content="網頁設計, 開發, UI/UX">
-    <meta property="og:title" content="我們的專業服務">
-    <meta property="og:description" content="提供優質的網站設計和開發服務">
-    <meta property="og:image" content="og-image.jpg">
-    
-    <!-- 標題 -->
-    <title>專業網站設計 - 我們的服務</title>
-    
-    <!-- 外部資源 -->
-    <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- 內嵌樣式 -->
+    <title>科學計算機</title>
     <style>
-        * { font-family: 'Poppins', sans-serif; }
-        body { scroll-behavior: smooth; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-hover { transition: transform 0.3s, box-shadow 0.3s; }
-        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .display {
+            background: #2d3436;
+            color: #00ff00;
+            font-size: 2.5rem;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: right;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            word-break: break-all;
+            min-height: 60px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .number-btn {
+            background: #ecf0f1;
+            color: #2d3436;
+        }
+
+        .number-btn:hover {
+            background: #d5dbdb;
+        }
+
+        .operator-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .operator-btn:hover {
+            background: #5568d3;
+        }
+
+        .function-btn {
+            background: #a29bfe;
+            color: white;
+        }
+
+        .function-btn:hover {
+            background: #8f85d4;
+        }
+
+        .equal-btn {
+            background: #00b894;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .equal-btn:hover {
+            background: #009478;
+        }
+
+        .clear-btn {
+            background: #ff7675;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear-btn:hover {
+            background: #d63031;
+        }
+
+        .backspace-btn {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+
+        .backspace-btn:hover {
+            background: #f9ca24;
+        }
+
+        @media (max-width: 500px) {
+            .calculator {
+                max-width: 100%;
+            }
+
+            .display {
+                font-size: 2rem;
+            }
+
+            button {
+                padding: 15px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-    
-    <!-- ========== 頭部導航 ========== -->
-    <header class="sticky top-0 z-50 bg-white shadow-sm">
-        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white font-bold">
-                    WD
-                </div>
-                <span class="text-2xl font-bold text-gray-900">WebDesign</span>
-            </div>
-            
-            <ul class="hidden md:flex gap-8 items-center">
-                <li><a href="#home" class="hover:text-indigo-600 transition">首頁</a></li>
-                <li><a href="#services" class="hover:text-indigo-600 transition">服務</a></li>
-                <li><a href="#projects" class="hover:text-indigo-600 transition">專案</a></li>
-                <li><a href="#team" class="hover:text-indigo-600 transition">團隊</a></li>
-                <li><a href="#contact" class="hover:text-indigo-600 transition">聯絡</a></li>
-            </ul>
-            
-            <button class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
-                開始專案
-            </button>
-        </nav>
-    </header>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons-container">
+            <!-- 第一行：清除、退格、除 -->
+            <button class="clear-btn" onclick="clearDisplay()">AC</button>
+            <button class="backspace-btn" onclick="backspace()">⌫</button>
+            <button class="operator-btn" onclick="appendOperator('/')">/</button>
+
+            <!-- 第二行：7、8、9、乘 -->
+            <button class="number-btn" onclick="appendNumber('7')">7</button>
+            <button class="number-btn" onclick="appendNumber('8')">8</button>
+            <button class="number-btn" onclick="appendNumber('9')">9</button>
+            <button class="operator-btn" onclick="appendOperator('*')">×</button>
+
+            <!-- 第三行：4、5、6、減 -->
+            <button class="number-btn" onclick="appendNumber('4')">4</button>
+            <button class="number-btn" onclick="appendNumber('5')">5</button>
+            <button class="number-btn" onclick="appendNumber('6')">6</button>
+            <button class="operator-btn" onclick="appendOperator('-')">−</button>
+
+            <!-- 第四行：1、2、3、加 -->
+            <button class="number-btn" onclick="appendNumber('1')">1</button>
+            <button class="number-btn" onclick="appendNumber('2')">2</button>
+            <button class="number-btn" onclick="appendNumber('3')">3</button>
+            <button class="operator-btn" onclick="appendOperator('+')">+</button>
+
+            <!-- 第五行：0、小數點 -->
+            <button class="number-btn" onclick="appendNumber('0')" style="grid-column: span 2;">0</button>
+            <button class="number-btn" onclick="appendNumber('.')">.</button>
+            <button class="equal-btn" onclick="calculate()">=</button>
+
+            <!-- 第六行：科學函數 -->
+            <button class="function-btn" onclick="calculateSquareRoot()">√</button>
+            <button class="function-btn" onclick="calculateSquare()">x²</button>
+            <button class="function-btn" onclick="calculateReciprocal()">1/x</button>
+            <button class="function-btn" onclick="toggleSign()">±</button>
+
+            <!-- 第七行：百分比、三角函數 -->
+            <button class="function-btn" onclick="calculatePercentage()">%</button>
+            <button class="function-btn" onclick="calculateSin()">sin</button>
+            <button class="function-btn" onclick="calculateCos()">cos</button>
+            <button class="function-btn" onclick="calculateTan()">tan</button>
+        </div>
+    </div>
+
+    <script>
+        // 全域變數
+        let display = document.getElementById('display');
+        let currentInput = '0';
+        let previousInput = '';
+        let operator = null;
+        let shouldResetDisplay = false;
+
+        /**
+         * 附加數字到顯示螢幕
+         * @param {string} num - 要附加的數字
+         */
+        function appendNumber(num) {
+            // 防止多個小數點
+            if (num === '.' && currentInput.includes('.')) return;
+
+            // 如果顯示為 0 或需要重置，直接替換
+            if (currentInput === '0' || shouldResetDisplay) {
+                currentInput = num === '.' ? '0.' : num;
+                shouldResetDisplay = false;
+            } else {
+                currentInput += num;
+            }
+
+            updateDisplay();
+        }
+
+        /**
+         * 附加運算符
+         * @param {string} op - 運算符 (+, -, *, /)
+         */
+        function appendOperator(op) {
+            // 如果已有運算符，先計算上一個運算
+            if (operator !== null && !shouldResetDisplay) {
+                calculate();
+            }
+
+            previousInput = currentInput;
+            operator = op;
+            shouldResetDisplay = true;
+        }
+
+        /**
+         * 計算結果
+         */
+        function calculate() {
+            if (operator === null || shouldResetDisplay) return;
+
+            let result = 0;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    // 防止除以零
+                    if (current === 0) {
+                        currentInput = '無法除以零';
+                        updateDisplay();
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            // 四捨五入到10位小數，避免浮點數誤差
+            currentInput = parseFloat(result.toFixed(10)).toString();
+            operator = null;
+            previousInput = '';
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 清除所有內容
+         */
+        function clearDisplay() {
+            currentInput = '0';
+            previousInput = '';
+            operator = null;
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        /**
+         * 退格（刪除最後一個字符）
+         */
+        function backspace() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        /**
+         * 計算平方根
+         */
+        function calculateSquareRoot() {
+            const num = parseFloat(currentInput);
+            if (num < 0) {
+                currentInput = '無法對負數開根';
+            } else {
+                currentInput = Math.sqrt(num).toString();
+            }
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 計算平方
+         */
+        function calculateSquare() {
+            const num = parseFloat(currentInput);
+            currentInput = (num * num).toString();
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 計算倒數 (1/x)
+         */
+        function calculateReciprocal() {
+            const num = parseFloat(currentInput);
+            if (num === 0) {
+                currentInput = '無法除以零';
+            } else {
+                currentInput = (1 / num).toString();
+            }
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 轉換正負號
+         */
+        function toggleSign() {
+            const num = parseFloat(currentInput);
+            currentInput = (num * -1).toString();
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 計算百分比
+         */
+        function calculatePercentage() {
+            const num = parseFloat(currentInput);
+            currentInput = (num / 100).toString();
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 計算正弦值 (單位：度)
+         */
+        function calculateSin() {
+            const num = parseFloat(currentInput);
+            // 將度轉換為弧度
+            const radians = num * (Math.PI / 180);
+            currentInput = Math.sin(radians).toFixed(10);
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 計算餘弦值 (單位：度)
+         */
+        function calculateCos() {
+            const num = parseFloat(currentInput);
+            // 將度轉換為弧度
+            const radians = num * (Math.PI / 180);
+            currentInput = Math.cos(radians).toFixed(10);
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 計算正切值 (單位：度)
+         */
+        function calculateTan() {
+            const num = parseFloat(currentInput);
+            // 將度轉換為弧度
+            const radians = num * (Math.PI / 180);
+            currentInput = Math.tan(radians).toFixed(10);
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        /**
+         * 更新顯示螢幕
+         */
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        // 支援鍵盤輸入
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            // 數字鍵
+            if (key >= '0' && key <= '9') {
+                appendNumber(key);
+            }
+            // 運算符
+            else if (key === '+') {
+                appendOperator('+');
+            } else if (key === '-') {
+                appendOperator('-');
+            } else if (key === '*') {
+                appendOperator('*');
+            } else if (key === '/') {
+                event.preventDefault();
+                appendOperator('/');
+            }
+            // 小數點
+            else if (key === '.') {
+                appendNumber('.');
+            }
+            // Enter 或 = 計算
+            else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                calculate();
+            }
+            // Backspace 退格
+            else if (key === 'Backspace') {
+                event.preventDefault();
+                backspace();
+            }
+            // Escape 清除
+            else if (key === 'Escape') {
+                clearDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
