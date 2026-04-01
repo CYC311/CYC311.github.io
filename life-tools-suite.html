@@ -43,4 +43,297 @@
         .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         label { font-weight: bold; color: #555; font-size: 0.95rem; }
-        input, select, textarea { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size:
+        input, select, textarea { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; width: 100%; }
+        button { padding: 12px 20px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-secondary { background: #ecf0f1; color: #555; }
+        .btn-danger { background: #ff6b6b; color: white; }
+        .btn-success { background: #4caf50; color: white; }
+        .result-box { background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea; margin-top: 15px; font-size: 1.1rem; }
+        .note-item {
+            background: #fff9e6; padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            border-left: 5px solid #ffd93d; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+        }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th { background: #667eea; color: white; padding: 12px; text-align: left; }
+        .table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        #qrOutput img { margin: 0 auto; border: 10px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛠️ 生活工具套件</h1>
+            <p>一站式解決日常需求 - 計算、轉換、筆記、提醒</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('calculator', this)">🧮 計算機</button>
+            <button class="tab-btn" onclick="switchTab('unit-converter', this)">📏 單位轉換</button>
+            <button class="tab-btn" onclick="switchTab('todo', this)">📝 待辦清單</button>
+            <button class="tab-btn" onclick="switchTab('notes', this)">📌 便簽筆記</button>
+            <button class="tab-btn" onclick="switchTab('timer', this)">⏱️ 計時器</button>
+            <button class="tab-btn" onclick="switchTab('expense', this)">💰 支出記錄</button>
+            <button class="tab-btn" onclick="switchTab('qrcode', this)">📱 二維碼</button>
+        </div>
+
+        <div id="calculator" class="tab-content active">
+            <div class="card">
+                <h2>🧮 簡易計算機</h2>
+                <div class="input-group">
+                    <input type="text" id="calcInput" placeholder="0" readonly style="text-align: right; font-size: 1.5rem; background: #f9f9f9;">
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px;">
+                    <button class="btn-secondary" onclick="appendCalc('7')">7</button>
+                    <button class="btn-secondary" onclick="appendCalc('8')">8</button>
+                    <button class="btn-secondary" onclick="appendCalc('9')">9</button>
+                    <button class="btn-danger" onclick="clearCalc()">C</button>
+                    <button class="btn-secondary" onclick="appendCalc('4')">4</button>
+                    <button class="btn-secondary" onclick="appendCalc('5')">5</button>
+                    <button class="btn-secondary" onclick="appendCalc('6')">6</button>
+                    <button class="btn-primary" onclick="appendCalc('/')">/</button>
+                    <button class="btn-secondary" onclick="appendCalc('1')">1</button>
+                    <button class="btn-secondary" onclick="appendCalc('2')">2</button>
+                    <button class="btn-secondary" onclick="appendCalc('3')">3</button>
+                    <button class="btn-primary" onclick="appendCalc('*')">*</button>
+                    <button class="btn-secondary" onclick="appendCalc('0')">0</button>
+                    <button class="btn-secondary" onclick="appendCalc('.')">.</button>
+                    <button class="btn-primary" onclick="appendCalc('-')">-</button>
+                    <button class="btn-primary" onclick="appendCalc('+')">+</button>
+                </div>
+                <button class="btn-success" style="width: 100%; font-size: 1.2rem;" onclick="calculateResult()">=</button>
+                <div id="calcResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div id="unit-converter" class="tab-content">
+            <div class="card">
+                <h2>📏 單位轉換工具</h2>
+                <h3>🌡️ 溫度轉換</h3>
+                <div class="input-row">
+                    <div><label>攝氏 (°C)</label><input type="number" id="celsius" oninput="convertTemp('C')"></div>
+                    <div><label>華氏 (°F)</label><input type="number" id="fahrenheit" oninput="convertTemp('F')"></div>
+                </div>
+                <hr style="margin: 20px 0;">
+                <h3>🛣️ 長度轉換</h3>
+                <div class="input-row">
+                    <div><label>公里 (km)</label><input type="number" id="kilometer" oninput="convertLen('K')"></div>
+                    <div><label>英里 (mi)</label><input type="number" id="mile" oninput="convertLen('M')"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="todo" class="tab-content">
+            <div class="card">
+                <h2>📝 待辦事項</h2>
+                <div class="input-group">
+                    <input type="text" id="todoInput" placeholder="想做點什麼？">
+                    <div class="input-row">
+                        <select id="todoPriority">
+                            <option value="低">🟢 低優先</option>
+                            <option value="中" selected>🟡 中優先</option>
+                            <option value="高">🔴 高優先</option>
+                        </select>
+                        <button class="btn-primary" onclick="addTodo()">新增</button>
+                    </div>
+                </div>
+                <div id="todoList"></div>
+            </div>
+        </div>
+
+        <div id="notes" class="tab-content">
+            <div class="card">
+                <h2>📌 便簽筆記</h2>
+                <div class="input-group">
+                    <input type="text" id="noteTitle" placeholder="標題">
+                    <textarea id="noteContent" rows="3" placeholder="內容..."></textarea>
+                    <button class="btn-primary" onclick="addNote()">儲存</button>
+                </div>
+                <div id="notesList"></div>
+            </div>
+        </div>
+
+        <div id="timer" class="tab-content">
+            <div class="card" style="text-align: center;">
+                <h2>⏱️ 倒計時</h2>
+                <div class="input-row" style="margin-bottom: 20px;">
+                    <input type="number" id="timerMinutes" value="5" min="0">
+                    <input type="number" id="timerSecondsInput" value="0" min="0" max="59">
+                </div>
+                <div id="timerDisplay" style="font-size: 4rem; font-family: monospace; margin: 20px 0; color: #667eea;">05:00</div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn-success" id="timerStartBtn" onclick="startTimer()">開始</button>
+                    <button class="btn-secondary" id="timerPauseBtn" onclick="pauseTimer()" style="display:none;">暫停</button>
+                    <button class="btn-danger" onclick="resetTimer()">重置</button>
+                </div>
+                <div id="timerAlert" class="result-box" style="display:none; color: red;">⏰ 時間到！</div>
+            </div>
+        </div>
+
+        <div id="expense" class="tab-content">
+            <div class="card">
+                <h2>💰 支出記錄</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <input type="number" id="expAmount" placeholder="金額">
+                        <input type="date" id="expDate">
+                    </div>
+                    <input type="text" id="expNote" placeholder="備註">
+                    <button class="btn-primary" onclick="addExpense()">記錄</button>
+                </div>
+                <div class="result-box">
+                    總支出：<span id="totalExpense" style="color:red; font-weight:bold;">$0</span>
+                </div>
+                <table class="table">
+                    <thead><tr><th>日期</th><th>備註</th><th>金額</th><th>操作</th></tr></thead>
+                    <tbody id="expenseBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="qrcode" class="tab-content">
+            <div class="card" style="text-align: center;">
+                <h2>📱 二維碼生成</h2>
+                <input type="text" id="qrInput" placeholder="輸入網址或文字" style="margin-bottom: 15px;">
+                <button class="btn-primary" onclick="generateQR()" style="width: 100%;">生成</button>
+                <div id="qrOutput" style="margin-top: 20px; display: flex; justify-content: center;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 狀態管理
+        let state = JSON.parse(localStorage.getItem('app_data')) || {
+            todos: [], notes: [], expenses: []
+        };
+        let timerInterval = null;
+        let timeLeft = 0;
+
+        function save() { localStorage.setItem('app_data', JSON.stringify(state)); }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // 1. 計算機
+        function appendCalc(v) { document.getElementById('calcInput').value += v; }
+        function clearCalc() { document.getElementById('calcInput').value = ''; document.getElementById('calcResult').style.display='none'; }
+        function calculateResult() {
+            try {
+                let res = eval(document.getElementById('calcInput').value);
+                document.getElementById('calcResult').innerHTML = "結果: " + res;
+                document.getElementById('calcResult').style.display = 'block';
+            } catch { alert("運算式錯誤"); }
+        }
+
+        // 2. 單位轉換
+        function convertTemp(type) {
+            let c = document.getElementById('celsius'), f = document.getElementById('fahrenheit');
+            if(type==='C') f.value = (c.value * 9/5 + 32).toFixed(1);
+            else c.value = ((f.value - 32) * 5/9).toFixed(1);
+        }
+        function convertLen(type) {
+            let k = document.getElementById('kilometer'), m = document.getElementById('mile');
+            if(type==='K') m.value = (k.value * 0.62137).toFixed(2);
+            else k.value = (m.value / 0.62137).toFixed(2);
+        }
+
+        // 3. 待辦 (修正優先級顏色)
+        function addTodo() {
+            let input = document.getElementById('todoInput');
+            if(!input.value) return;
+            state.todos.push({id: Date.now(), text: input.value, pri: document.getElementById('todoPriority').value});
+            input.value = ''; save(); renderTodos();
+        }
+        function renderTodos() {
+            let colors = { '高': '#ff6b6b', '中': '#ffd93d', '低': '#6bc1ff' };
+            document.getElementById('todoList').innerHTML = state.todos.map(t => `
+                <div class="note-item" style="border-left-color: ${colors[t.pri]}">
+                    <span>${t.text} <small>(${t.pri})</small></span>
+                    <button class="btn-danger" onclick="deleteTodo(${t.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+        function deleteTodo(id) { state.todos = state.todos.filter(t => t.id!==id); save(); renderTodos(); }
+
+        // 4. 筆記
+        function addNote() {
+            let t = document.getElementById('noteTitle'), c = document.getElementById('noteContent');
+            if(!t.value || !c.value) return;
+            state.notes.push({id: Date.now(), title: t.value, content: c.value});
+            t.value = ''; c.value = ''; save(); renderNotes();
+        }
+        function renderNotes() {
+            document.getElementById('notesList').innerHTML = state.notes.map(n => `
+                <div class="note-item">
+                    <div><b>${n.title}</b><p>${n.content}</p></div>
+                    <button class="btn-danger" onclick="deleteNote(${n.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+        function deleteNote(id) { state.notes = state.notes.filter(n => n.id!==id); save(); renderNotes(); }
+
+        // 5. 計時器 (修正邏輯)
+        function updateTimerDisplay() {
+            let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+        function startTimer() {
+            if(!timerInterval) {
+                if(timeLeft <= 0) {
+                    timeLeft = (parseInt(document.getElementById('timerMinutes').value)||0)*60 + (parseInt(document.getElementById('timerSecondsInput').value)||0);
+                }
+                if(timeLeft <= 0) return;
+                document.getElementById('timerStartBtn').style.display = 'none';
+                document.getElementById('timerPauseBtn').style.display = 'inline';
+                timerInterval = setInterval(() => {
+                    timeLeft--; updateTimerDisplay();
+                    if(timeLeft <= 0) {
+                        clearInterval(timerInterval); timerInterval = null;
+                        document.getElementById('timerAlert').style.display = 'block';
+                        resetTimerUI();
+                    }
+                }, 1000);
+            }
+        }
+        function pauseTimer() { clearInterval(timerInterval); timerInterval = null; resetTimerUI(); }
+        function resetTimerUI() { document.getElementById('timerStartBtn').style.display = 'inline'; document.getElementById('timerPauseBtn').style.display = 'none'; }
+        function resetTimer() { pauseTimer(); timeLeft = 0; updateTimerDisplay(); document.getElementById('timerAlert').style.display = 'none'; }
+
+        // 6. 支出 (新增渲染邏輯)
+        function addExpense() {
+            let amt = document.getElementById('expAmount'), date = document.getElementById('expDate'), note = document.getElementById('expNote');
+            if(!amt.value || !date.value) return;
+            state.expenses.push({id: Date.now(), amt: parseFloat(amt.value), date: date.value, note: note.value});
+            amt.value = ''; note.value = ''; save(); renderExpenses();
+        }
+        function renderExpenses() {
+            let total = 0;
+            document.getElementById('expenseBody').innerHTML = state.expenses.map(e => {
+                total += e.amt;
+                return `<tr><td>${e.date}</td><td>${e.note}</td><td>$${e.amt}</td><td><button class="btn-danger" onclick="deleteExp(${e.id})">X</button></td></tr>`;
+            }).join('');
+            document.getElementById('totalExpense').innerText = '$' + total;
+        }
+        function deleteExp(id) { state.expenses = state.expenses.filter(e => e.id!==id); save(); renderExpenses(); }
+
+        // 7. QR Code
+        let qrcodeObj = null;
+        function generateQR() {
+            let val = document.getElementById('qrInput').value;
+            if(!val) return;
+            document.getElementById('qrOutput').innerHTML = "";
+            new QRCode(document.getElementById("qrOutput"), { text: val, width: 200, height: 200 });
+        }
+
+        // 初始化
+        window.onload = () => {
+            renderTodos(); renderNotes(); renderExpenses();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+        };
+    </script>
+</body>
+</html>
