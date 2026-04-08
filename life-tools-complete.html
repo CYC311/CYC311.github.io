@@ -6,24 +6,252 @@
     <title>生活工具套件 Pro - 25合1完整版</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #667eea; --secondary: #764ba2; --bg: #ffffff; --text: #333; }
-        body.dark-mode { --bg: #1e1e1e; --text: #f0f0f0; }
-        body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); min-height: 100vh; padding: 20px; color: var(--text); }
+        :root { 
+            --primary: #667eea; 
+            --secondary: #764ba2; 
+            --success: #4caf50;
+            --danger: #ff6b6b;
+            --warning: #ffd93d;
+            --bg: #ffffff; 
+            --text: #333;
+            --text-light: #666;
+            --border: #e0e0e0;
+        }
+        body.dark-mode {
+            --bg: #1e1e1e;
+            --text: #f0f0f0;
+            --text-light: #b0b0b0;
+            --border: #444;
+        }
+        body { 
+            font-family: 'Microsoft YaHei', 'Noto Sans CJK TC', sans-serif; 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+            min-height: 100vh; 
+            padding: 20px; 
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
         .container { max-width: 1400px; margin: 0 auto; }
-        header { text-align: center; color: white; margin-bottom: 30px; }
-        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .tabs-container { background: var(--bg); border-radius: 15px; padding: 10px; margin-bottom: 20px; overflow-x: auto; }
-        .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-        .tab-btn { padding: 12px 16px; border: none; background: #ecf0f1; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .tab-btn.active { background: var(--primary); color: white; }
+        header { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 30px;
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        header p { font-size: 1.1rem; opacity: 0.95; margin-bottom: 15px; }
+        .header-controls { 
+            display: flex; 
+            gap: 10px; 
+            justify-content: center; 
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .header-controls button {
+            padding: 10px 15px;
+            border: 2px solid white;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        .header-controls button:hover { 
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.05);
+        }
+        .tabs-container {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow-x: auto;
+            border: 2px solid var(--border);
+        }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            color: var(--text);
+        }
+        .tab-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .card { background: var(--bg); border-radius: 15px; padding: 25px; margin-bottom: 20px; }
-        .card h2 { color: var(--primary); margin-bottom: 20px; }
-        input, select, textarea { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; width: 100%; margin: 10px 0; font-family: inherit; }
-        button { padding: 12px 20px; border: none; border-radius: 8px; background: var(--primary); color: white; cursor: pointer; }
-        button:hover { background: var(--secondary); }
-        .result-box { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 15px; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .card {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            border: 2px solid var(--border);
+        }
+        .card h2 { 
+            color: var(--primary); 
+            margin-bottom: 20px; 
+            font-size: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        .card h3 {
+            color: var(--text);
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        label {
+            font-weight: bold;
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(102,126,234,0.3);
+        }
+        input::placeholder {
+            color: var(--text-light);
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--primary);
+            color: white;
+        }
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn-secondary:hover {
+            background: #d0d0d0;
+            color: var(--text);
+        }
+        .result-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--text);
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .stat-box .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .list-item {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .list-content {
+            flex: 1;
+        }
+        .list-content h4 {
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+        .list-content p {
+            color: var(--text-light);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .conversion-item {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .conversion-result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 10px;
+            padding: 10px;
+            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+            border-radius: 8px;
+        }
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .input-row { grid-template-columns: 1fr; }
+            .tab-btn { padding: 10px 12px; font-size: 0.85rem; }
+        }
     </style>
 </head>
 <body>
@@ -31,224 +259,934 @@
         <header>
             <h1>🛠️ 生活工具套件 Pro</h1>
             <p>25合1超級工具 - 完整版本</p>
-            <button onclick="toggleDarkMode()">🌙 深色模式</button>
-            <button onclick="exportData()">📤 導出數據</button>
-            <button onclick="importData()">📥 導入數據</button>
+            <div class="header-controls">
+                <button onclick="toggleDarkMode()">🌙 深色模式</button>
+                <button onclick="exportData()">📤 導出數據</button>
+                <button onclick="importData()">📥 導入數據</button>
+            </div>
         </header>
 
         <div class="tabs-container">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('calculator')">🧮 計算機</button>
-                <button class="tab-btn" onclick="switchTab('converter')">📏 單位轉換</button>
-                <button class="tab-btn" onclick="switchTab('translator')">🌐 翻譯</button>
-                <button class="tab-btn" onclick="switchTab('todo')">📝 待辦</button>
-                <button class="tab-btn" onclick="switchTab('notes')">📌 筆記</button>
-                <button class="tab-btn" onclick="switchTab('timer')">⏱️ 計時</button>
-                <button class="tab-btn" onclick="switchTab('expense')">💰 支出</button>
-                <button class="tab-btn" onclick="switchTab('qrcode')">📱 二維碼</button>
-                <button class="tab-btn" onclick="switchTab('password')">🔐 密碼</button>
-                <button class="tab-btn" onclick="switchTab('health')">⚖️ 健康</button>
-                <button class="tab-btn" onclick="switchTab('crypto')">🔒 加密</button>
-                <button class="tab-btn" onclick="switchTab('fitness')">💪 健身</button>
-                <button class="tab-btn" onclick="switchTab('stats')">📊 統計</button>
+                <button class="tab-btn active" onclick="switchTab(event, 'calculator')">🧮 計算機</button>
+                <button class="tab-btn" onclick="switchTab(event, 'converter')">📏 單位轉換</button>
+                <button class="tab-btn" onclick="switchTab(event, 'translator')">🌐 翻譯</button>
+                <button class="tab-btn" onclick="switchTab(event, 'todo')">📝 待辦</button>
+                <button class="tab-btn" onclick="switchTab(event, 'notes')">📌 筆記</button>
+                <button class="tab-btn" onclick="switchTab(event, 'timer')">⏱️ 計時</button>
+                <button class="tab-btn" onclick="switchTab(event, 'expense')">💰 支出</button>
+                <button class="tab-btn" onclick="switchTab(event, 'qrcode')">📱 二維碼</button>
+                <button class="tab-btn" onclick="switchTab(event, 'password')">🔐 密碼</button>
+                <button class="tab-btn" onclick="switchTab(event, 'bmi')">⚖️ BMI</button>
+                <button class="tab-btn" onclick="switchTab(event, 'age')">🎂 年齡</button>
+                <button class="tab-btn" onclick="switchTab(event, 'crypto')">🔒 加密</button>
+                <button class="tab-btn" onclick="switchTab(event, 'fitness')">💪 健身</button>
+                <button class="tab-btn" onclick="switchTab(event, 'stats')">📊 統計</button>
             </div>
         </div>
-
+                <!-- 1. 計算機 -->
         <div id="calculator" class="tab-content active">
             <div class="card">
-                <h2>🧮 計算機</h2>
-                <input type="text" id="calcInput" placeholder="輸入計算式...">
-                <button onclick="calculateResult()">計算</button>
+                <h2>🧮 科學計算機</h2>
+                <input type="text" id="calcInput" placeholder="輸入計算式 例如: 2+2*3" style="font-size: 1.3rem; padding: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px;">
+                    <button class="btn-secondary" onclick="appendCalc('7')">7</button>
+                    <button class="btn-secondary" onclick="appendCalc('8')">8</button>
+                    <button class="btn-secondary" onclick="appendCalc('9')">9</button>
+                    <button class="btn-secondary" onclick="appendCalc('/')">/</button>
+                    <button class="btn-secondary" onclick="appendCalc('4')">4</button>
+                    <button class="btn-secondary" onclick="appendCalc('5')">5</button>
+                    <button class="btn-secondary" onclick="appendCalc('6')">6</button>
+                    <button class="btn-secondary" onclick="appendCalc('*')">*</button>
+                    <button class="btn-secondary" onclick="appendCalc('1')">1</button>
+                    <button class="btn-secondary" onclick="appendCalc('2')">2</button>
+                    <button class="btn-secondary" onclick="appendCalc('3')">3</button>
+                    <button class="btn-secondary" onclick="appendCalc('-')">-</button>
+                    <button class="btn-secondary" onclick="appendCalc('0')" style="grid-column: span 2;">0</button>
+                    <button class="btn-secondary" onclick="appendCalc('.')">.</button>
+                    <button class="btn-secondary" onclick="appendCalc('+')">+</button>
+                </div>
+                <button onclick="calculateResult()" style="width: 100%; margin-top: 15px; padding: 15px; font-size: 1.2rem;">=</button>
+                <button onclick="clearCalc()" class="btn-secondary" style="width: 100%; margin-top: 10px;">清除</button>
                 <div id="calcResult" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
+        <!-- 2. 單位轉換 -->
         <div id="converter" class="tab-content">
             <div class="card">
-                <h2>📏 單位轉換</h2>
-                <input type="number" id="celsius" placeholder="攝氏度(°C)" onchange="convertTemp()">
-                <input type="number" id="fahrenheit" placeholder="華氏度(°F)" onchange="convertTemp()">
-                <input type="number" id="km" placeholder="公里(km)" onchange="convertDistance()">
-                <input type="number" id="mile" placeholder="英里(mi)" onchange="convertDistance()">
-                <input type="number" id="kg" placeholder="公斤(kg)" onchange="convertWeight()">
-                <input type="number" id="lb" placeholder="磅(lb)" onchange="convertWeight()">
-                <input type="number" id="liter" placeholder="公升(L)" onchange="convertVolume()">
-                <input type="number" id="gallon" placeholder="加侖(gal)" onchange="convertVolume()">
+                <h2>📏 全能單位轉換 (12+種)</h2>
+                
+                <h3>🌡️ 溫度轉換 (℃ ↔ ℉)</h3>
+                <div class="conversion-item">
+                    <label>攝氏度 (℃)</label>
+                    <input type="number" id="celsius" placeholder="輸入溫度" onchange="convertTemp()" step="0.1">
+                    <div class="conversion-result" id="celsiusResult"></div>
+                </div>
+                <div class="conversion-item">
+                    <label>華氏度 (℉)</label>
+                    <input type="number" id="fahrenheit" placeholder="輸入溫度" onchange="convertTempFromF()" step="0.1">
+                    <div class="conversion-result" id="fahrenheitResult"></div>
+                </div>
+
+                <h3>📍 距離轉換 (km ↔ mi)</h3>
+                <div class="conversion-item">
+                    <label>公里 (km)</label>
+                    <input type="number" id="km" placeholder="輸入距離" onchange="convertDistance()" step="0.01">
+                    <div class="conversion-result" id="kmResult"></div>
+                </div>
+                <div class="conversion-item">
+                    <label>英里 (mi)</label>
+                    <input type="number" id="mile" placeholder="輸入距離" onchange="convertDistanceFromMi()" step="0.01">
+                    <div class="conversion-result" id="mileResult"></div>
+                </div>
+
+                <h3>⚖️ 重量轉換 (kg ↔ lb)</h3>
+                <div class="conversion-item">
+                    <label>公斤 (kg)</label>
+                    <input type="number" id="kg" placeholder="輸入重量" onchange="convertWeight()" step="0.1">
+                    <div class="conversion-result" id="kgResult"></div>
+                </div>
+                <div class="conversion-item">
+                    <label>磅 (lb)</label>
+                    <input type="number" id="lb" placeholder="輸入重量" onchange="convertWeightFromLb()" step="0.1">
+                    <div class="conversion-result" id="lbResult"></div>
+                </div>
+
+                <h3>💧 體積轉換 (L ↔ gal)</h3>
+                <div class="conversion-item">
+                    <label>公升 (L)</label>
+                    <input type="number" id="liter" placeholder="輸入體積" onchange="convertVolume()" step="0.01">
+                    <div class="conversion-result" id="literResult"></div>
+                </div>
+                <div class="conversion-item">
+                    <label>加侖 (gal)</label>
+                    <input type="number" id="gallon" placeholder="輸入體積" onchange="convertVolumeFromGal()" step="0.01">
+                    <div class="conversion-result" id="gallonResult"></div>
+                </div>
+
+                <h3>⏱️ 時間轉換 (h ↔ min)</h3>
+                <div class="conversion-item">
+                    <label>小時 (h)</label>
+                    <input type="number" id="hours" placeholder="輸入小時" onchange="convertTime()" step="0.1">
+                    <div class="conversion-result" id="hoursResult"></div>
+                </div>
+                <div class="conversion-item">
+                    <label>分鐘 (min)</label>
+                    <input type="number" id="minutes" placeholder="輸入分鐘" onchange="convertTimeFromMin()" step="1">
+                    <div class="conversion-result" id="minutesResult"></div>
+                </div>
+
+                <h3>🌍 速度轉換 (km/h ↔ mph)</h3>
+                <div class="conversion-item">
+                    <label>公里/小時 (km/h)</label>
+                    <input type="number" id="kmh" placeholder="輸入速度" onchange="convertSpeed()" step="0.1">
+                    <div class="conversion-result" id="kmhResult"></div>
+                </div>
+                <div class="conversion-item">
+                    <label>英里/小時 (mph)</label>
+                    <input type="number" id="mph" placeholder="輸入速度" onchange="convertSpeedFromMph()" step="0.1">
+                    <div class="conversion-result" id="mphResult"></div>
+                </div>
             </div>
         </div>
 
+        <!-- 3. 翻譯 -->
         <div id="translator" class="tab-content">
             <div class="card">
                 <h2>🌐 翻譯工具</h2>
-                <textarea id="translateInput" placeholder="輸入文字..." rows="6"></textarea>
-                <button onclick="translateText()">翻譯</button>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>源語言</label>
+                            <select id="sourceLang">
+                                <option value="zh">中文</option>
+                                <option value="en">英文</option>
+                                <option value="ja">日文</option>
+                                <option value="ko">韓文</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>目標語言</label>
+                            <select id="targetLang">
+                                <option value="en">英文</option>
+                                <option value="zh">中文</option>
+                                <option value="ja">日文</option>
+                                <option value="ko">韓文</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label>要翻譯的文字</label>
+                    <textarea id="translateInput" placeholder="輸入要翻譯的文字..." rows="6"></textarea>
+                    <button onclick="translateText()">🔄 翻譯</button>
+                </div>
                 <div id="translateOutput" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
+        <!-- 4. 待辦清單 -->
         <div id="todo" class="tab-content">
             <div class="card">
                 <h2>📝 待辦清單</h2>
-                <input type="text" id="todoInput" placeholder="輸入任務...">
-                <button onclick="addTodo()">新增</button>
+                <div class="input-group">
+                    <input type="text" id="todoInput" placeholder="輸入新任務...">
+                    <div class="input-row">
+                        <select id="todoCategory">
+                            <option value="工作">🏢 工作</option>
+                            <option value="學習">📚 學習</option>
+                            <option value="生活">🏠 生活</option>
+                            <option value="其他">🔖 其他</option>
+                        </select>
+                        <select id="todoPriority">
+                            <option value="高">🔴 高優先</option>
+                            <option value="中" selected>🟡 中優先</option>
+                            <option value="低">🟢 低優先</option>
+                        </select>
+                    </div>
+                    <button onclick="addTodo()">➕ 新增任務</button>
+                </div>
                 <div id="todoList"></div>
             </div>
         </div>
 
+        <!-- 5. 筆記 -->
         <div id="notes" class="tab-content">
             <div class="card">
-                <h2>📌 筆記</h2>
-                <input type="text" id="noteTitle" placeholder="標題...">
-                <textarea id="noteContent" placeholder="內容..." rows="6"></textarea>
-                <button onclick="addNote()">保存</button>
+                <h2>📌 便簽筆記</h2>
+                <div class="input-group">
+                    <input type="text" id="noteTitle" placeholder="筆記標題...">
+                    <textarea id="noteContent" placeholder="輸入筆記內容..." rows="6"></textarea>
+                    <button onclick="addNote()">💾 保存筆記</button>
+                </div>
                 <div id="notesList"></div>
             </div>
         </div>
 
+        <!-- 6. 計時器 -->
         <div id="timer" class="tab-content">
             <div class="card">
-                <h2>⏱️ 計時器</h2>
-                <input type="number" id="timerMin" value="5" placeholder="分鐘">
-                <input type="number" id="timerSec" value="0" placeholder="秒">
-                <div style="font-size: 4rem; text-align: center; margin: 20px 0;" id="timerDisplay">05:00</div>
-                <button onclick="startTimer()">開始</button>
-                <button onclick="pauseTimer()">暫停</button>
-                <button onclick="resetTimer()">重置</button>
+                <h2>⏱️ 倒計時器</h2>
+                <div class="input-row">
+                    <div>
+                        <label>分鐘</label>
+                        <input type="number" id="timerMin" value="5" min="0">
+                    </div>
+                    <div>
+                        <label>秒</label>
+                        <input type="number" id="timerSec" value="0" min="0">
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 30px 0;">
+                    <div style="font-size: 5rem; font-weight: bold; color: var(--primary); font-family: 'Courier New'; letter-spacing: 5px;" id="timerDisplay">05:00</div>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="startTimer()" id="timerStartBtn">▶️ 開始</button>
+                    <button onclick="pauseTimer()" id="timerPauseBtn" style="display: none;">⏸️ 暫停</button>
+                    <button onclick="resetTimer()" class="btn-secondary">🔄 重置</button>
+                </div>
             </div>
         </div>
 
+        <!-- 7. 支出記錄 -->
         <div id="expense" class="tab-content">
             <div class="card">
                 <h2>💰 支出記錄</h2>
-                <input type="number" id="expenseAmount" placeholder="金額">
-                <input type="date" id="expenseDate">
-                <button onclick="addExpense()">記錄</button>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>金額</label>
+                            <input type="number" id="expenseAmount" placeholder="輸入金額" min="0" step="0.01">
+                        </div>
+                        <div>
+                            <label>日期</label>
+                            <input type="date" id="expenseDate">
+                        </div>
+                    </div>
+                    <label>分類</label>
+                    <select id="expenseCategory">
+                        <option value="食物">🍔 食物</option>
+                        <option value="交通">🚗 交通</option>
+                        <option value="購物">🛍️ 購物</option>
+                        <option value="娛樂">🎬 娛樂</option>
+                        <option value="其他">🔖 其他</option>
+                    </select>
+                    <input type="text" id="expenseNote" placeholder="備註...">
+                    <button onclick="addExpense()">➕ 記錄支出</button>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="totalExpense">¥0.00</div>
+                    <div style="font-size: 0.9rem; opacity: 0.95;">���支出</div>
+                </div>
                 <div id="expenseList"></div>
             </div>
         </div>
 
+        <!-- 8. 二維碼 -->
         <div id="qrcode" class="tab-content">
             <div class="card">
                 <h2>📱 二維碼生成</h2>
-                <textarea id="qrInput" placeholder="輸入文字..." rows="4"></textarea>
-                <button onclick="generateQR()">生成</button>
-                <div id="qrOutput"></div>
+                <div class="input-group">
+                    <textarea id="qrInput" placeholder="輸入文字、URL..." rows="4"></textarea>
+                    <button onclick="generateQR()">🔲 生成二維碼</button>
+                </div>
+                <div id="qrOutput" style="text-align: center; margin-top: 20px;"></div>
             </div>
         </div>
 
+        <!-- 9. 密碼生成 -->
         <div id="password" class="tab-content">
             <div class="card">
-                <h2>🔐 密碼生成</h2>
-                <input type="number" id="pwdLength" value="12" placeholder="長度">
-                <button onclick="generatePasswords()">生成</button>
+                <h2>🔐 強密碼生成</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>密碼長度</label>
+                            <input type="number" id="pwdLength" value="12" min="6" max="50">
+                        </div>
+                        <div>
+                            <label>生成數量</label>
+                            <input type="number" id="pwdCount" value="5" min="1" max="20">
+                        </div>
+                    </div>
+                    <button onclick="generatePasswords()">🔑 生成密碼</button>
+                </div>
                 <div id="passwordList"></div>
             </div>
         </div>
 
-        <div id="health" class="tab-content">
+        <!-- 10. BMI -->
+        <div id="bmi" class="tab-content">
             <div class="card">
-                <h2>⚖️ 健康數據</h2>
-                <input type="number" id="bmiHeight" placeholder="身高(cm)">
-                <input type="number" id="bmiWeight" placeholder="體重(kg)">
-                <button onclick="calculateBMI()">計算BMI</button>
+                <h2>⚖️ BMI 計算</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>身高(cm)</label>
+                            <input type="number" id="bmiHeight" placeholder="輸入身高" min="0">
+                        </div>
+                        <div>
+                            <label>體重(kg)</label>
+                            <input type="number" id="bmiWeight" placeholder="輸入體重" min="0">
+                        </div>
+                    </div>
+                    <button onclick="calculateBMI()">計算BMI</button>
+                </div>
                 <div id="bmiResult" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
+        <!-- 11. 年齡 -->
+        <div id="age" class="tab-content">
+            <div class="card">
+                <h2>🎂 年齡計算</h2>
+                <div class="input-group">
+                    <label>出生日期</label>
+                    <input type="date" id="birthDate">
+                    <button onclick="calculateAge()">計算年齡</button>
+                </div>
+                <div id="ageResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 12. 加密 -->
         <div id="crypto" class="tab-content">
             <div class="card">
-                <h2>🔒 加密工具</h2>
-                <textarea id="cryptoInput" placeholder="輸入文字..." rows="4"></textarea>
-                <input type="password" id="cryptoKey" placeholder="密鑰">
-                <button onclick="encryptText()">加密</button>
-                <button onclick="decryptText()">解密</button>
+                <h2>🔒 文本加密/解密</h2>
+                <div class="input-group">
+                    <label>要加密的文本</label>
+                    <textarea id="cryptoInput" placeholder="輸入要加密的文字..." rows="6"></textarea>
+                    <input type="password" id="cryptoKey" placeholder="設置密鑰">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="encryptText()" style="flex: 1;">🔐 加密</button>
+                        <button onclick="decryptText()" class="btn-secondary" style="flex: 1;">🔓 解密</button>
+                    </div>
+                </div>
                 <div id="cryptoOutput" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
+        <!-- 13. 健身 -->
         <div id="fitness" class="tab-content">
             <div class="card">
                 <h2>💪 健身記錄</h2>
-                <input type="date" id="fitnessDate">
-                <input type="text" id="fitnessExercise" placeholder="運動項目...">
-                <input type="number" id="fitnessDuration" placeholder="時間(分)">
-                <input type="number" id="fitnessCalorie" placeholder="卡路里">
-                <button onclick="addFitness()">記錄</button>
+                <div class="input-group">
+                    <input type="date" id="fitnessDate">
+                    <input type="text" id="fitnessExercise" placeholder="運動項目">
+                    <div class="input-row">
+                        <div>
+                            <label>時間(分)</label>
+                            <input type="number" id="fitnessDuration" placeholder="時間" min="0">
+                        </div>
+                        <div>
+                            <label>卡路里</label>
+                            <input type="number" id="fitnessCalorie" placeholder="卡路里" min="0">
+                        </div>
+                    </div>
+                    <button onclick="addFitness()">➕ 記錄</button>
+                </div>
                 <div id="fitnessList"></div>
             </div>
         </div>
 
+        <!-- 14. 統計 -->
         <div id="stats" class="tab-content">
             <div class="card">
-                <h2>📊 統計分析</h2>
-                <button onclick="showStats()">生成報告</button>
+                <h2>📊 數據統計</h2>
+                <button onclick="showStats()" style="width: 100%; margin-bottom: 15px;">📈 生成報告</button>
                 <div id="statsOutput"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const state = { todos: [], notes: [], expenses: [], fitness: [], timerInterval: null, timerSeconds: 0, isTimerRunning: false };
+        const state = {
+            todos: [],
+            notes: [],
+            expenses: [],
+            fitness: [],
+            timerInterval: null,
+            timerSeconds: 0,
+            isTimerRunning: false,
+            isDarkMode: localStorage.getItem('darkMode') === 'true'
+        };
 
-        function init() { loadData(); document.getElementById('expenseDate').valueAsDate = new Date(); document.getElementById('fitnessDate').valueAsDate = new Date(); }
+        function init() {
+            loadData();
+            if (state.isDarkMode) document.body.classList.add('dark-mode');
+            document.getElementById('expenseDate').valueAsDate = new Date();
+            document.getElementById('fitnessDate').valueAsDate = new Date();
+            renderAll();
+        }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(tab).classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
 
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            state.isDarkMode = !state.isDarkMode;
+            localStorage.setItem('darkMode', state.isDarkMode);
+        }
 
-        function saveData() { localStorage.setItem('appState', JSON.stringify(state)); }
-        function loadData() { const saved = localStorage.getItem('appState'); if (saved) Object.assign(state, JSON.parse(saved)); }
-        function exportData() { const blob = new Blob([JSON.stringify(state)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'backup.json'; a.click(); }
-        function importData() { const input = document.createElement('input'); input.type = 'file'; input.onchange = (e) => { const file = e.target.files[0]; const reader = new FileReader(); reader.onload = (evt) => { Object.assign(state, JSON.parse(evt.target.result)); saveData(); alert('導入成功'); }; reader.readAsText(file); }; input.click(); }
+        function saveData() {
+            localStorage.setItem('appState', JSON.stringify(state));
+        }
 
-        function calculateResult() { try { const result = eval(document.getElementById('calcInput').value); document.getElementById('calcResult').textContent = '結果: ' + result; document.getElementById('calcResult').style.display = 'block'; } catch(e) { alert('計算錯誤'); } }
+        function loadData() {
+            const saved = localStorage.getItem('appState');
+            if (saved) {
+                try {
+                    Object.assign(state, JSON.parse(saved));
+                } catch(e) {
+                    console.error('數據加載失敗');
+                }
+            }
+        }
 
-        function convertTemp() { const c = parseFloat(document.getElementById('celsius').value); if (!isNaN(c)) document.getElementById('fahrenheit').value = (c * 9/5 + 32).toFixed(2); }
-        function convertDistance() { const km = parseFloat(document.getElementById('km').value); if (!isNaN(km)) document.getElementById('mile').value = (km * 0.621371).toFixed(4); }
-        function convertWeight() { const kg = parseFloat(document.getElementById('kg').value); if (!isNaN(kg)) document.getElementById('lb').value = (kg * 2.20462).toFixed(4); }
-        function convertVolume() { const l = parseFloat(document.getElementById('liter').value); if (!isNaN(l)) document.getElementById('gallon').value = (l * 0.264172).toFixed(4); }
+        function exportData() {
+            const data = JSON.stringify(state, null, 2);
+            const blob = new Blob([data], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+        }
 
-        function translateText() { const text = document.getElementById('translateInput').value; if (!text) return; document.getElementById('translateOutput').textContent = '翻譯: ' + text; document.getElementById('translateOutput').style.display = 'block'; }
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        Object.assign(state, JSON.parse(evt.target.result));
+                        saveData();
+                        renderAll();
+                        alert('✅ 導入成功');
+                    } catch(e) {
+                        alert('❌ 導入失敗');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
 
-        function addTodo() { const text = document.getElementById('todoInput').value; if (!text) return; state.todos.push({id: Date.now(), text, completed: false}); saveData(); renderTodos(); document.getElementById('todoInput').value = ''; }
-        function renderTodos() { const list = document.getElementById('todoList'); list.innerHTML = state.todos.map(todo => `<div style="padding:10px;margin:5px 0;background:#f0f0f0;border-radius:5px;"><input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})"> ${todo.text} <button onclick="deleteTodo(${todo.id})">刪</button></div>`).join(''); }
-        function toggleTodo(id) { const todo = state.todos.find(t => t.id === id); if (todo) todo.completed = !todo.completed; saveData(); renderTodos(); }
-        function deleteTodo(id) { state.todos = state.todos.filter(t => t.id !== id); saveData(); renderTodos(); }
+        // 計算機
+        function appendCalc(val) {
+            document.getElementById('calcInput').value += val;
+        }
 
-        function addNote() { const title = document.getElementById('noteTitle').value; const content = document.getElementById('noteContent').value; if (!title || !content) return; state.notes.push({id: Date.now(), title, content, date: new Date().toLocaleString()}); saveData(); renderNotes(); document.getElementById('noteTitle').value = ''; document.getElementById('noteContent').value = ''; }
-        function renderNotes() { const list = document.getElementById('notesList'); list.innerHTML = state.notes.map(note => `<div style="padding:10px;margin:5px 0;background:#fff9e6;border-radius:5px;"><strong>${note.title}</strong><p>${note.content.substring(0,50)}...</p><button onclick="deleteNote(${note.id})">刪</button></div>`).join(''); }
-        function deleteNote(id) { state.notes = state.notes.filter(n => n.id !== id); saveData(); renderNotes(); }
+        function clearCalc() {
+            document.getElementById('calcInput').value = '';
+            document.getElementById('calcResult').style.display = 'none';
+        }
 
-        function startTimer() { if (state.isTimerRunning) return; state.timerSeconds = parseInt(document.getElementById('timerMin').value) * 60 + parseInt(document.getElementById('timerSec').value); state.isTimerRunning = true; state.timerInterval = setInterval(() => { state.timerSeconds--; updateTimerDisplay(); if (state.timerSeconds <= 0) { clearInterval(state.timerInterval); state.isTimerRunning = false; alert('時間到'); } }, 1000); }
-        function pauseTimer() { clearInterval(state.timerInterval); state.isTimerRunning = false; }
-        function resetTimer() { clearInterval(state.timerInterval); state.isTimerRunning = false; state.timerSeconds = 0; updateTimerDisplay(); }
-        function updateTimerDisplay() { const min = Math.floor(state.timerSeconds / 60); const sec = state.timerSeconds % 60; document.getElementById('timerDisplay').textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; }
+        function calculateResult() {
+            try {
+                const result = eval(document.getElementById('calcInput').value);
+                document.getElementById('calcResult').innerHTML = `<strong>✓ 結果:</strong> ${result}`;
+                document.getElementById('calcResult').style.display = 'block';
+            } catch (e) {
+                alert('❌ 計算式錯誤');
+            }
+        }
 
-        function addExpense() { const amount = parseFloat(document.getElementById('expenseAmount').value); if (!amount) return; state.expenses.push({id: Date.now(), amount, date: document.getElementById('expenseDate').value}); saveData(); renderExpenses(); document.getElementById('expenseAmount').value = ''; }
-        function renderExpenses() { const total = state.expenses.reduce((sum, e) => sum + e.amount, 0); const list = document.getElementById('expenseList'); list.innerHTML = `<div style="font-size:20px;color:red;">總支出: ¥${total.toFixed(2)}</div>` + state.expenses.map(e => `<div style="padding:10px;margin:5px 0;background:#f0f0f0;border-radius:5px;">${e.date} ¥${e.amount}<button onclick="deleteExpense(${e.id})">刪</button></div>`).join(''); }
-        function deleteExpense(id) { state.expenses = state.expenses.filter(e => e.id !== id); saveData(); renderExpenses(); }
+        // 單位轉換
+        function convertTemp() {
+            const c = parseFloat(document.getElementById('celsius').value);
+            if (!isNaN(c)) {
+                const f = (c * 9/5 + 32).toFixed(2);
+                document.getElementById('fahrenheit').value = f;
+                document.getElementById('celsiusResult').textContent = `= ${f} ℉`;
+            }
+        }
 
-        function generateQR() { const text = document.getElementById('qrInput').value; if (!text) return; const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`; document.getElementById('qrOutput').innerHTML = `<img src="${url}" style="max-width:300px;border-radius:10px;"><br><a href="${url}" download="qrcode.png">下載</a>`; }
+        function convertTempFromF() {
+            const f = parseFloat(document.getElementById('fahrenheit').value);
+            if (!isNaN(f)) {
+                const c = ((f - 32) * 5/9).toFixed(2);
+                document.getElementById('celsius').value = c;
+                document.getElementById('fahrenheitResult').textContent = `= ${c} ℃`;
+            }
+        }
 
-        function generatePasswords() { const length = parseInt(document.getElementById('pwdLength').value); const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'; let pwd = ''; for (let i = 0; i < length; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length)); document.getElementById('passwordList').innerHTML = `<div style="padding:10px;background:#f0f0f0;border-radius:5px;"><code>${pwd}</code><button onclick="navigator.clipboard.writeText('${pwd}');alert('已複製')">複製</button></div>`; }
+        function convertDistance() {
+            const km = parseFloat(document.getElementById('km').value);
+            if (!isNaN(km)) {
+                const mi = (km * 0.621371).toFixed(4);
+                document.getElementById('mile').value = mi;
+                document.getElementById('kmResult').textContent = `= ${mi} mi`;
+            }
+        }
 
-        function calculateBMI() { const height = parseFloat(document.getElementById('bmiHeight').value) / 100; const weight = parseFloat(document.getElementById('bmiWeight').value); if (!height || !weight) return; const bmi = weight / (height * height); document.getElementById('bmiResult').textContent = `BMI: ${bmi.toFixed(1)}`; document.getElementById('bmiResult').style.display = 'block'; }
+        function convertDistanceFromMi() {
+            const mi = parseFloat(document.getElementById('mile').value);
+            if (!isNaN(mi)) {
+                const km = (mi / 0.621371).toFixed(4);
+                document.getElementById('km').value = km;
+                document.getElementById('mileResult').textContent = `= ${km} km`;
+            }
+        }
 
-        function encryptText() { const text = document.getElementById('cryptoInput').value; const key = document.getElementById('cryptoKey').value; if (!text || !key) return; let result = ''; for (let i = 0; i < text.length; i++) result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length)); document.getElementById('cryptoOutput').textContent = '加密: ' + btoa(result); document.getElementById('cryptoOutput').style.display = 'block'; }
-        function decryptText() { const encrypted = document.getElementById('cryptoInput').value; const key = document.getElementById('cryptoKey').value; if (!encrypted || !key) return; try { const text = atob(encrypted); let result = ''; for (let i = 0; i < text.length; i++) result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length)); document.getElementById('cryptoOutput').textContent = '解密: ' + result; document.getElementById('cryptoOutput').style.display = 'block'; } catch(e) { alert('解密失敗'); } }
+        function convertWeight() {
+            const kg = parseFloat(document.getElementById('kg').value);
+            if (!isNaN(kg)) {
+                const lb = (kg * 2.20462).toFixed(4);
+                document.getElementById('lb').value = lb;
+                document.getElementById('kgResult').textContent = `= ${lb} lb`;
+            }
+        }
 
-        function addFitness() { const date = document.getElementById('fitnessDate').value; const exercise = document.getElementById('fitnessExercise').value; const duration = parseInt(document.getElementById('fitnessDuration').value); const calorie = parseInt(document.getElementById('fitnessCalorie').value); if (!exercise || !duration || !calorie) return; state.fitness.push({id: Date.now(), date, exercise, duration, calorie}); saveData(); renderFitness(); document.getElementById('fitnessExercise').value = ''; document.getElementById('fitnessDuration').value = ''; document.getElementById('fitnessCalorie').value = ''; }
-        function renderFitness() { const list = document.getElementById('fitnessList'); const total = state.fitness.reduce((sum, f) => sum + f.calorie, 0); list.innerHTML = `<div style="font-size:20px;color:green;">總卡路里: ${total}</div>` + state.fitness.map(f => `<div style="padding:10px;margin:5px 0;background:#f0f0f0;border-radius:5px;">${f.date} ${f.exercise} ${f.duration}分 🔥${f.calorie}卡<button onclick="deleteFitness(${f.id})">刪</button></div>`).join(''); }
-        function deleteFitness(id) { state.fitness = state.fitness.filter(f => f.id !== id); saveData(); renderFitness(); }
+        function convertWeightFromLb() {
+            const lb = parseFloat(document.getElementById('lb').value);
+            if (!isNaN(lb)) {
+                const kg = (lb / 2.20462).toFixed(4);
+                document.getElementById('kg').value = kg;
+                document.getElementById('lbResult').textContent = `= ${kg} kg`;
+            }
+        }
 
-        function showStats() { const todoCount = state.todos.length; const todoCompleted = state.todos.filter(t => t.completed).length; const totalExpense = state.expenses.reduce((sum, e) => sum + e.amount, 0); const totalCalorie = state.fitness.reduce((sum, f) => sum + f.calorie, 0); document.getElementById('statsOutput').innerHTML = `<div>任務總數: ${todoCount}</div><div>完成率: ${todoCompleted}/${todoCount}</div><div>總支出: ¥${totalExpense.toFixed(2)}</div><div>卡路里: ${totalCalorie}</div>`; }
+        function convertVolume() {
+            const l = parseFloat(document.getElementById('liter').value);
+            if (!isNaN(l)) {
+                const gal = (l * 0.264172).toFixed(4);
+                document.getElementById('gallon').value = gal;
+                document.getElementById('literResult').textContent = `= ${gal} gal`;
+            }
+        }
 
-        init();
+        function convertVolumeFromGal() {
+            const gal = parseFloat(document.getElementById('gallon').value);
+            if (!isNaN(gal)) {
+                const l = (gal / 0.264172).toFixed(4);
+                document.getElementById('liter').value = l;
+                document.getElementById('gallonResult').textContent = `= ${l} L`;
+            }
+        }
+
+        function convertTime() {
+            const h = parseFloat(document.getElementById('hours').value);
+            if (!isNaN(h)) {
+                const min = (h * 60).toFixed(2);
+                document.getElementById('minutes').value = min;
+                document.getElementById('hoursResult').textContent = `= ${min} min`;
+            }
+        }
+
+        function convertTimeFromMin() {
+            const min = parseFloat(document.getElementById('minutes').value);
+            if (!isNaN(min)) {
+                const h = (min / 60).toFixed(4);
+                document.getElementById('hours').value = h;
+                document.getElementById('minutesResult').textContent = `= ${h} h`;
+            }
+        }
+
+        function convertSpeed() {
+            const kmh = parseFloat(document.getElementById('kmh').value);
+            if (!isNaN(kmh)) {
+                const mph = (kmh * 0.621371).toFixed(4);
+                document.getElementById('mph').value = mph;
+                document.getElementById('kmhResult').textContent = `= ${mph} mph`;
+            }
+        }
+
+        function convertSpeedFromMph() {
+            const mph = parseFloat(document.getElementById('mph').value);
+            if (!isNaN(mph)) {
+                const kmh = (mph / 0.621371).toFixed(4);
+                document.getElementById('kmh').value = kmh;
+                document.getElementById('mphResult').textContent = `= ${kmh} km/h`;
+            }
+        }
+
+        // 翻譯
+        function translateText() {
+            const text = document.getElementById('translateInput').value;
+            if (!text) { alert('請輸入文字'); return; }
+            const output = document.getElementById('translateOutput');
+            output.innerHTML = '⏳ 翻譯中...';
+            output.style.display = 'block';
+            setTimeout(() => {
+                output.innerHTML = `<strong>原文:</strong> ${text}<br><br>💡 <strong>提示:</strong> 建議使用 Google 翻譯、有道翻譯獲得準確結果。`;
+            }, 500);
+        }
+
+        // 待辦
+        function addTodo() {
+            const text = document.getElementById('todoInput').value.trim();
+            if (!text) { alert('請輸入任務'); return; }
+            state.todos.push({
+                id: Date.now(),
+                text,
+                category: document.getElementById('todoCategory').value,
+                priority: document.getElementById('todoPriority').value,
+                completed: false
+            });
+            saveData();
+            renderTodos();
+            document.getElementById('todoInput').value = '';
+        }
+
+        function renderTodos() {
+            const list = document.getElementById('todoList');
+            if (state.todos.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有任務</p>';
+                return;
+            }
+            list.innerHTML = state.todos.map(todo => `
+                <div class="list-item">
+                    <div class="list-content">
+                        <h4><input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})" style="margin-right: 8px;"> <span style="text-decoration: ${todo.completed ? 'line-through' : 'none'};">${todo.text}</span></h4>
+                        <p>${todo.category} • ${todo.priority}</p>
+                    </div>
+                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="deleteTodo(${todo.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleTodo(id) {
+            const todo = state.todos.find(t => t.id === id);
+            if (todo) todo.completed = !todo.completed;
+            saveData();
+            renderTodos();
+        }
+
+        function deleteTodo(id) {
+            state.todos = state.todos.filter(t => t.id !== id);
+            saveData();
+            renderTodos();
+        }
+
+        // 筆記
+        function addNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+            if (!title || !content) { alert('請輸入標題和內容'); return; }
+            state.notes.push({
+                id: Date.now(),
+                title,
+                content,
+                createdAt: new Date().toLocaleString('zh-TW')
+            });
+            saveData();
+            renderNotes();
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notesList');
+            if (state.notes.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有筆記</p>';
+                return;
+            }
+            list.innerHTML = state.notes.map(note => `
+                <div class="list-item" style="flex-direction: column; align-items: flex-start;">
+                    <div class="list-content" style="width: 100%;">
+                        <h4 style="color: var(--primary);">${note.title}</h4>
+                        <p>${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</p>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 8px;">📅 ${note.createdAt}</p>
+                    </div>
+                    <button class="btn-secondary" style="padding: 6px 12px; margin-top: 10px;" onclick="deleteNote(${note.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteNote(id) {
+            state.notes = state.notes.filter(n => n.id !== id);
+            saveData();
+            renderNotes();
+        }
+
+        // 計時器
+        function startTimer() {
+            if (state.isTimerRunning) return;
+            if (state.timerSeconds === 0) {
+                state.timerSeconds = parseInt(document.getElementById('timerMin').value || 0) * 60 + parseInt(document.getElementById('timerSec').value || 0);
+            }
+            if (state.timerSeconds <= 0) { alert('請輸入時間'); return; }
+            state.isTimerRunning = true;
+            document.getElementById('timerStartBtn').style.display = 'none';
+            document.getElementById('timerPauseBtn').style.display = 'inline-block';
+            state.timerInterval = setInterval(() => {
+                state.timerSeconds--;
+                updateTimerDisplay();
+                if (state.timerSeconds <= 0) {
+                    clearInterval(state.timerInterval);
+                    state.isTimerRunning = false;
+                    alert('⏰ 時間到！');
+                    document.getElementById('timerStartBtn').style.display = 'inline-block';
+                    document.getElementById('timerPauseBtn').style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(state.timerInterval);
+            state.isTimerRunning = false;
+            document.getElementById('timerStartBtn').style.display = 'inline-block';
+            document.getElementById('timerPauseBtn').style.display = 'none';
+        }
+
+        function resetTimer() {
+            clearInterval(state.timerInterval);
+            state.isTimerRunning = false;
+            state.timerSeconds = 0;
+            document.getElementById('timerStartBtn').style.display = 'inline-block';
+            document.getElementById('timerPauseBtn').style.display = 'none';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const min = Math.floor(state.timerSeconds / 60);
+            const sec = state.timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+
+        // 支出
+        function addExpense() {
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            if (!amount || amount <= 0) { alert('請輸入金額'); return; }
+            state.expenses.push({
+                id: Date.now(),
+                amount,
+                date: document.getElementById('expenseDate').value,
+                category: document.getElementById('expenseCategory').value,
+                note: document.getElementById('expenseNote').value
+            });
+            saveData();
+            renderExpenses();
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseNote').value = '';
+        }
+
+        function renderExpenses() {
+            const total = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('totalExpense').textContent = `¥${total.toFixed(2)}`;
+            const list = document.getElementById('expenseList');
+            if (state.expenses.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有支出</p>';
+                return;
+            }
+            list.innerHTML = state.expenses.map(e => `
+                <div class="list-item">
+                    <div class="list-content">
+                        <h4>${e.category}</h4>
+                        <p>📅 ${e.date} ${e.note ? '| ' + e.note : ''}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.2rem; color: var(--danger); font-weight: bold;">¥${e.amount.toFixed(2)}</div>
+                        <button class="btn-secondary" style="padding: 6px 12px; margin-top: 8px;" onclick="deleteExpense(${e.id})">刪除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteExpense(id) {
+            state.expenses = state.expenses.filter(e => e.id !== id);
+            saveData();
+            renderExpenses();
+        }
+
+        // 二維碼
+        function generateQR() {
+            const text = document.getElementById('qrInput').value.trim();
+            if (!text) { alert('請輸入內容'); return; }
+            const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
+            document.getElementById('qrOutput').innerHTML = `
+                <img src="${url}" style="max-width: 300px; border-radius: 10px; border: 2px solid var(--border); padding: 10px;">
+                <br><a href="${url}" download="qrcode.png" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px;">⬇️ 下載</a>
+            `;
+        }
+
+        // 密碼
+        function generatePasswords() {
+            const length = parseInt(document.getElementById('pwdLength').value);
+            const count = parseInt(document.getElementById('pwdCount').value);
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+            let passwords = [];
+            for (let i = 0; i < count; i++) {
+                let pwd = '';
+                for (let j = 0; j < length; j++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+                passwords.push(pwd);
+            }
+            document.getElementById('passwordList').innerHTML = passwords.map(pwd => `
+                <div class="list-item">
+                    <code style="font-size: 1.1rem; font-weight: bold; flex: 1; word-break: break-all;">${pwd}</code>
+                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="navigator.clipboard.writeText('${pwd}'); alert('✅ 已複製');">📋 複製</button>
+                </div>
+            `).join('');
+        }
+
+        // BMI
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('bmiHeight').value) / 100;
+            const weight = parseFloat(document.getElementById('bmiWeight').value);
+            if (!height || !weight) { alert('請輸入身高和體重'); return; }
+            const bmi = weight / (height * height);
+            let category = '';
+            if (bmi < 18.5) category = '體重過輕';
+            else if (bmi < 25) category = '正常體重';
+            else if (bmi < 30) category = '體重過重';
+            else category = '肥胖';
+            document.getElementById('bmiResult').innerHTML = `<strong>BMI:</strong> ${bmi.toFixed(1)}<br><strong>分類:</strong> ${category}`;
+            document.getElementById('bmiResult').style.display = 'block';
+        }
+
+        // 年齡
+        function calculateAge() {
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            if (!document.getElementById('birthDate').value) { alert('請輸入出生日期'); return; }
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+            const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+            if (nextBirthday < today) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+            const daysUntil = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+            document.getElementById('ageResult').innerHTML = `<strong>年齡:</strong> ${age} 歲<br><strong>距生日:</strong> 還有 ${daysUntil} 天 🎂`;
+            document.getElementById('ageResult').style.display = 'block';
+        }
+
+        // 加密
+        function encryptText() {
+            const text = document.getElementById('cryptoInput').value;
+            const key = document.getElementById('cryptoKey').value;
+            if (!text || !key) { alert('請輸入文本和密鑰'); return; }
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            document.getElementById('cryptoOutput').innerHTML = `<strong>✓ 加密結果:</strong>\n${btoa(result)}`;
+            document.getElementById('cryptoOutput').style.display = 'block';
+        }
+
+        function decryptText() {
+            const encrypted = document.getElementById('cryptoInput').value;
+            const key = document.getElementById('cryptoKey').value;
+            if (!encrypted || !key) { alert('請輸入密文和密鑰'); return; }
+            try {
+                const text = atob(encrypted);
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+                }
+                document.getElementById('cryptoOutput').innerHTML = `<strong>✓ 解密結果:</strong>\n${result}`;
+                document.getElementById('cryptoOutput').style.display = 'block';
+            } catch(e) {
+                alert('❌ 解密失敗');
+            }
+        }
+
+        // 健身
+        function addFitness() {
+            const date = document.getElementById('fitnessDate').value;
+            const exercise = document.getElementById('fitnessExercise').value.trim();
+            const duration = parseInt(document.getElementById('fitnessDuration').value);
+            const calorie = parseInt(document.getElementById('fitnessCalorie').value);
+            if (!exercise || !duration || !calorie) { alert('請完整填寫'); return; }
+            state.fitness.push({ id: Date.now(), date, exercise, duration, calorie });
+            saveData();
+            renderFitness();
+            document.getElementById('fitnessExercise').value = '';
+            document.getElementById('fitnessDuration').value = '';
+            document.getElementById('fitnessCalorie').value = '';
+        }
+
+        function renderFitness() {
+            const list = document.getElementById('fitnessList');
+            const total = state.fitness.reduce((sum, f) => sum + f.calorie, 0);
+            let html = `<div class="stat-box"><div class="number">🔥${total}</div><div style="font-size: 0.9rem;">總卡路里</div></div>`;
+            if (state.fitness.length === 0) {
+                html += '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有記錄</p>';
+            } else {
+                html += state.fitness.map(f => `
+                    <div class="list-item">
+                        <div class="list-content"><h4>${f.exercise}</h4><p>📅 ${f.date} • ⏱️ ${f.duration} 分</p></div>
+                        <div style="text-align: right;"><div style="font-size: 1.2rem; color: var(--danger); font-weight: bold;">🔥 ${f.calorie}</div><button class="btn-secondary" style="padding: 6px 12px; margin-top: 8px;" onclick="deleteFitness(${f.id})">刪除</button></div>
+                    </div>
+                `).join('');
+            }
+            list.innerHTML = html;
+        }
+
+        function deleteFitness(id) {
+            state.fitness = state.fitness.filter(f => f.id !== id);
+            saveData();
+            renderFitness();
+        }
+
+        // 統計
+        function showStats() {
+            const todoCount = state.todos.length;
+            const todoCompleted = state.todos.filter(t => t.completed).length;
+            const totalExpense = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const totalCalorie = state.fitness.reduce((sum, f) => sum + f.calorie, 0);
+            document.getElementById('statsOutput').innerHTML = `
+                <div class="stat-box"><div class="number">${todoCount}</div><div style="font-size: 0.9rem;">任務總數</div></div>
+                <div class="stat-box"><div class="number">${todoCompleted}/${todoCount}</div><div style="font-size: 0.9rem;">完成率</div></div>
+                <div class="stat-box"><div class="number">¥${totalExpense.toFixed(2)}</div><div style="font-size: 0.9rem;">支出</div></div>
+                <div class="stat-box"><div class="number">🔥${totalCalorie}</div><div style="font-size: 0.9rem;">卡路里</div></div>
+            `;
+        }
+
+        function renderAll() {
+            renderTodos();
+            renderNotes();
+            renderExpenses();
+            renderFitness();
+            updateTimerDisplay();
+        }
+
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
