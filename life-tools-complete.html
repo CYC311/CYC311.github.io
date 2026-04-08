@@ -282,6 +282,7 @@
                 <button class="tab-btn" onclick="switchTab(event, 'crypto')">🔒 加密</button>
                 <button class="tab-btn" onclick="switchTab(event, 'fitness')">💪 健身</button>
                 <button class="tab-btn" onclick="switchTab(event, 'stats')">📊 統計</button>
+                <button class="tab-btn" onclick="switchTab(event, 'probability')">🎰 概率計算</button>
             </div>
         </div>
                 <!-- 1. 計算機 -->
@@ -636,6 +637,45 @@
                 <div id="statsOutput"></div>
             </div>
         </div>
+        <!-- 15. 概率計算 -->
+<div id="probability" class="tab-content">
+    <div class="card">
+        <h2>🎰 遊戲抽取概率計算</h2>
+        <p style="color: var(--text-light); margin-bottom: 20px;">計算遊戲抽取的中獎機率、期望值和保底機制分析</p>
+        
+        <div class="input-group">
+            <div class="input-row">
+                <div>
+                    <label>單次抽取大獎機率(%)</label>
+                    <input type="number" id="probRate" placeholder="例如:0.6" step="0.01" min="0" max="100" value="0.6">
+                </div>
+                <div>
+                    <label>保底所需次數</label>
+                    <input type="number" id="pityCount" placeholder="例如:90" step="1" min="1" value="90">
+                </div>
+            </div>
+            <div>
+                <label>玩家總抽數</label>
+                <input type="number" id="totalDraws" placeholder="例如:360" step="1" min="1" value="360">
+            </div>
+            <button onclick="calculateProbability()">📊 計算概率</button>
+        </div>
+
+        <div id="probResult" class="result-box" style="display: none;"></div>
+        
+        <div id="probChart" style="margin-top: 20px; display: none;">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">📈 中獎概率曲線</h3>
+            <canvas id="probabilityCanvas" style="max-width: 100%; border-radius: 10px;"></canvas>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: rgba(76,175,80,0.1); border-left: 4px solid #4caf50; border-radius: 8px; color: var(--text);">
+            <strong>💡 使用説明：</strong><br>
+            • 單次機率: 每次抽取獲得大獎的概率，如原神限定角色為0.6%<br>
+            • 保底機制: 抽取一定次數後必定獲得大獎，如原神為90次保底<br>
+            • 總抽數: 你計畫花費的總抽數，用於計算期望獲得次數
+        </div>
+    </div>
+</div>
     </div>
 
     <script>
@@ -1177,6 +1217,178 @@
                 <div class="stat-box"><div class="number">🔥${totalCalorie}</div><div style="font-size: 0.9rem;">卡路里</div></div>
             `;
         }
+        // ===== 概率計算 =====
+function calculateProbability() {
+    const probRate = parseFloat(document.getElementById('probRate').value);
+    const pityCount = parseInt(document.getElementById('pityCount').value);
+    const totalDraws = parseInt(document.getElementById('totalDraws').value);
+
+    if (!probRate || probRate <= 0 || probRate > 100) { 
+        alert('請輸入有效的機率(0-100)'); 
+        return; 
+    }
+    if (!pityCount || pityCount <= 0) { 
+        alert('請輸入有效的保底次數'); 
+        return; 
+    }
+    if (!totalDraws || totalDraws <= 0) { 
+        alert('請輸入有效的總抽數'); 
+        return; 
+    }
+
+    // 將百分比轉換為小數
+    const p = probRate / 100;
+    
+    // 計算期望值（平均需要多少次才能抽到一次）
+    const expectedValue = 1 / p;
+    
+    // 計算在總抽數內至少中獎一次的概率
+    const probAtLeastOnce = 1 - Math.pow(1 - p, totalDraws);
+    
+    // 計算保底邏輯下的期望抽數和中獎次數
+    let expectedDrawsWithPity = 0;
+    let expectedPrizeCount = 0;
+
+    // 模擬計算考慮保底的期望值
+    if (totalDraws >= pityCount) {
+        // 簡化計算：假設玩家按照概率分布獲得大獎
+        expectedPrizeCount = Math.floor(totalDraws / expectedValue);
+        
+        // 考慮保底機制的調整
+        let adjustedDraws = totalDraws;
+        let remainingDraws = totalDraws;
+        let prizeCount = 0;
+
+        while (remainingDraws > 0) {
+            if (remainingDraws >= pityCount) {
+                // 期望在這個範圍內獲得多少次大獎
+                const drawsInThisSegment = Math.min(remainingDraws, pityCount);
+                const probInSegment = 1 - Math.pow(1 - p, drawsInThisSegment);
+                prizeCount += probInSegment;
+                remainingDraws -= pityCount;
+            } else {
+                const probInSegment = 1 - Math.pow(1 - p, remainingDraws);
+                prizeCount += probInSegment;
+                remainingDraws = 0;
+            }
+        }
+        expectedPrizeCount = prizeCount;
+    } else {
+        expectedPrizeCount = 1 - Math.pow(1 - p, totalDraws);
+    }
+
+    // 計算更精確的概率（考慮保底）
+    let probWithPity = 0;
+    if (totalDraws >= pityCount) {
+        probWithPity = 0.99999; // 保底次數內必定獲得
+    } else {
+        probWithPity = 1 - Math.pow(1 - p, totalDraws);
+    }
+
+    // 生成報告
+    const resultHTML = `
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">📊 計算結果</h3>
+            
+            <div class="stat-box" style="margin-bottom: 15px;">
+                <div class="number">${(probWithPity * 100).toFixed(2)}%</div>
+                <div>在 ${totalDraws} 次抽取內至少獲得大獎的概率</div>
+            </div>
+
+            <div class="stat-box" style="margin-bottom: 15px;">
+                <div class="number">${expectedValue.toFixed(1)}</div>
+                <div>期望值（平均需要抽取次數）</div>
+            </div>
+
+            <div class="stat-box" style="margin-bottom: 15px;">
+                <div class="number">${expectedPrizeCount.toFixed(2)}</div>
+                <div>在 ${totalDraws} 次抽取內期望獲得的大獎次數</div>
+            </div>
+
+            <div style="background: rgba(102,126,234,0.1); padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary);">
+                <h4 style="color: var(--primary); margin-bottom: 10px;">📈 詳細分析</h4>
+                <p><strong>單次機率:</strong> ${probRate}%</p>
+                <p><strong>保底機制:</strong> ${pityCount} 次抽取後保證獲得</p>
+                <p><strong>總投入:</strong> ${totalDraws} 次抽取</p>
+                <p style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);"><strong>🎯 結論:</strong> 以 ${probRate}% 的機率進行 ${totalDraws} 次抽取，你有 <span style="color: var(--primary); font-weight: bold;">${(probWithPity * 100).toFixed(2)}%</span> 的機率至少獲得一次大獎。平均每 <span style="color: var(--primary); font-weight: bold;">${expectedValue.toFixed(1)}</span> 次抽取會獲得一次大獎。</p>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('probResult').innerHTML = resultHTML;
+    document.getElementById('probResult').style.display = 'block';
+
+    // 生成概率曲線圖
+    drawProbabilityChart(p, pityCount, totalDraws);
+}
+
+function drawProbabilityChart(p, pityCount, totalDraws) {
+    const canvas = document.getElementById('probabilityCanvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const width = canvas.parentElement.offsetWidth - 20;
+    const height = 300;
+    
+    canvas.width = width;
+    canvas.height = height;
+
+    // 設定背景
+    ctx.fillStyle = 'rgba(102,126,234,0.05)';
+    ctx.fillRect(0, 0, width, height);
+
+    // 計算數據點
+    const steps = Math.min(totalDraws, 100);
+    const points = [];
+    for (let i = 1; i <= steps; i++) {
+        const x = (i / steps) * totalDraws;
+        const y = 1 - Math.pow(1 - p, x);
+        points.push({ x: x, y: y });
+    }
+
+    // 繪製坐標軸
+    ctx.strokeStyle = 'var(--border)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(40, height - 40);
+    ctx.lineTo(width - 20, height - 40);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(40, 20);
+    ctx.lineTo(40, height - 40);
+    ctx.stroke();
+
+    // 繪製曲線
+    ctx.strokeStyle = '#667eea';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const canvasX = 40 + (point.x / totalDraws) * (width - 60);
+        const canvasY = height - 40 - point.y * (height - 60);
+        if (i === 0) ctx.moveTo(canvasX, canvasY);
+        else ctx.lineTo(canvasX, canvasY);
+    }
+    ctx.stroke();
+
+    // 繪製刻度標籤
+    ctx.fillStyle = 'var(--text)';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'center';
+    
+    // X軸標籤
+    ctx.fillText('0', 40, height - 20);
+    ctx.fillText(Math.round(totalDraws / 2), 40 + (width - 60) / 2, height - 20);
+    ctx.fillText(totalDraws, width - 20, height - 20);
+    
+    // Y軸標籤
+    ctx.textAlign = 'right';
+    ctx.fillText('0%', 35, height - 35);
+    ctx.fillText('50%', 35, height - 40 - (height - 60) / 2);
+    ctx.fillText('100%', 35, 25);
+
+    document.getElementById('probChart').style.display = 'block';
+}
 
         function renderAll() {
             renderTodos();
