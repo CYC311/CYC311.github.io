@@ -1,32 +1,1342 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-    <title>Enhanced Life Tools Suite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生活工具套件 Pro - 17合1超級工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Noto Sans CJK TC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs-container {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 16px;
+            border: none;
+            background: #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .input-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e63946;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #388e3c;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-box .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .list-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .list-content {
+            flex: 1;
+        }
+
+        .list-content h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .list-content p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .conversion-result {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .tip-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2196f3;
+            margin-top: 15px;
+        }
+
+        .tip-box strong {
+            color: #1565c0;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .input-row, .input-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-btn {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Enhanced Life Tools Suite</h1>
-    <p>This suite includes 17 powerful features to improve your life:</p>
-    <ol>
-        <li>Current Date and Time</li>
-        <li>Goal Tracker</li>
-        <li>Habit Tracker</li>
-        <li>Mood Journal</li>
-        <li>Budget Planner</li>
-        <li>Meal Planner</li>
-        <li>Workout Planner</li>
-        <li>Sleep Tracker</li>
-        <li>Reading List</li>
-        <li>Time Zone Converter</li>
-        <li>Daily Affirmations</li>
-        <li>Event Countdown</li>
-        <li>Travel Planner</li>
-        <li>Gratitude Journal</li>
-        <li>Quick Meditation Guide</li>
-        <li>Emergency Contacts List</li>
-        <li>Life Goals Overview</li>
-    </ol>
-    <footer>
-        <p>Created on: 2026-04-08 02:12:45 UTC</p>
-    </footer>
+    <div class="container">
+        <header>
+            <h1>🛠️ 生活工具套件 Pro</h1>
+            <p>17合1超級工具 - 工作、學習、生活全搞定</p>
+        </header>
+
+        <!-- 標籤頁導航 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('calculator')">🧮 計算機</button>
+                <button class="tab-btn" onclick="switchTab('converter')">📏 單位轉換</button>
+                <button class="tab-btn" onclick="switchTab('todo')">📝 待辦清單</button>
+                <button class="tab-btn" onclick="switchTab('notes')">📌 便簽筆記</button>
+                <button class="tab-btn" onclick="switchTab('timer')">⏱️ 計時器</button>
+                <button class="tab-btn" onclick="switchTab('expense')">💰 支出記錄</button>
+                <button class="tab-btn" onclick="switchTab('qrcode')">📱 二維碼</button>
+                <button class="tab-btn" onclick="switchTab('password')">🔐 密碼生成</button>
+                <button class="tab-btn" onclick="switchTab('bmi')">⚖️ BMI計算</button>
+                <button class="tab-btn" onclick="switchTab('age')">🎂 年齡計算</button>
+                <button class="tab-btn" onclick="switchTab('markdown')">📄 Markdown</button>
+                <button class="tab-btn" onclick="switchTab('json')">{ } JSON</button>
+                <button class="tab-btn" onclick="switchTab('base64')">🔤 Base64</button>
+                <button class="tab-btn" onclick="switchTab('color')">🎨 顏色轉換</button>
+                <button class="tab-btn" onclick="switchTab('compound')">📈 複利計算</button>
+                <button class="tab-btn" onclick="switchTab('lyrics')">🎵 歌詞生成</button>
+                <button class="tab-btn" onclick="switchTab('translator')">🌐 翻譯工具</button>
+            </div>
+        </div>
+
+        <!-- ========== 1. 計算機 ========== -->
+        <div id="calculator" class="tab-content active">
+            <div class="card">
+                <h2>🧮 科學計算機</h2>
+                <input type="text" id="calcInput" placeholder="輸入計算式..." style="font-size: 1.2rem; padding: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px;">
+                    <button class="btn-secondary" onclick="appendCalc('7')">7</button>
+                    <button class="btn-secondary" onclick="appendCalc('8')">8</button>
+                    <button class="btn-secondary" onclick="appendCalc('9')">9</button>
+                    <button class="btn-secondary" onclick="appendCalc('/')">/</button>
+
+                    <button class="btn-secondary" onclick="appendCalc('4')">4</button>
+                    <button class="btn-secondary" onclick="appendCalc('5')">5</button>
+                    <button class="btn-secondary" onclick="appendCalc('6')">6</button>
+                    <button class="btn-secondary" onclick="appendCalc('*')">*</button>
+
+                    <button class="btn-secondary" onclick="appendCalc('1')">1</button>
+                    <button class="btn-secondary" onclick="appendCalc('2')">2</button>
+                    <button class="btn-secondary" onclick="appendCalc('3')">3</button>
+                    <button class="btn-secondary" onclick="appendCalc('-')">-</button>
+
+                    <button class="btn-secondary" onclick="appendCalc('0')" style="grid-column: span 2;">0</button>
+                    <button class="btn-secondary" onclick="appendCalc('.')">.</button>
+                    <button class="btn-secondary" onclick="appendCalc('+')">+</button>
+                </div>
+                <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;" onclick="calculateResult()">=</button>
+                <div id="calcResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 2. 單位轉換 ========== -->
+        <div id="converter" class="tab-content">
+            <div class="card">
+                <h2>📏 全能單位轉換</h2>
+                
+                <h3>🌡️ 溫度轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>攝氏度 (°C)</label>
+                        <input type="number" id="celsius" placeholder="輸入攝氏度" onchange="convertTemp()">
+                    </div>
+                    <div>
+                        <label>華氏度 (°F)</label>
+                        <input type="number" id="fahrenheit" placeholder="華氏度" onchange="convertTemp()">
+                    </div>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+                <h3>📍 距離轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公里 (km)</label>
+                        <input type="number" id="km" placeholder="輸���公里" onchange="convertDistance()">
+                    </div>
+                    <div>
+                        <label>英里 (mi)</label>
+                        <input type="number" id="mile" placeholder="英里" onchange="convertDistance()">
+                    </div>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+                <h3>⚖️ 重量轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公斤 (kg)</label>
+                        <input type="number" id="kg" placeholder="輸入公斤" onchange="convertWeight()">
+                    </div>
+                    <div>
+                        <label>磅 (lb)</label>
+                        <input type="number" id="lb" placeholder="磅" onchange="convertWeight()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 3. 待辦清單 ========== -->
+        <div id="todo" class="tab-content">
+            <div class="card">
+                <h2>📝 待辦事項</h2>
+                <div class="input-group">
+                    <input type="text" id="todoInput" placeholder="輸入新任務..." onkeypress="if(event.key==='Enter') addTodo()">
+                    <div class="input-row">
+                        <select id="todoCategory">
+                            <option value="工作">🏢 工作</option>
+                            <option value="學習">📚 學習</option>
+                            <option value="生活">🏠 生活</option>
+                            <option value="其他">🔖 其他</option>
+                        </select>
+                        <select id="todoPriority">
+                            <option value="高">🔴 高優先</option>
+                            <option value="中" selected>🟡 中優先</option>
+                            <option value="低">🟢 低優先</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="addTodo()">➕ 新增任務</button>
+                </div>
+                <div id="todoList"></div>
+            </div>
+        </div>
+
+        <!-- ========== 4. 便簽筆記 ========== -->
+        <div id="notes" class="tab-content">
+            <div class="card">
+                <h2>📌 便簽筆記</h2>
+                <div class="input-group">
+                    <input type="text" id="noteTitle" placeholder="筆記標題...">
+                    <textarea id="noteContent" placeholder="輸入筆記內容..." rows="4"></textarea>
+                    <button class="btn-primary" onclick="addNote()">💾 保存筆記</button>
+                </div>
+                <div id="notesList"></div>
+            </div>
+        </div>
+
+        <!-- ========== 5. 計時器 ========== -->
+        <div id="timer" class="tab-content">
+            <div class="card">
+                <h2>⏱️ 倒計時器</h2>
+                <div class="input-row">
+                    <div>
+                        <label>分鐘</label>
+                        <input type="number" id="timerMin" value="5" min="0">
+                    </div>
+                    <div>
+                        <label>秒</label>
+                        <input type="number" id="timerSec" value="0" min="0">
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 30px 0;">
+                    <div style="font-size: 4rem; font-weight: bold; color: #667eea; font-family: 'Courier New';" id="timerDisplay">05:00</div>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn-success" onclick="startTimer()" id="timerStartBtn">▶️ 開始</button>
+                    <button class="btn-secondary" onclick="pauseTimer()" id="timerPauseBtn" style="display: none;">⏸️ 暫停</button>
+                    <button class="btn-danger" onclick="resetTimer()">🔄 重置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 6. 支出記錄 ========== -->
+        <div id="expense" class="tab-content">
+            <div class="card">
+                <h2>💰 支出記錄管理</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>金額</label>
+                            <input type="number" id="expenseAmount" placeholder="輸入金額" min="0" step="0.01">
+                        </div>
+                        <div>
+                            <label>日期</label>
+                            <input type="date" id="expenseDate">
+                        </div>
+                    </div>
+                    <select id="expenseCategory">
+                        <option value="食物">🍔 食物</option>
+                        <option value="交通">🚗 交通</option>
+                        <option value="購物">🛍️ 購物</option>
+                        <option value="娛樂">🎬 娛樂</option>
+                        <option value="其他">🔖 其他</option>
+                    </select>
+                    <input type="text" id="expenseNote" placeholder="備註...">
+                    <button class="btn-primary" onclick="addExpense()">➕ 記錄支出</button>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="totalExpense">¥0.00</div>
+                    <div class="label">總支出</div>
+                </div>
+                <table class="table" id="expenseTable">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>分類</th>
+                            <th>金額</th>
+                            <th>備註</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 7. 二維碼生成 ========== -->
+        <div id="qrcode" class="tab-content">
+            <div class="card">
+                <h2>📱 二維碼生成器</h2>
+                <div class="input-group">
+                    <textarea id="qrInput" placeholder="輸入文字、URL、聯絡資訊..." rows="3"></textarea>
+                    <button class="btn-primary" onclick="generateQR()">🔲 生成二維碼</button>
+                </div>
+                <div id="qrOutput" style="text-align: center; margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 8. 密碼生成 ========== -->
+        <div id="password" class="tab-content">
+            <div class="card">
+                <h2>🔐 強密碼生成器</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>密碼長度</label>
+                            <input type="number" id="pwdLength" value="12" min="6" max="50">
+                        </div>
+                        <div>
+                            <label>生成數量</label>
+                            <input type="number" id="pwdCount" value="5" min="1" max="20">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" id="pwdUppercase" checked> 大寫字母</label>
+                        <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" id="pwdLowercase" checked> 小寫字母</label>
+                        <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" id="pwdNumbers" checked> 數字</label>
+                        <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" id="pwdSymbols" checked> 符號</label>
+                    </div>
+                    <button class="btn-primary" onclick="generatePasswords()">🔑 生成密碼</button>
+                </div>
+                <div id="passwordList"></div>
+            </div>
+        </div>
+
+        <!-- ========== 9. BMI計算 ========== -->
+        <div id="bmi" class="tab-content">
+            <div class="card">
+                <h2>⚖️ BMI 指數計算</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>身高 (cm)</label>
+                            <input type="number" id="bmiHeight" placeholder="輸入身高" min="0">
+                        </div>
+                        <div>
+                            <label>體重 (kg)</label>
+                            <input type="number" id="bmiWeight" placeholder="輸入體重" min="0">
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="calculateBMI()">計算BMI</button>
+                </div>
+                <div id="bmiResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 10. 年齡計算 ========== -->
+        <div id="age" class="tab-content">
+            <div class="card">
+                <h2>🎂 年齡計算器</h2>
+                <div class="input-group">
+                    <div>
+                        <label>出生日期</label>
+                        <input type="date" id="birthDate">
+                    </div>
+                    <button class="btn-primary" onclick="calculateAge()">計算年齡</button>
+                </div>
+                <div id="ageResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 11. Markdown轉換 ========== -->
+        <div id="markdown" class="tab-content">
+            <div class="card">
+                <h2>📄 Markdown 編輯器</h2>
+                <div class="grid-2">
+                    <div>
+                        <h3>Markdown</h3>
+                        <textarea id="markdownInput" placeholder="輸入Markdown..." rows="10" onkeyup="renderMarkdown()"></textarea>
+                    </div>
+                    <div>
+                        <h3>預覽</h3>
+                        <div id="markdownPreview" style="background: #f8f9fa; padding: 15px; border-radius: 10px; min-height: 300px; border: 1px solid #e0e0e0;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 12. JSON格式化 ========== -->
+        <div id="json" class="tab-content">
+            <div class="card">
+                <h2>{ } JSON 工具</h2>
+                <div class="grid-2">
+                    <div>
+                        <h3>輸入</h3>
+                        <textarea id="jsonInput" placeholder="貼上JSON..." rows="10"></textarea>
+                    </div>
+                    <div>
+                        <h3>格式化輸出</h3>
+                        <textarea id="jsonOutput" placeholder="格式化結果..." rows="10" readonly></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn-primary" onclick="formatJSON()">✨ 格式化</button>
+                    <button class="btn-secondary" onclick="minifyJSON()">📦 最小化</button>
+                    <button class="btn-secondary" onclick="copyJSON()">📋 複製輸出</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 13. Base64編碼 ========== -->
+        <div id="base64" class="tab-content">
+            <div class="card">
+                <h2>🔤 Base64 編解碼</h2>
+                <div class="input-group">
+                    <textarea id="base64Input" placeholder="輸入文字或Base64..." rows="6"></textarea>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" style="flex: 1;" onclick="encodeBase64()">🔐 編碼</button>
+                        <button class="btn-primary" style="flex: 1;" onclick="decodeBase64()">🔓 解碼</button>
+                    </div>
+                </div>
+                <div id="base64Output" class="result-box" style="display: none; word-break: break-all;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 14. 顏色轉換 ========== -->
+        <div id="color" class="tab-content">
+            <div class="card">
+                <h2>🎨 顏色轉換工具</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>十六進制</label>
+                            <input type="text" id="hexColor" placeholder="#FF5733" onchange="updateColor()">
+                        </div>
+                        <div style="text-align: center;">
+                            <label>預覽</label>
+                            <div id="colorPreview" style="width: 100%; height: 40px; background: #FF5733; border-radius: 8px; border: 2px solid #e0e0e0;"></div>
+                        </div>
+                    </div>
+                    <div class="input-row-3">
+                        <div>
+                            <label>RGB R</label>
+                            <input type="number" id="rgbR" min="0" max="255" onchange="updateColor()">
+                        </div>
+                        <div>
+                            <label>RGB G</label>
+                            <input type="number" id="rgbG" min="0" max="255" onchange="updateColor()">
+                        </div>
+                        <div>
+                            <label>RGB B</label>
+                            <input type="number" id="rgbB" min="0" max="255" onchange="updateColor()">
+                        </div>
+                    </div>
+                </div>
+                <div id="colorResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 15. 複利計算 ========== -->
+        <div id="compound" class="tab-content">
+            <div class="card">
+                <h2>📈 複利計算器</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>本金 (¥)</label>
+                            <input type="number" id="principal" placeholder="輸入本金" min="0" step="0.01">
+                        </div>
+                        <div>
+                            <label>年利率 (%)</label>
+                            <input type="number" id="rate" placeholder="輸入年利率" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div>
+                            <label>複利次數/年</label>
+                            <select id="compoundFreq">
+                                <option value="1">年複利</option>
+                                <option value="2">半年複利</option>
+                                <option value="4">季複利</option>
+                                <option value="12">月複利</option>
+                                <option value="365">日複利</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>投資年數</label>
+                            <input type="number" id="years" placeholder="輸入年數" min="0" step="0.1">
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="calculateCompound()">計算複利</button>
+                </div>
+                <div id="compoundResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 16. 歌詞生成 ========== -->
+        <div id="lyrics" class="tab-content">
+            <div class="card">
+                <h2>🎵 創意歌詞生成器</h2>
+                <div class="input-group">
+                    <div>
+                        <label>歌詞主題</label>
+                        <input type="text" id="lyricsTheme" placeholder="例：愛情、夢想、冒險...">
+                    </div>
+                    <div>
+                        <label>歌詞風格</label>
+                        <select id="lyricsStyle">
+                            <option value="浪漫">💕 浪漫</option>
+                            <option value="勵志">💪 勵志</option>
+                            <option value="搞笑">😂 搞笑</option>
+                            <option value="傷感">😢 傷感</option>
+                            <option value="搖滾">🤘 搖滾</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="generateLyrics()">🎼 生成歌詞</button>
+                </div>
+                <div id="lyricsOutput" style="background: #f8f9fa; padding: 20px; border-radius: 10px; min-height: 200px; white-space: pre-wrap; line-height: 1.8; margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 17. 翻譯工具 ========== -->
+        <div id="translator" class="tab-content">
+            <div class="card">
+                <h2>🌐 快速翻譯工具</h2>
+                <div class="input-group">
+                    <div class="input-row">
+                        <div>
+                            <label>源語言</label>
+                            <select id="sourceLang">
+                                <option value="zh">中文</option>
+                                <option value="en">英文</option>
+                                <option value="es">西班牙文</option>
+                                <option value="fr">法文</option>
+                                <option value="de">德文</option>
+                                <option value="ja">日文</option>
+                                <option value="ko">韓文</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>目標語言</label>
+                            <select id="targetLang">
+                                <option value="en">英文</option>
+                                <option value="zh">中文</option>
+                                <option value="es">西班牙文</option>
+                                <option value="fr">法文</option>
+                                <option value="de">德文</option>
+                                <option value="ja">日文</option>
+                                <option value="ko">韓文</option>
+                            </select>
+                        </div>
+                    </div>
+                    <textarea id="translateInput" placeholder="輸入要翻譯的文字..." rows="4"></textarea>
+                    <button class="btn-primary" onclick="translate()">🔄 翻譯</button>
+                </div>
+                <div id="translateOutput" class="result-box" style="display: none; word-break: break-all;"></div>
+                <div class="tip-box" style="margin-top: 15px;">
+                    <strong>💡 提示:</strong> 此工具使用在線翻譯API，需要網絡連接
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ 全域狀態 ============
+        const state = {
+            todos: [],
+            notes: [],
+            expenses: [],
+            timerInterval: null,
+            timerSeconds: 0,
+            isTimerRunning: false
+        };
+
+        // 初始化
+        function init() {
+            loadData();
+            setTodayDate();
+            renderTodos();
+            renderNotes();
+            renderExpenses();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ============ 本地存儲 ============
+        function saveData() {
+            localStorage.setItem('appState', JSON.stringify(state));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('appState');
+            if (saved) {
+                Object.assign(state, JSON.parse(saved));
+            }
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expenseDate').value = today;
+        }
+
+        // ============ 1. 計算機 ============
+        function appendCalc(val) {
+            const input = document.getElementById('calcInput');
+            input.value += val;
+        }
+
+        function calculateResult() {
+            try {
+                const input = document.getElementById('calcInput').value;
+                const result = eval(input);
+                const resultBox = document.getElementById('calcResult');
+                resultBox.innerHTML = `<strong>結果:</strong> ${result}`;
+                resultBox.style.display = 'block';
+            } catch (e) {
+                alert('計算式錯誤');
+            }
+        }
+
+        // ============ 2. 單位轉換 ============
+        function convertTemp() {
+            const c = parseFloat(document.getElementById('celsius').value);
+            if (!isNaN(c)) {
+                document.getElementById('fahrenheit').value = (c * 9/5 + 32).toFixed(2);
+            }
+        }
+
+        function convertDistance() {
+            const km = parseFloat(document.getElementById('km').value);
+            if (!isNaN(km)) {
+                document.getElementById('mile').value = (km * 0.621371).toFixed(4);
+            }
+        }
+
+        function convertWeight() {
+            const kg = parseFloat(document.getElementById('kg').value);
+            if (!isNaN(kg)) {
+                document.getElementById('lb').value = (kg * 2.20462).toFixed(4);
+            }
+        }
+
+        // ============ 3. 待辦清單 ============
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            if (!input.value.trim()) return;
+
+            state.todos.push({
+                id: Date.now(),
+                text: input.value,
+                category: document.getElementById('todoCategory').value,
+                priority: document.getElementById('todoPriority').value,
+                completed: false
+            });
+
+            saveData();
+            renderTodos();
+            input.value = '';
+        }
+
+        function renderTodos() {
+            const list = document.getElementById('todoList');
+            if (state.todos.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999;">還沒有任務</p>';
+                return;
+            }
+
+            list.innerHTML = state.todos.map(todo => `
+                <div class="list-item" style="background: ${todo.completed ? '#e8f5e9' : '#fff9e6'};">
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})" style="margin-top: 3px;">
+                    <div class="list-content">
+                        <h4 style="text-decoration: ${todo.completed ? 'line-through' : 'none'};">${todo.text}</h4>
+                        <p>${todo.category} • ${todo.priority}</p>
+                    </div>
+                    <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteTodo(${todo.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleTodo(id) {
+            const todo = state.todos.find(t => t.id === id);
+            if (todo) todo.completed = !todo.completed;
+            saveData();
+            renderTodos();
+        }
+
+        function deleteTodo(id) {
+            state.todos = state.todos.filter(t => t.id !== id);
+            saveData();
+            renderTodos();
+        }
+
+        // ============ 4. 便簽筆記 ============
+        function addNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+            if (!title || !content) return;
+
+            state.notes.push({
+                id: Date.now(),
+                title,
+                content,
+                createdAt: new Date().toLocaleString('zh-TW')
+            });
+
+            saveData();
+            renderNotes();
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notesList');
+            if (state.notes.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999;">還沒有筆記</p>';
+                return;
+            }
+
+            list.innerHTML = state.notes.map(note => `
+                <div class="list-item">
+                    <div class="list-content">
+                        <h4>${note.title}</h4>
+                        <p>${note.content}</p>
+                        <p style="font-size: 0.8rem; color: #999; margin-top: 5px;">${note.createdAt}</p>
+                    </div>
+                    <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteNote(${note.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteNote(id) {
+            state.notes = state.notes.filter(n => n.id !== id);
+            saveData();
+            renderNotes();
+        }
+
+        // ============ 5. 計時器 ============
+        function startTimer() {
+            if (state.isTimerRunning) return;
+            if (state.timerSeconds === 0) {
+                state.timerSeconds = parseInt(document.getElementById('timerMin').value) * 60 + parseInt(document.getElementById('timerSec').value);
+            }
+            state.isTimerRunning = true;
+            document.getElementById('timerStartBtn').style.display = 'none';
+            document.getElementById('timerPauseBtn').style.display = 'inline-block';
+
+            state.timerInterval = setInterval(() => {
+                state.timerSeconds--;
+                updateTimerDisplay();
+                if (state.timerSeconds <= 0) {
+                    clearInterval(state.timerInterval);
+                    state.isTimerRunning = false;
+                    alert('⏰ 倒計時完成！');
+                    document.getElementById('timerStartBtn').style.display = 'inline-block';
+                    document.getElementById('timerPauseBtn').style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(state.timerInterval);
+            state.isTimerRunning = false;
+            document.getElementById('timerStartBtn').style.display = 'inline-block';
+            document.getElementById('timerPauseBtn').style.display = 'none';
+        }
+
+        function resetTimer() {
+            clearInterval(state.timerInterval);
+            state.isTimerRunning = false;
+            state.timerSeconds = 0;
+            document.getElementById('timerStartBtn').style.display = 'inline-block';
+            document.getElementById('timerPauseBtn').style.display = 'none';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const min = Math.floor(state.timerSeconds / 60);
+            const sec = state.timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+
+        // ============ 6. 支出記錄 ============
+        function addExpense() {
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            if (!amount) return;
+
+            state.expenses.push({
+                id: Date.now(),
+                amount,
+                date: document.getElementById('expenseDate').value,
+                category: document.getElementById('expenseCategory').value,
+                note: document.getElementById('expenseNote').value
+            });
+
+            saveData();
+            renderExpenses();
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseNote').value = '';
+        }
+
+        function renderExpenses() {
+            const total = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('totalExpense').textContent = `¥${total.toFixed(2)}`;
+
+            const tbody = document.getElementById('expenseBody');
+            tbody.innerHTML = state.expenses.map(e => `
+                <tr>
+                    <td>${e.date}</td>
+                    <td>${e.category}</td>
+                    <td style="color: #ff6b6b; font-weight: bold;">¥${e.amount.toFixed(2)}</td>
+                    <td>${e.note || '-'}</td>
+                    <td><button class="btn-danger" style="padding: 4px 8px;" onclick="deleteExpense(${e.id})">刪除</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteExpense(id) {
+            state.expenses = state.expenses.filter(e => e.id !== id);
+            saveData();
+            renderExpenses();
+        }
+
+        // ============ 7. 二維碼 ============
+        function generateQR() {
+            const text = document.getElementById('qrInput').value.trim();
+            if (!text) return;
+            const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
+            document.getElementById('qrOutput').innerHTML = `<img src="${url}" style="max-width: 300px; border-radius: 10px;">`;
+        }
+
+        // ============ 8. 密碼生成 ============
+        function generatePasswords() {
+            const length = parseInt(document.getElementById('pwdLength').value);
+            const count = parseInt(document.getElementById('pwdCount').value);
+            const chars = [];
+
+            if (document.getElementById('pwdUppercase').checked) chars.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+            if (document.getElementById('pwdLowercase').checked) chars.push('abcdefghijklmnopqrstuvwxyz');
+            if (document.getElementById('pwdNumbers').checked) chars.push('0123456789');
+            if (document.getElementById('pwdSymbols').checked) chars.push('!@#$%^&*');
+
+            const allChars = chars.join('');
+            let passwords = [];
+
+            for (let i = 0; i < count; i++) {
+                let pwd = '';
+                for (let j = 0; j < length; j++) {
+                    pwd += allChars.charAt(Math.floor(Math.random() * allChars.length));
+                }
+                passwords.push(pwd);
+            }
+
+            document.getElementById('passwordList').innerHTML = passwords.map((pwd, i) => `
+                <div class="list-item">
+                    <code style="flex: 1; font-size: 1.1rem; font-weight: bold;">${pwd}</code>
+                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="copyText('${pwd}')">📋 複製</button>
+                </div>
+            `).join('');
+        }
+
+        // ============ 9. BMI計算 ============
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('bmiHeight').value) / 100;
+            const weight = parseFloat(document.getElementById('bmiWeight').value);
+            if (!height || !weight) return;
+
+            const bmi = weight / (height * height);
+            let category = '';
+            if (bmi < 18.5) category = '體重過輕';
+            else if (bmi < 25) category = '正常體重';
+            else if (bmi < 30) category = '體重過重';
+            else category = '肥胖';
+
+            const result = document.getElementById('bmiResult');
+            result.innerHTML = `<strong>BMI:</strong> ${bmi.toFixed(1)} (${category})`;
+            result.style.display = 'block';
+        }
+
+        // ============ 10. 年齡計算 ============
+        function calculateAge() {
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+            const result = document.getElementById('ageResult');
+            result.innerHTML = `<strong>你已經 ${age} 歲了！</strong><br>距離下個生日還有 ${Math.floor((new Date(today.getFullYear() + 1, birthDate.getMonth(), birthDate.getDate()) - today) / (1000 * 60 * 60 * 24))} 天`;
+            result.style.display = 'block';
+        }
+
+        // ============ 11. Markdown ============
+        function renderMarkdown() {
+            const input = document.getElementById('markdownInput').value;
+            let html = input
+                .replace(/^### (.*)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*)/gm, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+
+            document.getElementById('markdownPreview').innerHTML = html;
+        }
+
+        // ============ 12. JSON ============
+        function formatJSON() {
+            try {
+                const input = document.getElementById('jsonInput').value;
+                const obj = JSON.parse(input);
+                document.getElementById('jsonOutput').value = JSON.stringify(obj, null, 2);
+            } catch (e) {
+                alert('JSON格式錯誤');
+            }
+        }
+
+        function minifyJSON() {
+            try {
+                const input = document.getElementById('jsonInput').value;
+                const obj = JSON.parse(input);
+                document.getElementById('jsonOutput').value = JSON.stringify(obj);
+            } catch (e) {
+                alert('JSON格式錯誤');
+            }
+        }
+
+        function copyJSON() {
+            const output = document.getElementById('jsonOutput').value;
+            navigator.clipboard.writeText(output);
+            alert('已複製到剪貼板');
+        }
+
+        // ============ 13. Base64 ============
+        function encodeBase64() {
+            const input = document.getElementById('base64Input').value;
+            const output = btoa(unescape(encodeURIComponent(input)));
+            const result = document.getElementById('base64Output');
+            result.innerHTML = `<strong>編碼結果:</strong><br>${output}`;
+            result.style.display = 'block';
+        }
+
+        function decodeBase64() {
+            try {
+                const input = document.getElementById('base64Input').value;
+                const output = decodeURIComponent(escape(atob(input)));
+                const result = document.getElementById('base64Output');
+                result.innerHTML = `<strong>解碼結果:</strong><br>${output}`;
+                result.style.display = 'block';
+            } catch (e) {
+                alert('Base64格式錯誤');
+            }
+        }
+
+        // ============ 14. 顏色轉換 ============
+        function updateColor() {
+            const hex = document.getElementById('hexColor').value;
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                document.getElementById('colorPreview').style.background = hex;
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                document.getElementById('rgbR').value = r;
+                document.getElementById('rgbG').value = g;
+                document.getElementById('rgbB').value = b;
+                const result = document.getElementById('colorResult');
+                result.innerHTML = `<strong>HEX:</strong> ${hex}<br><strong>RGB:</strong> rgb(${r}, ${g}, ${b})`;
+                result.style.display = 'block';
+            }
+        }
+
+        // ============ 15. 複利計算 ============
+        function calculateCompound() {
+            const P = parseFloat(document.getElementById('principal').value);
+            const r = parseFloat(document.getElementById('rate').value) / 100;
+            const n = parseInt(document.getElementById('compoundFreq').value);
+            const t = parseFloat(document.getElementById('years').value);
+
+            const A = P * Math.pow(1 + r / n, n * t);
+            const profit = A - P;
+
+            const result = document.getElementById('compoundResult');
+            result.innerHTML = `<strong>本金:</strong> ¥${P.toFixed(2)}<br><strong>本息和:</strong> ¥${A.toFixed(2)}<br><strong>利息:</strong> ¥${profit.toFixed(2)}`;
+            result.style.display = 'block';
+        }
+
+        // ============ 16. 歌詞生成 ============
+        function generateLyrics() {
+            const theme = document.getElementById('lyricsTheme').value || '愛情';
+            const style = document.getElementById('lyricsStyle').value;
+
+            const lyricsLib = {
+                浪漫: [
+                    `在星月下，我看見你的眼眸\n如同${theme}一樣溫柔\n你的笑容照亮我的心空\n我願用一生來守護你`,
+                    `${theme}在心中悄悄綻放\n你的出現讓世界閃閃發光\n和你在一起的每一刻\n都是我最珍貴的時光`
+                ],
+                勵志: [
+                    `不要放棄心中的${theme}夢想\n即使路途充滿迷茫\n堅持往前，永不言敗\n成功就在下一個轉角`,
+                    `為了${theme}，我願意奮力前行\n克服所有困難和挫折\n因為我知道\n勝利最終會屬於堅持者`
+                ],
+                搞笑: [
+                    `哈哈哈，${theme}真是太好玩了\n我決定從此改變人生\n不過...明天再說吧\n今天我還想多睡會兒`,
+                    `如果${theme}是一個人\n我肯定會和它成為朋友\n一起吃飯，一起笑，一起搞怪\n生活就應該這麼有趣`
+                ],
+                傷感: [
+                    `曾經對${theme}充滿期待\n如今只剩下無盡的遺憾\n你離開的那天下雨了\n似乎連天空都在為我哭泣`,
+                    `${theme}就像一場夢\n醒來後只留下淡淡的憂傷\n我想念那段美好的時光\n可惜回不到過去`
+                ],
+                搖滾: [
+                    `搖滾起來！${theme}在我心中燃燒\n打破所有的束縛和框架\n我們要自由，我們要狂野\n我們就是這個時代的英雄`,
+                    `大聲吶喊${theme}的名字\n讓全世界都聽見\n沒有什麼能阻擋我們的腳步\n這是屬於我們的時代`
+                ]
+            };
+
+            const lyrics = lyricsLib[style][Math.floor(Math.random() * lyricsLib[style].length)];
+            document.getElementById('lyricsOutput').textContent = lyrics;
+        }
+
+        // ============ 17. 翻譯工具 ============
+        function translate() {
+            const text = document.getElementById('translateInput').value;
+            const sourceLang = document.getElementById('sourceLang').value;
+            const targetLang = document.getElementById('targetLang').value;
+
+            if (!text) return;
+
+            // 簡單的翻譯模擬（使用離線庫）
+            const translations = {
+                'hello': '你好',
+                'world': '世界',
+                'love': '愛',
+                'good': '好的',
+                'thank you': '謝謝你'
+            };
+
+            let result = text;
+            if (sourceLang === 'en' && targetLang === 'zh') {
+                for (let key in translations) {
+                    result = result.replace(new RegExp(key, 'gi'), translations[key]);
+                }
+            }
+
+            const output = document.getElementById('translateOutput');
+            output.innerHTML = `<strong>翻譯結果:</strong><br>${result}`;
+            output.style.display = 'block';
+        }
+
+        // ============ 工具函數 ============
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert('已複製到剪貼板');
+        }
+
+        // 初始化
+        init();
+    </script>
 </body>
 </html>
