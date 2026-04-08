@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'zh-TW', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>生活工具套件 Pro - 20+合1超級工具</title>
@@ -192,8 +198,7 @@
                     <textarea id="translateInput" placeholder="輸入要翻譯的文字..." rows="6" style="resize: vertical;"></textarea>
                     <button class="btn-primary" onclick="translateText()">🔄 翻譯</button>
                 </div>
-                <div id="translateOutput" class="result-box" style="display: none; word-break: break-all; white-space: pre-wrap;"></div>
-                <div class="tip-box">
+                <div id="google_translate_element"></div>
                     <strong>💡 提示:</strong> 本翻譯工具使用 MyMemory 翻譯API (免費、無需密鑰、離線支援常用詞彙)
                 </div>
             </div>
