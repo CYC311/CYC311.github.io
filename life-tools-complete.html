@@ -1309,8 +1309,14 @@ function calculateProbability() {
             </div>
 
             <div style="background: rgba(102,126,234,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary); margin-bottom: 20px;">
-                
+            </div>
+        </div>
+    ;
+                    
+    document.getElementById('probResult').innerHTML = resultHTML;
     document.getElementById('probChart').style.display = 'block';
+
+    drawProbabilityChartWithPity(p, pityCount, totalDraws);
 }
 
         function renderAll() {
