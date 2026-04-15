@@ -1235,43 +1235,45 @@ function calculateProbability() {
         alert('請輸入有效的總抽數'); 
         return; 
     }
-
-    // 將百分比轉換為小數
-    const p = probRate / 100;
     
     // ===== 核心計算：考慮保底的概率分析 =====
     
-    // 1. 計算保底內的期望次數
-    // 在保底距離內，期望獲得大獎的次數
-    const expectedInPity = 1 - Math.pow(1 - p, pityCount); // 保底內至少中一次的概率
+    // 將百分比轉換為小數
+    const p = probRate / 100;
     
-    // 2. 計算能完整保底輪的次數
+    // 1. 計算能完整保底輪的次數
     const fullPityRounds = Math.floor(totalDraws / pityCount);
+    
+    // 2. 計算保底內的期望次數
+    // 在保底距離內，期望獲得大獎的次數
+    const expectedInPity = 1 - Math.pow(1 - p, pityCount - 1); // 保底內至少中一次的概率
     
     // 3. 計算剩餘的抽數
     const remainingDraws = totalDraws % pityCount;
+    const draws = remainingDraws + (fullPityRounds * (pityCount - 1));
+    const E = draws * p + fullPityRounds;
+
+    const PT = Math.round(p + (1/pityCount),2);
+    const PD = PT * pityCount;
     
-    // 4. 計算保底內必定獲得的大獎次數（每個保底輪至少1個）
-    const guaranteedPrizes = fullPityRounds; // 完整保底輪的數量
-    
-    // 5. 計算完整保底輪內的額外大獎（超過保底的概率獲得）
+    // 4. 計算完整保底輪內的額外大獎（超過保底的概率獲得）
     // 每輪保底內，除了保底的1個外，還能通過概率額外獲得
     let extraPrizesInFullRounds = 0;
     if (fullPityRounds > 0) {
         // 期望在fullPityRounds輪中額外獲得多少個
-        extraPrizesInFullRounds = fullPityRounds * (expectedInPity - 1);
+        extraPrizesInFullRounds = fullPityRounds * (expectedInPity);
     }
     
-    // 6. 計算剩餘抽數中的期望大獎
+    // 5. 計算剩餘抽數中的期望大獎
     let prizesInRemaining = 0;
     if (remainingDraws > 0) {
         prizesInRemaining = 1 - Math.pow(1 - p, remainingDraws);
     }
     
-    // 7. 總期望大獎次數
+    // 6. 總期望大獎次數
     const totalExpectedPrizes = guaranteedPrizes + extraPrizesInFullRounds + prizesInRemaining;
     
-    // 8. 至少中獎一次的概率
+    // 7. 至少中獎一次的概率
     // 由於有保底機制，只要totalDraws >= pityCount就必定中獎
     let probAtLeastOnce = 0;
     if (totalDraws >= pityCount) {
@@ -1280,10 +1282,10 @@ function calculateProbability() {
         probAtLeastOnce = 1 - Math.pow(1 - p, totalDraws);
     }
     
-    // 9. 期望所需的抽數（不考慮保底限制，純概率）
+    // 8. 期望所需的抽數（不考慮保底限制，純概率）
     const expectedDrawsWithoutPity = 1 / p;
     
-    // 10. 考慮保底後的期望所需抽數
+    // 9. 考慮保底後的期望所需抽數
     const expectedDrawsWithPity = (pityCount + expectedDrawsWithoutPity) / 2;
 
     // ===== 生成詳細報告 =====
@@ -1292,7 +1294,7 @@ function calculateProbability() {
             <h3 style="color: var(--primary); margin-bottom: 15px;">📊 計算結果</h3>
             
             <div class="stat-box" style="margin-bottom: 15px;">
-                <div class="number">${totalExpectedPrizes.toFixed(2)}</div>
+                <div class="number">${E.toFixed(2)}</div>
                 <div>期望能獲得的大獎次數</div>
             </div>
 
@@ -1302,172 +1304,12 @@ function calculateProbability() {
             </div>
 
             <div class="stat-box" style="margin-bottom: 15px;">
-                <div class="number">${expectedDrawsWithPity.toFixed(1)}</div>
+                <div class="number">${PD.toFixed(1)}</div>
                 <div>期望所需的抽數（含保底）</div>
             </div>
 
             <div style="background: rgba(102,126,234,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary); margin-bottom: 20px;">
-                <h4 style="color: var(--primary); margin-bottom: 15px;">📈 詳細分析</h4>
                 
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px;">
-                    <strong>基礎參數：</strong><br>
-                    • 單次大獎機率：${probRate}%<br>
-                    • 保底機制：每${pityCount}次必定獲得1個<br>
-                    • 計劃總抽數：${totalDraws}
-                </div>
-
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(76,175,80,0.1); border-radius: 8px; border-left: 3px solid #4caf50;">
-                    <strong>🎯 保底機制分析：</strong><br>
-                    • 完整保底輪數：${fullPityRounds} 輪<br>
-                    • 保底必定獲得：${guaranteedPrizes} 個大獎<br>
-                    • 剩餘抽數：${remainingDraws} 次
-                </div>
-
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(255,193,7,0.1); border-radius: 8px; border-left: 3px solid #ffd93d;">
-                    <strong>✨ 額外收穫分析：</strong><br>
-                    • 在保底輪內額外獲得：${extraPrizesInFullRounds.toFixed(2)} 個<br>
-                    • 在剩餘抽數中獲得：${prizesInRemaining.toFixed(2)} 個<br>
-                    • <strong style="color: var(--primary);">總共期望獲得：${totalExpectedPrizes.toFixed(2)} 個</strong>
-                </div>
-
-                <div style="padding: 10px; background: rgba(255,107,107,0.1); border-radius: 8px; border-left: 3px solid #ff6b6b;">
-                    <strong>💡 概率論述：</strong><br>
-                    • 純概率下期望抽數：${expectedDrawsWithoutPity.toFixed(1)} 次/個<br>
-                    • 考慮保底後期望抽數：${expectedDrawsWithPity.toFixed(1)} 次/個<br>
-                    • 保底幫你節省約：${(expectedDrawsWithoutPity - expectedDrawsWithPity).toFixed(1)} 次抽數
-                </div>
-            </div>
-
-            <div style="padding: 15px; background: rgba(0,255,0,0.05); border-radius: 10px;">
-                <strong>📌 結論：</strong><br>
-                以${probRate}%的機率進行${totalDraws}次抽取，<br>
-                在保底機制的保護下，你有<span style="color: var(--primary); font-weight: bold;">${(probAtLeastOnce * 100).toFixed(2)}%</span>的把握至少獲得1個大獎，<br>
-                <strong>期望能夠獲得<span style="color: var(--primary);">${totalExpectedPrizes.toFixed(2)}</span>個大獎</strong>。
-            </div>
-        </div>
-    `;
-
-    document.getElementById('probResult').innerHTML = resultHTML;
-    document.getElementById('probResult').style.display = 'block';
-
-    // 生成概率曲線圖（考慮保底）
-    drawProbabilityChartWithPity(p, pityCount, totalDraws);
-}
-
-function drawProbabilityChartWithPity(p, pityCount, totalDraws) {
-    const canvas = document.getElementById('probabilityCanvas');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    const width = canvas.parentElement.offsetWidth - 40;
-    const height = 300;
-    
-    canvas.width = width;
-    canvas.height = height;
-
-    // 設定背景
-    ctx.fillStyle = 'rgba(102,126,234,0.05)';
-    ctx.fillRect(0, 0, width, height);
-
-    // 邊距
-    const padding = 50;
-    const graphWidth = width - 2 * padding;
-    const graphHeight = height - 2 * padding;
-
-    // 計算數據點（考慮保底）
-    const steps = Math.min(totalDraws, 150);
-    const points = [];
-    
-    for (let i = 1; i <= steps; i++) {
-        const x = (i / steps) * totalDraws;
-        let y = 0;
-        
-        // 計算考慮保底的實際概率
-        const fullRounds = Math.floor(x / pityCount);
-        const remaining = x % pityCount;
-        
-        // 保底輪數越多，中獎概率越接近100%
-        if (fullRounds > 0) {
-            // 已觸發保底，確保至少1個大獎
-            y = 1.0;
-        } else {
-            // 還未到達保底，純概率
-            y = 1 - Math.pow(1 - p, x);
-        }
-        
-        points.push({ x: x, y: y });
-    }
-
-    // 繪製坐標軸
-    ctx.strokeStyle = '#999';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(padding, height - padding);
-    ctx.lineTo(width - padding / 2, height - padding);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(padding, padding / 2);
-    ctx.lineTo(padding, height - padding);
-    ctx.stroke();
-
-    // 繪製保底線（參考線）
-    ctx.strokeStyle = 'rgba(255,193,7,0.3)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    const pityX = padding + (pityCount / totalDraws) * graphWidth;
-    ctx.beginPath();
-    ctx.moveTo(pityX, padding / 2);
-    ctx.lineTo(pityX, height - padding);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 繪製概率曲線
-    ctx.strokeStyle = '#667eea';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        const canvasX = padding + (point.x / totalDraws) * graphWidth;
-        const canvasY = height - padding - point.y * graphHeight;
-        if (i === 0) ctx.moveTo(canvasX, canvasY);
-        else ctx.lineTo(canvasX, canvasY);
-    }
-    ctx.stroke();
-
-    // 標籤：保底位置
-    ctx.fillStyle = '#ffd93d';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(`保底(${pityCount})`, pityX, height - padding + 20);
-
-    // 繪製刻度和標籤
-    ctx.fillStyle = '#666';
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    
-    // X軸標籤
-    ctx.fillText('0', padding, height - padding + 20);
-    ctx.fillText(Math.round(totalDraws / 2), padding + graphWidth / 2, height - padding + 20);
-    ctx.fillText(totalDraws, width - padding / 2, height - padding + 20);
-    
-    // Y軸標籤
-    ctx.textAlign = 'right';
-    ctx.fillText('0%', padding - 10, height - padding + 5);
-    ctx.fillText('50%', padding - 10, height - padding - graphHeight / 2 + 5);
-    ctx.fillText('100%', padding - 10, padding / 2 + 5);
-
-    // 軸標籤
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 14px Arial';
-    ctx.fillText('抽取次數', width / 2, height - 10);
-    
-    ctx.save();
-    ctx.translate(15, height / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('中獎概率', 0, 0);
-    ctx.restore();
-
     document.getElementById('probChart').style.display = 'block';
 }
 
