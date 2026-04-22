@@ -851,6 +851,39 @@
             }
         }
 
+        // 1. 計算單次抽卡平均消耗 (考慮保底後的實際期望抽數)
+    // 簡單近似計算法：
+    let avgPullPerPrize = 0;
+    let cumulativeNoWinProb = 1;
+    
+    for (let i = 1; i <= pityCount; i++) {
+        let currentProb = (i >= softPityStart) ? softPityChance : baseRate;
+        if (i === pityCount) currentProb = 1; // 硬保底
+        
+        // 剛好在第 i 抽中的機率 = 前 i-1 抽沒中 * 第 i 抽中
+        let winAtI = cumulativeNoWinProb * currentProb;
+        avgPullPerPrize += i * winAtI;
+        
+        cumulativeNoWinProb *= (1 - currentProb);
+    }
+
+    // 2. 基於平均抽數計算期望獲得次數
+    const expectedWins = totalDraws / avgPullPerPrize;
+
+    // 3. 至少中一次的正確概率 (機率隨抽數變化，不能直接用 Math.pow)
+    let probNoWinAtAll = 1;
+    let currentPity = 0;
+    for (let i = 0; i < totalDraws; i++) {
+        currentPity++;
+        let p = (currentPity >= softPityStart) ? softPityChance : baseRate;
+        if (currentPity >= pityCount) {
+            probNoWinAtAll = 0; // 只要總抽數超過硬保底，不中獎機率就是 0
+            break;
+        }
+        probNoWinAtAll *= (1 - p);
+    }
+    const atLeastOnce = 1 - probNoWinAtAll;
+
         /**
          * 模擬抽卡 - 用隨機模擬驗證理論計算
          */
