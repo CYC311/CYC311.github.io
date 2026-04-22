@@ -1607,10 +1607,6 @@ function calculateCalculus() {
         document.getElementById('resSlope').innerText = mStr;
         document.getElementById('resTangent').innerText = tangentEq;
 
-    } catch (error) {
-        // 錯誤攔截：若使用者輸入不符合數學語法 (例如漏寫乘號)
-        alert("數學式解析錯誤！請確保格式正確，例如 2x 請寫成 2*x。");
-        console.error("運算錯誤:", error);
     }
 }
 
