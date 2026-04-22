@@ -621,6 +621,7 @@
             <p><strong>切線方程式：</strong> <br><span id="resTangent" class="highlight"></span></p>
         </div>
     </div>
+    <script>
         // ==================== 全局狀態管理 ====================
         const state = {
             todos: [],
@@ -1546,7 +1547,8 @@
 
         // ==================== 1️⃣5️⃣ 數學計算 ====================
                 // 核心微積分與幾何處理函數
-        function calculateCalculus() {
+        
+                function calculateCalculus() {
             try {
                 // 1. 檢查 math.js 是否正確載入
                 if (typeof math === 'undefined') {
