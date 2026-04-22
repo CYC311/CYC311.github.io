@@ -606,15 +606,7 @@
     </div>
         <!-- ========== 1️⃣5️⃣ 數學計算 ========== -->
         <div id="stumath" class="tab-content">
-        <h2>微積分工具箱 🚀</h2>
-        
-        <div class="input-group">
-            <label for="functionInput">輸入函數 f(x) (例如: x^3 - 2*x^2 + x):</label>
-            <input type="text" id="functionInput" value="x^3 - 2*x^2 + x">
-        </div>
-        
-        <div class="input-group">
-            <label for="pointInput">輸入計算點 a (x 座標):</label>
+        <label for="pointInput">輸入計算點 a (x 座標):</label>
             <input type="number" id="pointInput" value="1" step="any">
         </div>
         
@@ -628,8 +620,7 @@
             <p><strong>切線斜率 m：</strong> <span id="resSlope"></span></p>
             <p><strong>切線方程式：</strong> <br><span id="resTangent" class="highlight"></span></p>
         </div>
-         </div>
-    <script>
+    </div>
         // ==================== 全局狀態管理 ====================
         const state = {
             todos: [],
@@ -1555,64 +1546,60 @@
 
         // ==================== 1️⃣5️⃣ 數學計算 ====================
                 // 核心微積分與幾何處理函數
-function calculateCalculus() {
-    try {
-        // 1. 取得 DOM 元素與使用者輸入
-        const funcStr = document.getElementById('functionInput').value;
-        const a = parseFloat(document.getElementById('pointInput').value);
+        function calculateCalculus() {
+            try {
+                // 1. 檢查 math.js 是否正確載入
+                if (typeof math === 'undefined') {
+                    throw new Error("外部數學函式庫 (math.js) 未成功載入。請確認您的網路連線，或檢查是否被瀏覽器的擴充功能(如擋廣告套件)攔截。");
+                }
 
-        // 顯示結果區塊
-        const resultArea = document.getElementById('resultArea');
-        resultArea.style.display = 'block';
+                // 2. 取得 DOM 元素與使用者輸入
+                const funcStr = document.getElementById('functionInput').value;
+                const a = parseFloat(document.getElementById('pointInput').value);
 
-        // 2. 符號運算：解析函數並求導數
-        // 利用 math.js 的 derivative 進行偏微分/常微分
-        const node = math.parse(funcStr);
-        const derivativeNode = math.derivative(node, 'x');
-        
-        // 將抽象語法樹 (AST) 轉回人類可讀的字串
-        const derivStr = derivativeNode.toString();
+                const resultArea = document.getElementById('resultArea');
+                resultArea.style.display = 'block';
 
-        // 3. 數值運算：計算 f(a) 與斜率 f'(a)
-        // 將函數編譯為可執行的 JavaScript 程式碼
-        const compiledFunc = node.compile();
-        const compiledDeriv = derivativeNode.compile();
+                // 3. 符號運算：解析與微分
+                const node = math.parse(funcStr);
+                const derivativeNode = math.derivative(node, 'x');
+                const derivStr = derivativeNode.toString();
 
-        // 設定變數 x 的環境值
-        const scope = { x: a };
-        const fa = compiledFunc.evaluate(scope);      // y 座標
-        const slope = compiledDeriv.evaluate(scope);  // 切線斜率 m
+                // 4. 數值運算：計算 f(a) 與斜率
+                const compiledFunc = node.compile();
+                const compiledDeriv = derivativeNode.compile();
 
-        // 4. 代數推導：組合切線方程式
-        // 點斜式: y - f(a) = m * (x - a)
-        // 展開為: y = m*x - m*a + f(a)
-        let intercept = fa - slope * a; // 計算 y 截距
-        
-        // 處理顯示的格式，讓正負號更美觀，並四捨五入到小數點後 4 位
-        let mStr = math.round(slope, 4);
-        let bStr = math.round(intercept, 4);
-        
-        let tangentEq = "";
-        if (slope === 0) {
-            tangentEq = `y = ${bStr} (水平切線)`;
-        } else {
-            let interceptDisplay = intercept >= 0 ? `+ ${bStr}` : `- ${Math.abs(bStr)}`;
-            tangentEq = `y = ${mStr}x ${interceptDisplay}`;
+                const scope = { x: a };
+                const fa = compiledFunc.evaluate(scope);      
+                const slope = compiledDeriv.evaluate(scope);  
+
+                // 5. 代數推導：組合切線方程式 (y = mx + b)
+                let intercept = fa - slope * a; 
+                
+                let mStr = math.round(slope, 4);
+                let bStr = math.round(intercept, 4);
+                
+                let tangentEq = "";
+                if (slope === 0) {
+                    tangentEq = `y = ${bStr} (水平切線)`;
+                } else {
+                    let interceptDisplay = intercept >= 0 ? `+ ${bStr}` : `- ${Math.abs(bStr)}`;
+                    tangentEq = `y = ${mStr}x ${interceptDisplay}`;
+                }
+
+                // 6. 更新網頁結果顯示
+                document.getElementById('resFunc').innerText = funcStr;
+                document.getElementById('resDeriv').innerText = derivStr;
+                document.getElementById('resVal').innerText = math.round(fa, 4);
+                document.getElementById('resSlope').innerText = mStr;
+                document.getElementById('resTangent').innerText = tangentEq;
+
+            } catch (error) {
+                // 顯示真實的錯誤訊息，不再隱藏
+                alert("發生錯誤：\n" + error.message);
+                console.error("詳細錯誤資訊:", error);
+            }
         }
-
-        // 5. 更新網頁結果
-        document.getElementById('resFunc').innerText = funcStr;
-        document.getElementById('resDeriv').innerText = derivStr;
-        document.getElementById('resVal').innerText = math.round(fa, 4);
-        document.getElementById('resSlope').innerText = mStr;
-        document.getElementById('resTangent').innerText = tangentEq;
-
-    }  catch (error) {
-        // 錯誤攔截：若使用者輸入不符合數學語法 (例如漏寫乘號)
-        alert("數學式解析錯誤！請確保格式正確，例如 2x 請寫成 2*x。");
-        console.error("運算錯誤:", error);
-    }
-}
 
 
         // ==================== 深色模式 ====================
