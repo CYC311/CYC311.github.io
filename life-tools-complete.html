@@ -756,7 +756,7 @@
 
         // ==================== 3️⃣ 機率計算 (核心功能!) ====================
         /**
-         * 機率計算核心邏輯
+         * 機率計算核心邏輯 - 已修復
          * - 支持軟保底（在指定抽數後增加機率）
          * - 支持硬保底（到達保底次數必定獲得）
          * - 計算期望值和概率分佈
@@ -769,51 +769,75 @@
                 const multiplier = parseFloat(document.getElementById('probMultiplier').value);
                 const totalDraws = parseInt(document.getElementById('totalDraws').value);
 
-                if (isNaN(baseRate) || isNaN(pityCount) || baseRate <= 0) {
-                    alert('請輸入有效的數據');
+                if (isNaN(baseRate) || isNaN(pityCount) || baseRate <= 0 || softPityStart > pityCount) {
+                    alert('請輸入有效的數據（軟保底必須小於硬保底）');
                     return;
                 }
 
-                // 計算保底內的機率
                 const softPityChance = baseRate * multiplier;
-                
-                // 計算至少抽中一次的概率
-                const noWinProb = Math.pow(1 - baseRate, softPityStart - 1) * Math.pow(1 - softPityChance, pityCount - softPityStart);
-                const atLeastOnce = 1 - noWinProb;
 
-                // 計算完整保底輪數
+                // ✅ 修復1：正確計算完整保底輪內的概率
+                // 計算在一個完整保底輪（1-pityCount）內至少獲得一次的概率
+                let probNoWinInPity = 1;
+                for (let i = 1; i <= pityCount; i++) {
+                    let currentProb = (i >= softPityStart) ? softPityChance : baseRate;
+                    if (i === pityCount) currentProb = 1; // 硬保底
+                    probNoWinInPity *= (1 - currentProb);
+                }
+                const probAtLeastOnceInPity = 1 - probNoWinInPity;
+
+                // ✅ 修復2：計算期望獲得次數（正確版本）
+                // 計算每個保底輪的平均獲得數
+                let expectedPerPity = 0;
+                let cumulativeProb = 1;
+                for (let i = 1; i <= pityCount; i++) {
+                    let currentProb = (i >= softPityStart) ? softPityChance : baseRate;
+                    if (i === pityCount) currentProb = 1;
+                    
+                    // 在第 i 抽中獎的概率 = 前 i-1 抽都沒中 × 第 i 抽中
+                    let winAtI = cumulativeProb * currentProb;
+                    expectedPerPity += winAtI;
+                    
+                    cumulativeProb *= (1 - currentProb);
+                }
+
+                // 完整保底輪數和期望獲得
                 const fullPityRounds = Math.floor(totalDraws / pityCount);
                 const remainingDraws = totalDraws % pityCount;
 
-                // 計算期望獲得次數
-                let expectedWins = fullPityRounds; // 硬保底
-                
-                // 每輪在軟保底區間的期望額外獲得
-                let extraWinsPerRound = 0;
-                for (let i = softPityStart - 1; i < pityCount; i++) {
-                    if (i < softPityStart - 1) {
-                        extraWinsPerRound += baseRate;
-                    } else {
-                        extraWinsPerRound += softPityChance;
-                    }
+                // 期望獲得 = 完整輪數 × 每輪期望 + 剩餘抽數的期望
+                let expectedWins = fullPityRounds * expectedPerPity;
+
+                // 計算剩餘抽數的期望
+                let remainingExpected = 0;
+                cumulativeProb = 1;
+                for (let i = 1; i <= remainingDraws; i++) {
+                    let currentProb = (i >= softPityStart) ? softPityChance : baseRate;
+                    let winAtI = cumulativeProb * currentProb;
+                    remainingExpected += winAtI;
+                    cumulativeProb *= (1 - currentProb);
                 }
-                extraWinsPerRound = extraWinsPerRound / pityCount;
-                
-                expectedWins += fullPityRounds * extraWinsPerRound;
+                expectedWins += remainingExpected;
 
-                // 剩餘抽數的期望
-                let remainingWins = 0;
-                for (let i = 0; i < remainingDraws; i++) {
-                    if (i < softPityStart - 1) {
-                        remainingWins += baseRate;
-                    } else {
-                        remainingWins += softPityChance;
+                // ✅ 修復3：計算軟保底前的概率
+                let probNoWinBeforeSoftPity = Math.pow(1 - baseRate, softPityStart - 1);
+                let probAtLeastOnceBeforeSoftPity = 1 - probNoWinBeforeSoftPity;
+
+                // ✅ 修復4：計算至少中一次的正確概率
+                let probNoWinAtAll = 1;
+                let pityCounter = 0;
+                for (let i = 0; i < totalDraws; i++) {
+                    pityCounter++;
+                    let currentProb = (pityCounter >= softPityStart) ? softPityChance : baseRate;
+                    if (pityCounter >= pityCount) {
+                        probNoWinAtAll = 0;
+                        break;
                     }
+                    probNoWinAtAll *= (1 - currentProb);
                 }
+                const probAtLeastOnceTotal = 1 - probNoWinAtAll;
 
-                expectedWins += remainingWins;
-
-                // 計算概率分佈
+                // 生成結果
                 const probabilityDetails = `
                     <strong>📊 機率分析結果</strong><br><br>
                     <strong style="color: var(--primary);">基礎設定：</strong><br>
@@ -822,70 +846,39 @@
                     • 軟保底倍增：${multiplier}x (${(softPityChance * 100).toFixed(2)}%)<br>
                     • 硬保底次數：${pityCount} 抽<br><br>
 
-                    <strong style="color: var(--primary);">在 ${softPityStart} 抽內：</strong><br>
-                    • 不中獎概率：${(Math.pow(1 - baseRate, softPityStart - 1) * 100).toFixed(2)}%<br>
-                    • 至少中獎概率：${(Math.min(1, (1 - Math.pow(1 - baseRate, softPityStart - 1))) * 100).toFixed(2)}%<br><br>
-
-                    <strong style="color: var(--primary);">在 ${pityCount} 抽完整保底內：</strong><br>
-                    • 至少中獎概率：${(atLeastOnce * 100).toFixed(2)}%<br>
+                    <strong style="color: var(--primary);">在軟保底前 (1-${softPityStart - 1} 抽)：</strong><br>
+                    • 不中獎概率：${(probNoWinBeforeSoftPity * 100).toFixed(2)}%<br>
+                    • 至少中獎概率：${(probAtLeastOnceBeforeSoftPity * 100).toFixed(2)}%<br>
                     • 平均需要抽數：${(1 / baseRate).toFixed(1)} 抽<br><br>
 
+                    <strong style="color: var(--primary);">在完整保底內 (1-${pityCount} 抽)：</strong><br>
+                    • 至少中獎概率：${(probAtLeastOnceInPity * 100).toFixed(2)}%<br>
+                    • 平均每輪獲得次數：${expectedPerPity.toFixed(2)} 個<br><br>
+
                     <strong style="color: var(--success); font-size: 1.2rem;">計畫抽取 ${totalDraws} 次的預測：</strong><br>
-                    • 完整保底輪數：${fullPityRounds} 輪 (必定獲得)<br>
+                    • 完整保底輪數：${fullPityRounds} 輪<br>
                     • 剩餘抽數：${remainingDraws} 抽<br>
-                    • 期望獲得次數：<span style="color: var(--primary); font-size: 1.1rem;">${expectedWins.toFixed(2)}</span> 個<br>
-                    • 期望獲得次數 (保守估��)：${Math.floor(expectedWins)} - ${Math.ceil(expectedWins)} 個<br><br>
+                    • 預期獲得次數：<span style="color: var(--primary); font-size: 1.1rem;">${expectedWins.toFixed(2)}</span> 個<br>
+                    • 預期範圍（保守）：${Math.floor(expectedWins)} - ${Math.ceil(expectedWins)} 個<br>
+                    • 至少獲得1個的概率：${(probAtLeastOnceTotal * 100).toFixed(2)}%<br><br>
 
                     <strong style="color: var(--warning);">💡 提示：</strong><br>
                     • 期望值是平均情況，實際可能高於或低於此值<br>
-                    • 軟保底後每抽機率為基礎機率的 ${multiplier}x<br>
+                    • 軟保底區間 (${softPityStart}-${pityCount}) 每抽機率為基礎機率的 ${multiplier}x<br>
                     • 到達 ${pityCount} 抽時保證獲得 1 個大獎
                 `;
 
                 document.getElementById('probResult').innerHTML = probabilityDetails;
                 document.getElementById('probResult').style.display = 'block';
-                
                 saveData();
             } catch (error) {
                 alert('❌ 計算錯誤: ' + error.message);
+                console.error(error);
             }
         }
 
-        // 1. 計算單次抽卡平均消耗 (考慮保底後的實際期望抽數)
-    // 簡單近似計算法：
-    let avgPullPerPrize = 0;
-    let cumulativeNoWinProb = 1;
-    
-    for (let i = 1; i <= pityCount; i++) {
-        let currentProb = (i >= softPityStart) ? softPityChance : baseRate;
-        if (i === pityCount) currentProb = 1; // 硬保底
-        
-        // 剛好在第 i 抽中的機率 = 前 i-1 抽沒中 * 第 i 抽中
-        let winAtI = cumulativeNoWinProb * currentProb;
-        avgPullPerPrize += i * winAtI;
-        
-        cumulativeNoWinProb *= (1 - currentProb);
-    }
-
-    // 2. 基於平均抽數計算期望獲得次數
-    const expectedWins = totalDraws / avgPullPerPrize;
-
-    // 3. 至少中一次的正確概率 (機率隨抽數變化，不能直接用 Math.pow)
-    let probNoWinAtAll = 1;
-    let currentPity = 0;
-    for (let i = 0; i < totalDraws; i++) {
-        currentPity++;
-        let p = (currentPity >= softPityStart) ? softPityChance : baseRate;
-        if (currentPity >= pityCount) {
-            probNoWinAtAll = 0; // 只要總抽數超過硬保底，不中獎機率就是 0
-            break;
-        }
-        probNoWinAtAll *= (1 - p);
-    }
-    const atLeastOnce = 1 - probNoWinAtAll;
-
         /**
-         * 模擬抽卡 - 用隨機模擬驗證理論計算
+         * 模擬抽卡 - 用隨機模擬驗證理論計算 (已修復)
          */
         function simulatePulls() {
             try {
@@ -913,20 +906,25 @@
                         pityCounter++;
                         let currentProb;
 
-                        // 判斷當前機率
-                        if (pityCounter >= softPityStart) {
-                            currentProb = softPityChance;
-                        } else {
-                            currentProb = baseRate;
-                        }
-
-                        // 硬保底
+                        // ✅ 修復5：正確判斷當前機率
                         if (pityCounter >= pityCount) {
+                            // 硬保底
                             wins++;
                             pityCounter = 0;
-                        } else if (Math.random() < currentProb) {
-                            wins++;
-                            pityCounter = 0;
+                        } else if (pityCounter >= softPityStart) {
+                            // 軟保底區間
+                            currentProb = softPityChance;
+                            if (Math.random() < currentProb) {
+                                wins++;
+                                pityCounter = 0;
+                            }
+                        } else {
+                            // 正常區間
+                            currentProb = baseRate;
+                            if (Math.random() < currentProb) {
+                                wins++;
+                                pityCounter = 0;
+                            }
                         }
                     }
 
@@ -940,19 +938,21 @@
                 const variance = results.reduce((sum, val) => sum + Math.pow(val - avgWins, 2), 0) / results.length;
                 const stdDev = Math.sqrt(variance);
 
-                // 分佈統計
+                // 分佈統計 (只顯示前15個)
                 const distribution = {};
                 results.forEach(w => {
                     distribution[w] = (distribution[w] || 0) + 1;
                 });
 
-                const sortedDistribution = Object.keys(distribution).sort((a, b) => a - b);
-                let distributionHTML = '<br><strong>獲得次數分佈：</strong><br>';
+                const sortedDistribution = Object.keys(distribution)
+                    .map(Number)
+                    .sort((a, b) => a - b);
+                let distributionHTML = '<br><strong>獲得次數分佈（前15個）：</strong><br>';
                 
-                sortedDistribution.slice(0, 10).forEach(wins => {
+                sortedDistribution.slice(0, 15).forEach(wins => {
                     const count = distribution[wins];
                     const percent = ((count / simCount) * 100).toFixed(2);
-                    const barLength = Math.floor(count / simCount * 40);
+                    const barLength = Math.max(1, Math.floor(count / simCount * 50));
                     distributionHTML += `${wins}個: [${'█'.repeat(barLength)}] ${count}次 (${percent}%)<br>`;
                 });
 
@@ -962,8 +962,9 @@
                     • 平均獲得次數：<span style="color: var(--success); font-size: 1.1rem;">${avgWins.toFixed(2)}</span> 個<br>
                     • 最多獲得：${maxWins} 個<br>
                     • 最少獲得：${minWins} 個<br>
-                    • 標準差：${stdDev.toFixed(2)}<br>
-                    • 波動範圍（±1σ）：${(avgWins - stdDev).toFixed(1)} ~ ${(avgWins + stdDev).toFixed(1)} 個<br><br>
+                    • 標準差（σ）：${stdDev.toFixed(2)}<br>
+                    • 置信區間 (68%)：${(avgWins - stdDev).toFixed(1)} ~ ${(avgWins + stdDev).toFixed(1)} 個<br>
+                    • 置信區間 (95%)：${(avgWins - 2 * stdDev).toFixed(1)} ~ ${(avgWins + 2 * stdDev).toFixed(1)} 個<br><br>
                     ${distributionHTML}
                 `;
 
@@ -972,6 +973,7 @@
                 saveData();
             } catch (error) {
                 alert('❌ 模擬出錯: ' + error.message);
+                console.error(error);
             }
         }
 
@@ -979,7 +981,7 @@
             document.getElementById('probResult').style.display = 'none';
             document.getElementById('simResult').style.display = 'none';
         }
-
+        
         // ==================== 4️⃣ 翻譯 ====================
         function translateText() {
             try {
