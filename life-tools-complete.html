@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>生活工具套件 Pro - 15合1完整版</title>
+    <!-- ✅ QR碼庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { 
@@ -135,6 +137,11 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
+        .input-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
         label {
             font-weight: bold;
             color: var(--text);
@@ -189,76 +196,50 @@
             border-radius: 10px;
             border-left: 4px solid var(--primary);
             margin-top: 15px;
-            font-weight: bold;
             color: var(--text);
             word-break: break-all;
             white-space: pre-wrap;
+            line-height: 1.6;
         }
         .stat-box {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             padding: 25px;
             border-radius: 10px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .stat-box .number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
+            margin-top: 15px;
+            font-size: 1.1rem;
         }
         .list-item {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary);
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(102,126,234,0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
         }
-        .list-content {
-            flex: 1;
-        }
-        .list-content h4 {
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-        .list-content p {
-            color: var(--text-light);
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        .conversion-item {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            padding: 15px;
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--border);
             border-radius: 10px;
-            margin-bottom: 12px;
+            overflow: hidden;
+            margin: 10px 0;
         }
-        .conversion-result {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-top: 10px;
-            padding: 10px;
-            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
-            border-radius: 8px;
-        }
-        @media (max-width: 768px) {
-            header h1 { font-size: 1.8rem; }
-            .input-row { grid-template-columns: 1fr; }
-            .tab-btn { padding: 10px 12px; font-size: 0.85rem; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            transition: width 0.3s;
         }
     </style>
 </head>
+<!-- ✅ 關鍵修復：添加 onload="init()" -->
 <body onload="init()">
     <div class="container">
         <header>
             <h1>🛠️ 生活工具套件 Pro</h1>
-            <p>15合1超級工具 - 完整版本</p>
+            <p>15合1完整工具 - 加強版本</p>
             <div class="header-controls">
                 <button onclick="toggleDarkMode()">🌙 深色模式</button>
                 <button onclick="exportData()">📤 導出數據</button>
@@ -268,1255 +249,1337 @@
 
         <div class="tabs-container">
             <div class="tabs">
-                <button class="tab-btn" onclick="switchTab(event, 'calculator')">🧮 計算機</button>
-                <button class="tab-btn" onclick="switchTab(event, 'converter')">📏 單位轉換</button>
-                <button class="tab-btn" onclick="switchTab(event, 'translator')">🌐 翻譯</button>
-                <button class="tab-btn" onclick="switchTab(event, 'todo')">📝 待辦</button>
-                <button class="tab-btn" onclick="switchTab(event, 'notes')">📌 筆記</button>
-                <button class="tab-btn" onclick="switchTab(event, 'timer')">⏱️ 計時</button>
-                <button class="tab-btn" onclick="switchTab(event, 'expense')">💰 支出</button>
-                <button class="tab-btn" onclick="switchTab(event, 'qrcode')">📱 二維碼</button>
-                <button class="tab-btn" onclick="switchTab(event, 'password')">🔐 密碼</button>
-                <button class="tab-btn" onclick="switchTab(event, 'bmi')">⚖️ BMI</button>
-                <button class="tab-btn" onclick="switchTab(event, 'age')">🎂 年齡</button>
-                <button class="tab-btn" onclick="switchTab(event, 'crypto')">🔒 加密</button>
-                <button class="tab-btn" onclick="switchTab(event, 'fitness')">💪 健身</button>
-                <button class="tab-btn" onclick="switchTab(event, 'stats')">📊 統計</button>
-                <button class="tab-btn" onclick="switchTab(event, 'probability')">🎰 概率計算</button>
+                <!-- ✅ 關鍵修復：使用 switchTab(id, this) -->
+                <button class="tab-btn active" onclick="switchTab('calculator', this)">🧮 計算機</button>
+                <button class="tab-btn" onclick="switchTab('converter', this)">📏 單位轉換</button>
+                <button class="tab-btn" onclick="switchTab('probability', this)">🎰 機率計算</button>
+                <button class="tab-btn" onclick="switchTab('translator', this)">🌐 翻譯</button>
+                <button class="tab-btn" onclick="switchTab('todo', this)">📝 待辦</button>
+                <button class="tab-btn" onclick="switchTab('notes', this)">📌 筆記</button>
+                <button class="tab-btn" onclick="switchTab('timer', this)">⏱️ 計時</button>
+                <button class="tab-btn" onclick="switchTab('expense', this)">💰 支出</button>
+                <button class="tab-btn" onclick="switchTab('qrcode', this)">📱 二維碼</button>
+                <button class="tab-btn" onclick="switchTab('password', this)">🔐 密碼</button>
+                <button class="tab-btn" onclick="switchTab('health', this)">⚖️ 健康</button>
+                <button class="tab-btn" onclick="switchTab('crypto', this)">🔒 加密</button>
+                <button class="tab-btn" onclick="switchTab('fitness', this)">💪 健身</button>
+                <button class="tab-btn" onclick="switchTab('stats', this)">📊 統計</button>
             </div>
         </div>
-                <!-- 1. 計算機 -->
+
+        <!-- ========== 1️⃣ 計算機 ========== -->
         <div id="calculator" class="tab-content active">
             <div class="card">
-                <h2>🧮 科學計算機</h2>
-                <input type="text" id="calcInput" placeholder="輸入計算式 例如: 2+2*3" style="font-size: 1.3rem; padding: 15px;">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px;">
-                    <button class="btn-secondary" onclick="appendCalc('7')">7</button>
-                    <button class="btn-secondary" onclick="appendCalc('8')">8</button>
-                    <button class="btn-secondary" onclick="appendCalc('9')">9</button>
-                    <button class="btn-secondary" onclick="appendCalc('/')">/</button>
-                    <button class="btn-secondary" onclick="appendCalc('4')">4</button>
-                    <button class="btn-secondary" onclick="appendCalc('5')">5</button>
-                    <button class="btn-secondary" onclick="appendCalc('6')">6</button>
-                    <button class="btn-secondary" onclick="appendCalc('*')">*</button>
-                    <button class="btn-secondary" onclick="appendCalc('1')">1</button>
-                    <button class="btn-secondary" onclick="appendCalc('2')">2</button>
-                    <button class="btn-secondary" onclick="appendCalc('3')">3</button>
-                    <button class="btn-secondary" onclick="appendCalc('-')">-</button>
-                    <button class="btn-secondary" onclick="appendCalc('0')" style="grid-column: span 2;">0</button>
-                    <button class="btn-secondary" onclick="appendCalc('.')">.</button>
-                    <button class="btn-secondary" onclick="appendCalc('+')">+</button>
-                </div>
-                <button onclick="calculateResult()" style="width: 100%; margin-top: 15px; padding: 15px; font-size: 1.2rem;">=</button>
-                <button onclick="clearCalc()" class="btn-secondary" style="width: 100%; margin-top: 10px;">清除</button>
+                <h2>🧮 計算機</h2>
+                <input type="text" id="calcInput" placeholder="輸入計算式... 例如：5 + 3 * 2">
+                <button onclick="calculateResult()">計算</button>
                 <div id="calcResult" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- 2. 單位轉換 -->
+        <!-- ========== 2️⃣ 單位轉換 ========== -->
         <div id="converter" class="tab-content">
             <div class="card">
-                <h2>📏 全能單位轉換 (12+種)</h2>
+                <h2>📏 單位轉換 (12+種轉換)</h2>
                 
-                <h3>🌡️ 溫度轉換 (℃ ↔ ℉)</h3>
-                <div class="conversion-item">
-                    <label>攝氏度 (℃)</label>
-                    <input type="number" id="celsius" placeholder="輸入溫度" onchange="convertTemp()" step="0.1">
-                    <div class="conversion-result" id="celsiusResult"></div>
-                </div>
-                <div class="conversion-item">
-                    <label>華氏度 (℉)</label>
-                    <input type="number" id="fahrenheit" placeholder="輸入溫度" onchange="convertTempFromF()" step="0.1">
-                    <div class="conversion-result" id="fahrenheitResult"></div>
-                </div>
-
-                <h3>📍 距離轉換 (km ↔ mi)</h3>
-                <div class="conversion-item">
-                    <label>公里 (km)</label>
-                    <input type="number" id="km" placeholder="輸入距離" onchange="convertDistance()" step="0.01">
-                    <div class="conversion-result" id="kmResult"></div>
-                </div>
-                <div class="conversion-item">
-                    <label>英里 (mi)</label>
-                    <input type="number" id="mile" placeholder="輸入距離" onchange="convertDistanceFromMi()" step="0.01">
-                    <div class="conversion-result" id="mileResult"></div>
+                <h3>溫度轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>攝氏度(°C)</label>
+                        <input type="number" id="celsius" placeholder="輸入°C" onchange="convertTemp()">
+                    </div>
+                    <div>
+                        <label>華氏度(°F)</label>
+                        <input type="number" id="fahrenheit" placeholder="輸入°F" onchange="convertTemp()">
+                    </div>
                 </div>
 
-                <h3>⚖️ 重量轉換 (kg ↔ lb)</h3>
-                <div class="conversion-item">
-                    <label>公斤 (kg)</label>
-                    <input type="number" id="kg" placeholder="輸入重量" onchange="convertWeight()" step="0.1">
-                    <div class="conversion-result" id="kgResult"></div>
-                </div>
-                <div class="conversion-item">
-                    <label>磅 (lb)</label>
-                    <input type="number" id="lb" placeholder="輸入重量" onchange="convertWeightFromLb()" step="0.1">
-                    <div class="conversion-result" id="lbResult"></div>
-                </div>
-
-                <h3>💧 體積轉換 (L ↔ gal)</h3>
-                <div class="conversion-item">
-                    <label>公升 (L)</label>
-                    <input type="number" id="liter" placeholder="輸入體積" onchange="convertVolume()" step="0.01">
-                    <div class="conversion-result" id="literResult"></div>
-                </div>
-                <div class="conversion-item">
-                    <label>加侖 (gal)</label>
-                    <input type="number" id="gallon" placeholder="輸入體積" onchange="convertVolumeFromGal()" step="0.01">
-                    <div class="conversion-result" id="gallonResult"></div>
+                <h3>距離轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公里(km)</label>
+                        <input type="number" id="km" placeholder="輸入km" onchange="convertDistance()">
+                    </div>
+                    <div>
+                        <label>英里(mi)</label>
+                        <input type="number" id="mile" placeholder="輸入mi" onchange="convertDistance()">
+                    </div>
                 </div>
 
-                <h3>⏱️ 時間轉換 (h ↔ min)</h3>
-                <div class="conversion-item">
-                    <label>小時 (h)</label>
-                    <input type="number" id="hours" placeholder="輸入小時" onchange="convertTime()" step="0.1">
-                    <div class="conversion-result" id="hoursResult"></div>
-                </div>
-                <div class="conversion-item">
-                    <label>分鐘 (min)</label>
-                    <input type="number" id="minutes" placeholder="輸入分鐘" onchange="convertTimeFromMin()" step="1">
-                    <div class="conversion-result" id="minutesResult"></div>
+                <h3>重量轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公斤(kg)</label>
+                        <input type="number" id="kg" placeholder="輸入kg" onchange="convertWeight()">
+                    </div>
+                    <div>
+                        <label>磅(lb)</label>
+                        <input type="number" id="lb" placeholder="輸入lb" onchange="convertWeight()">
+                    </div>
                 </div>
 
-                <h3>🌍 速度轉換 (km/h ↔ mph)</h3>
-                <div class="conversion-item">
-                    <label>公里/小時 (km/h)</label>
-                    <input type="number" id="kmh" placeholder="輸入速度" onchange="convertSpeed()" step="0.1">
-                    <div class="conversion-result" id="kmhResult"></div>
+                <h3>容積轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公升(L)</label>
+                        <input type="number" id="liter" placeholder="輸入L" onchange="convertVolume()">
+                    </div>
+                    <div>
+                        <label>加侖(gal)</label>
+                        <input type="number" id="gallon" placeholder="輸入gal" onchange="convertVolume()">
+                    </div>
                 </div>
-                <div class="conversion-item">
-                    <label>英里/小時 (mph)</label>
-                    <input type="number" id="mph" placeholder="輸入速度" onchange="convertSpeedFromMph()" step="0.1">
-                    <div class="conversion-result" id="mphResult"></div>
+
+                <h3>面積轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>平方米(m²)</label>
+                        <input type="number" id="sqm" placeholder="輸入m²" onchange="convertArea()">
+                    </div>
+                    <div>
+                        <label>平方英尺(ft²)</label>
+                        <input type="number" id="sqft" placeholder="輸入ft²" onchange="convertArea()">
+                    </div>
+                </div>
+
+                <h3>速度轉換</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公里/小時(km/h)</label>
+                        <input type="number" id="kmh" placeholder="輸入km/h" onchange="convertSpeed()">
+                    </div>
+                    <div>
+                        <label>英里/小時(mph)</label>
+                        <input type="number" id="mph" placeholder="輸入mph" onchange="convertSpeed()">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. 翻譯 -->
+        <!-- ========== 3️⃣ 機率計算 (新增!) ========== -->
+        <div id="probability" class="tab-content">
+            <div class="card">
+                <h2>🎰 機率計算 - 抽卡/抽獎系統</h2>
+                
+                <h3>基礎設定</h3>
+                <div class="input-row-3">
+                    <div>
+                        <label>基礎出現率 (%)</label>
+                        <input type="number" id="baseProbRate" value="0.6" placeholder="0.6" min="0.01" max="100" step="0.01">
+                    </div>
+                    <div>
+                        <label>保底次數</label>
+                        <input type="number" id="pityCount" value="90" placeholder="90" min="1" max="1000">
+                    </div>
+                    <div>
+                        <label>增幅開始抽數</label>
+                        <input type="number" id="softPityStart" value="74" placeholder="74" min="1" max="500">
+                    </div>
+                </div>
+
+                <h3>計算設定</h3>
+                <div class="input-row-3">
+                    <div>
+                        <label>未中獎時增幅倍數</label>
+                        <input type="number" id="probMultiplier" value="2" placeholder="2" min="1" max="10" step="0.1">
+                    </div>
+                    <div>
+                        <label>計畫抽取次數</label>
+                        <input type="number" id="totalDraws" value="360" placeholder="360" min="1" max="10000">
+                    </div>
+                    <div>
+                        <label>模擬次數(驗證)</label>
+                        <input type="number" id="simulations" value="10000" placeholder="10000" min="100" max="100000">
+                    </div>
+                </div>
+
+                <button onclick="calculateProbability()">📊 計算機率</button>
+                <button onclick="simulatePulls()">🎲 模擬抽卡</button>
+                <button onclick="clearProbabilityResults()">🗑️ 清除結果</button>
+
+                <div id="probResult" class="result-box" style="display: none;"></div>
+                <div id="simResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 4️⃣ 翻譯 ========== -->
         <div id="translator" class="tab-content">
             <div class="card">
                 <h2>🌐 翻譯工具</h2>
-                <div class="input-group">
-                    <div class="input-row">
-                        <div>
-                            <label>源語言</label>
-                            <select id="sourceLang">
-                                <option value="zh">中文</option>
-                                <option value="en">英文</option>
-                                <option value="ja">日文</option>
-                                <option value="ko">韓文</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>目標語言</label>
-                            <select id="targetLang">
-                                <option value="en">英文</option>
-                                <option value="zh">中文</option>
-                                <option value="ja">日文</option>
-                                <option value="ko">韓文</option>
-                            </select>
-                        </div>
+                <textarea id="translateInput" placeholder="輸入要翻譯的文字..." rows="5"></textarea>
+                <div class="input-row">
+                    <div>
+                        <label>源語言</label>
+                        <select id="sourceLang">
+                            <option value="zh-TW">繁體中文</option>
+                            <option value="zh-CN">簡體中文</option>
+                            <option value="en">英文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韓文</option>
+                        </select>
                     </div>
-                    <label>要翻譯的文字</label>
-                    <textarea id="translateInput" placeholder="輸入要翻譯的文字..." rows="6"></textarea>
-                    <button onclick="translateText()">🔄 翻譯</button>
+                    <div>
+                        <label>目標語言</label>
+                        <select id="targetLang">
+                            <option value="en">英文</option>
+                            <option value="zh-TW">繁體中文</option>
+                            <option value="zh-CN">簡體中文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韓文</option>
+                        </select>
+                    </div>
                 </div>
+                <button onclick="translateText()">翻譯</button>
                 <div id="translateOutput" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- 4. 待辦清單 -->
+        <!-- ========== 5️⃣ 待辦清單 ========== -->
         <div id="todo" class="tab-content">
             <div class="card">
                 <h2>📝 待辦清單</h2>
-                <div class="input-group">
-                    <input type="text" id="todoInput" placeholder="輸入新任務...">
-                    <div class="input-row">
-                        <select id="todoCategory">
-                            <option value="工作">🏢 工作</option>
-                            <option value="學習">📚 學習</option>
-                            <option value="生活">🏠 生活</option>
-                            <option value="其他">🔖 其他</option>
-                        </select>
-                        <select id="todoPriority">
-                            <option value="高">🔴 高優先</option>
-                            <option value="中" selected>🟡 中優先</option>
-                            <option value="低">🟢 低優先</option>
-                        </select>
-                    </div>
-                    <button onclick="addTodo()">➕ 新增任務</button>
+                <div class="input-row">
+                    <input type="text" id="todoInput" placeholder="輸入新任務..." onkeypress="if(event.key==='Enter')addTodo()">
+                    <button onclick="addTodo()">➕ 新增</button>
                 </div>
                 <div id="todoList"></div>
             </div>
         </div>
 
-        <!-- 5. 筆記 -->
+        <!-- ========== 6️⃣ 筆記 ========== -->
         <div id="notes" class="tab-content">
             <div class="card">
-                <h2>📌 便簽筆記</h2>
-                <div class="input-group">
-                    <input type="text" id="noteTitle" placeholder="筆記標題...">
-                    <textarea id="noteContent" placeholder="輸入筆記內容..." rows="6"></textarea>
-                    <button onclick="addNote()">💾 保存筆記</button>
-                </div>
+                <h2>📌 筆記</h2>
+                <input type="text" id="noteTitle" placeholder="標題...">
+                <textarea id="noteContent" placeholder="內容..." rows="5"></textarea>
+                <button onclick="addNote()">💾 保存筆記</button>
                 <div id="notesList"></div>
             </div>
         </div>
 
-        <!-- 6. 計時器 -->
+        <!-- ========== 7️⃣ 計時器 ========== -->
         <div id="timer" class="tab-content">
             <div class="card">
-                <h2>⏱️ 倒計時器</h2>
+                <h2>⏱️ 計時器</h2>
                 <div class="input-row">
                     <div>
                         <label>分鐘</label>
-                        <input type="number" id="timerMin" value="5" min="0">
+                        <input type="number" id="timerMin" value="5" placeholder="分鐘" min="0">
                     </div>
                     <div>
                         <label>秒</label>
-                        <input type="number" id="timerSec" value="0" min="0">
+                        <input type="number" id="timerSec" value="0" placeholder="秒" min="0" max="59">
                     </div>
                 </div>
-                <div style="text-align: center; margin: 30px 0;">
-                    <div style="font-size: 5rem; font-weight: bold; color: var(--primary); font-family: 'Courier New'; letter-spacing: 5px;" id="timerDisplay">05:00</div>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <button onclick="startTimer()" id="timerStartBtn">▶️ 開始</button>
-                    <button onclick="pauseTimer()" id="timerPauseBtn" style="display: none;">⏸️ 暫停</button>
-                    <button onclick="resetTimer()" class="btn-secondary">🔄 重置</button>
+                <div style="font-size: 4rem; text-align: center; margin: 30px 0; font-weight: bold; font-family: 'Courier New';" id="timerDisplay">05:00</div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="startTimer()">▶️ 開始</button>
+                    <button onclick="pauseTimer()">⏸️ 暫停</button>
+                    <button onclick="resetTimer()">🔄 重置</button>
                 </div>
             </div>
         </div>
 
-        <!-- 7. 支出記錄 -->
+        <!-- ========== 8️⃣ 支出記錄 ========== -->
         <div id="expense" class="tab-content">
             <div class="card">
                 <h2>💰 支出記錄</h2>
-                <div class="input-group">
-                    <div class="input-row">
-                        <div>
-                            <label>金額</label>
-                            <input type="number" id="expenseAmount" placeholder="輸入金額" min="0" step="0.01">
-                        </div>
-                        <div>
-                            <label>日期</label>
-                            <input type="date" id="expenseDate">
-                        </div>
+                <div class="input-row">
+                    <div>
+                        <label>金額 (¥)</label>
+                        <input type="number" id="expenseAmount" placeholder="金額" min="0" step="0.01">
                     </div>
-                    <label>分類</label>
-                    <select id="expenseCategory">
-                        <option value="食物">🍔 食物</option>
-                        <option value="交通">🚗 交通</option>
-                        <option value="購物">🛍️ 購物</option>
-                        <option value="娛樂">🎬 娛樂</option>
-                        <option value="其他">🔖 其他</option>
-                    </select>
-                    <input type="text" id="expenseNote" placeholder="備註...">
-                    <button onclick="addExpense()">➕ 記錄支出</button>
+                    <div>
+                        <label>日期</label>
+                        <input type="date" id="expenseDate">
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <div class="number" id="totalExpense">¥0.00</div>
-                    <div style="font-size: 0.9rem; opacity: 0.95;">���支出</div>
-                </div>
+                <input type="text" id="expenseCategory" placeholder="分類 (例如：食物、交通)">
+                <button onclick="addExpense()">📝 記錄支出</button>
                 <div id="expenseList"></div>
             </div>
         </div>
 
-        <!-- 8. 二維碼 -->
+        <!-- ========== 9️⃣ 二維碼 ========== -->
         <div id="qrcode" class="tab-content">
             <div class="card">
                 <h2>📱 二維碼生成</h2>
-                <div class="input-group">
-                    <textarea id="qrInput" placeholder="輸入文字、URL..." rows="4"></textarea>
-                    <button onclick="generateQR()">🔲 生成二維碼</button>
-                </div>
+                <textarea id="qrInput" placeholder="輸入要編碼的文字或URL..." rows="4"></textarea>
+                <button onclick="generateQR()">🔄 生成二維碼</button>
                 <div id="qrOutput" style="text-align: center; margin-top: 20px;"></div>
             </div>
         </div>
 
-        <!-- 9. 密碼生成 -->
+        <!-- ========== 🔟 密碼生成 ========== -->
         <div id="password" class="tab-content">
             <div class="card">
-                <h2>🔐 強密碼生成</h2>
-                <div class="input-group">
-                    <div class="input-row">
-                        <div>
-                            <label>密碼長度</label>
-                            <input type="number" id="pwdLength" value="12" min="6" max="50">
-                        </div>
-                        <div>
-                            <label>生成數量</label>
-                            <input type="number" id="pwdCount" value="5" min="1" max="20">
-                        </div>
+                <h2>🔐 密碼生成器</h2>
+                <div class="input-row-3">
+                    <div>
+                        <label>密碼長度</label>
+                        <input type="number" id="pwdLength" value="16" placeholder="16" min="8" max="64">
                     </div>
-                    <button onclick="generatePasswords()">🔑 生成密碼</button>
+                    <div>
+                        <label>包含大寫字母</label>
+                        <input type="checkbox" id="pwdUppercase" checked>
+                    </div>
+                    <div>
+                        <label>包含特殊符號</label>
+                        <input type="checkbox" id="pwdSymbols" checked>
+                    </div>
                 </div>
+                <button onclick="generatePasswords()">🔄 生成密碼</button>
                 <div id="passwordList"></div>
             </div>
         </div>
 
-        <!-- 10. BMI -->
-        <div id="bmi" class="tab-content">
+        <!-- ========== 1️⃣1️⃣ 健康數據 ========== -->
+        <div id="health" class="tab-content">
             <div class="card">
-                <h2>⚖️ BMI 計算</h2>
-                <div class="input-group">
-                    <div class="input-row">
-                        <div>
-                            <label>身高(cm)</label>
-                            <input type="number" id="bmiHeight" placeholder="輸入身高" min="0">
-                        </div>
-                        <div>
-                            <label>體重(kg)</label>
-                            <input type="number" id="bmiWeight" placeholder="輸入體重" min="0">
-                        </div>
+                <h2>⚖️ 健康計算 (BMI)</h2>
+                <div class="input-row">
+                    <div>
+                        <label>身高 (cm)</label>
+                        <input type="number" id="bmiHeight" placeholder="身高" min="50" max="300">
                     </div>
-                    <button onclick="calculateBMI()">計算BMI</button>
+                    <div>
+                        <label>體重 (kg)</label>
+                        <input type="number" id="bmiWeight" placeholder="體重" min="20" max="500" step="0.1">
+                    </div>
                 </div>
+                <button onclick="calculateBMI()">📊 計算BMI</button>
                 <div id="bmiResult" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- 11. 年齡 -->
-        <div id="age" class="tab-content">
-            <div class="card">
-                <h2>🎂 年齡計算</h2>
-                <div class="input-group">
-                    <label>出生日期</label>
-                    <input type="date" id="birthDate">
-                    <button onclick="calculateAge()">計算年齡</button>
-                </div>
-                <div id="ageResult" class="result-box" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- 12. 加密 -->
+        <!-- ========== 1️⃣2️⃣ 加密 ========== -->
         <div id="crypto" class="tab-content">
             <div class="card">
-                <h2>🔒 文本加密/解密</h2>
-                <div class="input-group">
-                    <label>要加密的文本</label>
-                    <textarea id="cryptoInput" placeholder="輸入要加密的文字..." rows="6"></textarea>
-                    <input type="password" id="cryptoKey" placeholder="設置密鑰">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button onclick="encryptText()" style="flex: 1;">🔐 加密</button>
-                        <button onclick="decryptText()" class="btn-secondary" style="flex: 1;">🔓 解密</button>
-                    </div>
+                <h2>🔒 加密/解密工具</h2>
+                <textarea id="cryptoInput" placeholder="輸入文字..." rows="4"></textarea>
+                <div class="input-row">
+                    <button onclick="encryptText()">🔐 加密 (Base64)</button>
+                    <button onclick="decryptText()">🔓 解密 (Base64)</button>
                 </div>
                 <div id="cryptoOutput" class="result-box" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- 13. 健身 -->
+        <!-- ========== 1️⃣3️⃣ 健身記錄 ========== -->
         <div id="fitness" class="tab-content">
             <div class="card">
                 <h2>💪 健身記錄</h2>
-                <div class="input-group">
-                    <input type="date" id="fitnessDate">
-                    <input type="text" id="fitnessExercise" placeholder="運動項目">
-                    <div class="input-row">
-                        <div>
-                            <label>時間(分)</label>
-                            <input type="number" id="fitnessDuration" placeholder="時間" min="0">
-                        </div>
-                        <div>
-                            <label>卡路里</label>
-                            <input type="number" id="fitnessCalorie" placeholder="卡路里" min="0">
-                        </div>
+                <div class="input-row">
+                    <div>
+                        <label>日期</label>
+                        <input type="date" id="fitnessDate">
                     </div>
-                    <button onclick="addFitness()">➕ 記錄</button>
+                    <div>
+                        <label>運動項目</label>
+                        <input type="text" id="fitnessExercise" placeholder="例如：跑步、游泳">
+                    </div>
                 </div>
+                <div class="input-row">
+                    <div>
+                        <label>時間 (分鐘)</label>
+                        <input type="number" id="fitnessDuration" placeholder="時間" min="1" max="480">
+                    </div>
+                    <div>
+                        <label>卡路里</label>
+                        <input type="number" id="fitnessCalorie" placeholder="卡路里" min="0" step="10">
+                    </div>
+                </div>
+                <button onclick="addFitness()">➕ 記錄</button>
                 <div id="fitnessList"></div>
             </div>
         </div>
 
-        <!-- 14. 統計 -->
+        <!-- ========== 1️⃣4️⃣ 統計分析 ========== -->
         <div id="stats" class="tab-content">
             <div class="card">
-                <h2>📊 數據統計</h2>
-                <button onclick="showStats()" style="width: 100%; margin-bottom: 15px;">📈 生成報告</button>
+                <h2>📊 統計分析</h2>
+                <button onclick="showStats()">📈 生成報告</button>
                 <div id="statsOutput"></div>
             </div>
         </div>
-        <!-- 15. 概率計算 -->
-<div id="probability" class="tab-content">
-    <div class="card">
-        <h2>🎰 遊戲抽取概率計算</h2>
-        <p style="color: var(--text-light); margin-bottom: 20px;">計算遊戲抽取的中獎機率、期望值和保底機制分析</p>
-        
-        <div class="input-group">
-            <div class="input-row">
-                <div>
-                    <label>單次抽取大獎機率(%)</label>
-                    <input type="number" id="probRate" placeholder="例如:0.6" step="0.01" min="0" max="100" value="0.6">
-                </div>
-                <div>
-                    <label>保底所需次數</label>
-                    <input type="number" id="pityCount" placeholder="例如:90" step="1" min="1" value="90">
-                </div>
-            </div>
-            <div>
-                <label>玩家總抽數</label>
-                <input type="number" id="totalDraws" placeholder="例如:360" step="1" min="1" value="360">
-            </div>
-            <button onclick="calculateProbability()">📊 計算概率</button>
-        </div>
-
-        <div id="probResult" class="result-box" style="display: none;"></div>
-        
-        <div id="probChart" style="margin-top: 20px; display: none;">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">📈 中獎概率曲線</h3>
-            <canvas id="probabilityCanvas" style="max-width: 100%; border-radius: 10px;"></canvas>
-        </div>
-
-        <div style="margin-top: 20px; padding: 15px; background: rgba(76,175,80,0.1); border-left: 4px solid #4caf50; border-radius: 8px; color: var(--text);">
-            <strong>💡 使用説明：</strong><br>
-            • 單次機率: 每次抽取獲得大獎的概率，如原神限定角色為0.6%<br>
-            • 保底機制: 抽取一定次數後必定獲得大獎，如原神為90次保底<br>
-            • 總抽數: 你計畫花費的總抽數，用於計算期望獲得次數
-        </div>
-    </div>
-</div>
     </div>
 
     <script>
+        // ==================== 全局狀態管理 ====================
         const state = {
             todos: [],
             notes: [],
             expenses: [],
             fitness: [],
+            darkMode: false,
             timerInterval: null,
             timerSeconds: 0,
             isTimerRunning: false,
-            isDarkMode: localStorage.getItem('darkMode') === 'true'
+            probabilityRecords: []
         };
 
+        // ✅ 初始化函數（關鍵！）
         function init() {
-            loadData();
-            if (state.isDarkMode) document.body.classList.add('dark-mode');
-            document.getElementById('expenseDate').valueAsDate = new Date();
-            document.getElementById('fitnessDate').valueAsDate = new Date();
-            renderAll();
-        }
-
-        function switchTab(tab, event) {  // 接收event參數
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(tab).classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        if (event && event.target) {
-            event.target.classList.add('active');
-        }
-        }
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            state.isDarkMode = !state.isDarkMode;
-            localStorage.setItem('darkMode', state.isDarkMode);
-        }
-
-        function saveData() {
-            localStorage.setItem('appState', JSON.stringify(state));
-        }
-
-        function loadData() {
-            const saved = localStorage.getItem('appState');
-            if (saved) {
-                try {
-                    Object.assign(state, JSON.parse(saved));
-                } catch(e) {
-                    console.error('數據加載失敗');
-                }
+            try {
+                loadData();
+                setDefaultDates();
+                loadDarkMode();
+                console.log('✅ 應用已初始化成功');
+            } catch (error) {
+                console.error('❌ 初始化錯誤:', error);
             }
         }
 
-        function exportData() {
-            const data = JSON.stringify(state, null, 2);
-            const blob = new Blob([data], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup-${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            if (document.getElementById('expenseDate')) {
+                document.getElementById('expenseDate').value = today;
+            }
+            if (document.getElementById('fitnessDate')) {
+                document.getElementById('fitnessDate').value = today;
+            }
         }
 
-        function importData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    try {
-                        Object.assign(state, JSON.parse(evt.target.result));
-                        saveData();
-                        renderAll();
-                        alert('✅ 導入成功');
-                    } catch(e) {
-                        alert('❌ 導入失敗');
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
+        // ==================== 標籤切換 ====================
+        // ✅ 修復的switchTab函數
+        function switchTab(tab, element) {
+            try {
+                // 隱藏所有標籤內容
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                
+                // 顯示選中的標籤
+                const targetTab = document.getElementById(tab);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+                
+                // 更新按鈕狀態
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                element.classList.add('active');
+            } catch (error) {
+                console.error('❌ 切換標籤出錯:', error);
+                alert('切換標籤失敗，請重新整理頁面');
+            }
         }
 
-        // 計算機
-        function appendCalc(val) {
-            document.getElementById('calcInput').value += val;
-        }
-
-        function clearCalc() {
-            document.getElementById('calcInput').value = '';
-            document.getElementById('calcResult').style.display = 'none';
-        }
-
+        // ==================== 1️⃣ 計算機 ====================
         function calculateResult() {
             try {
-                const result = eval(document.getElementById('calcInput').value);
-                document.getElementById('calcResult').innerHTML = `<strong>✓ 結果:</strong> ${result}`;
-                document.getElementById('calcResult').style.display = 'block';
-            } catch (e) {
-                alert('❌ 計算式錯誤');
+                const input = document.getElementById('calcInput').value.trim();
+                if (!input) {
+                    alert('請輸入計算式');
+                    return;
+                }
+                
+                // 安全檢查：只允許數字和基本運算符
+                if (!/^[\d+\-*/().\s]*$/.test(input)) {
+                    throw new Error('只允許數字、運算符 (+, -, *, /) 和括號');
+                }
+                
+                const result = Function('"use strict"; return (' + input + ')')();
+                const resultBox = document.getElementById('calcResult');
+                resultBox.innerHTML = `<strong>計算結果：<br>${input}<br>=<br>${result}</strong>`;
+                resultBox.style.display = 'block';
+            } catch (error) {
+                const resultBox = document.getElementById('calcResult');
+                resultBox.innerHTML = `<strong style="color: var(--danger);">❌ 錯誤：${error.message}</strong>`;
+                resultBox.style.display = 'block';
             }
         }
 
-        // 單位轉換
+        // ==================== 2️⃣ 單位轉換 ====================
         function convertTemp() {
-            const c = parseFloat(document.getElementById('celsius').value);
-            if (!isNaN(c)) {
-                const f = (c * 9/5 + 32).toFixed(2);
-                document.getElementById('fahrenheit').value = f;
-                document.getElementById('celsiusResult').textContent = `= ${f} ℉`;
-            }
-        }
-
-        function convertTempFromF() {
-            const f = parseFloat(document.getElementById('fahrenheit').value);
-            if (!isNaN(f)) {
-                const c = ((f - 32) * 5/9).toFixed(2);
-                document.getElementById('celsius').value = c;
-                document.getElementById('fahrenheitResult').textContent = `= ${c} ℃`;
+            const celsius = parseFloat(document.getElementById('celsius').value);
+            const fahrenheit = parseFloat(document.getElementById('fahrenheit').value);
+            
+            if (!isNaN(celsius)) {
+                document.getElementById('fahrenheit').value = (celsius * 9/5 + 32).toFixed(2);
+            } else if (!isNaN(fahrenheit)) {
+                document.getElementById('celsius').value = ((fahrenheit - 32) * 5/9).toFixed(2);
             }
         }
 
         function convertDistance() {
             const km = parseFloat(document.getElementById('km').value);
+            const mile = parseFloat(document.getElementById('mile').value);
+            
             if (!isNaN(km)) {
-                const mi = (km * 0.621371).toFixed(4);
-                document.getElementById('mile').value = mi;
-                document.getElementById('kmResult').textContent = `= ${mi} mi`;
-            }
-        }
-
-        function convertDistanceFromMi() {
-            const mi = parseFloat(document.getElementById('mile').value);
-            if (!isNaN(mi)) {
-                const km = (mi / 0.621371).toFixed(4);
-                document.getElementById('km').value = km;
-                document.getElementById('mileResult').textContent = `= ${km} km`;
+                document.getElementById('mile').value = (km * 0.621371).toFixed(4);
+            } else if (!isNaN(mile)) {
+                document.getElementById('km').value = (mile * 1.60934).toFixed(4);
             }
         }
 
         function convertWeight() {
             const kg = parseFloat(document.getElementById('kg').value);
-            if (!isNaN(kg)) {
-                const lb = (kg * 2.20462).toFixed(4);
-                document.getElementById('lb').value = lb;
-                document.getElementById('kgResult').textContent = `= ${lb} lb`;
-            }
-        }
-
-        function convertWeightFromLb() {
             const lb = parseFloat(document.getElementById('lb').value);
-            if (!isNaN(lb)) {
-                const kg = (lb / 2.20462).toFixed(4);
-                document.getElementById('kg').value = kg;
-                document.getElementById('lbResult').textContent = `= ${kg} kg`;
+            
+            if (!isNaN(kg)) {
+                document.getElementById('lb').value = (kg * 2.20462).toFixed(4);
+            } else if (!isNaN(lb)) {
+                document.getElementById('kg').value = (lb / 2.20462).toFixed(4);
             }
         }
 
         function convertVolume() {
-            const l = parseFloat(document.getElementById('liter').value);
-            if (!isNaN(l)) {
-                const gal = (l * 0.264172).toFixed(4);
-                document.getElementById('gallon').value = gal;
-                document.getElementById('literResult').textContent = `= ${gal} gal`;
+            const liter = parseFloat(document.getElementById('liter').value);
+            const gallon = parseFloat(document.getElementById('gallon').value);
+            
+            if (!isNaN(liter)) {
+                document.getElementById('gallon').value = (liter * 0.264172).toFixed(4);
+            } else if (!isNaN(gallon)) {
+                document.getElementById('liter').value = (gallon * 3.78541).toFixed(4);
             }
         }
 
-        function convertVolumeFromGal() {
-            const gal = parseFloat(document.getElementById('gallon').value);
-            if (!isNaN(gal)) {
-                const l = (gal / 0.264172).toFixed(4);
-                document.getElementById('liter').value = l;
-                document.getElementById('gallonResult').textContent = `= ${l} L`;
-            }
-        }
-
-        function convertTime() {
-            const h = parseFloat(document.getElementById('hours').value);
-            if (!isNaN(h)) {
-                const min = (h * 60).toFixed(2);
-                document.getElementById('minutes').value = min;
-                document.getElementById('hoursResult').textContent = `= ${min} min`;
-            }
-        }
-
-        function convertTimeFromMin() {
-            const min = parseFloat(document.getElementById('minutes').value);
-            if (!isNaN(min)) {
-                const h = (min / 60).toFixed(4);
-                document.getElementById('hours').value = h;
-                document.getElementById('minutesResult').textContent = `= ${h} h`;
+        function convertArea() {
+            const sqm = parseFloat(document.getElementById('sqm').value);
+            const sqft = parseFloat(document.getElementById('sqft').value);
+            
+            if (!isNaN(sqm)) {
+                document.getElementById('sqft').value = (sqm * 10.764).toFixed(4);
+            } else if (!isNaN(sqft)) {
+                document.getElementById('sqm').value = (sqft / 10.764).toFixed(4);
             }
         }
 
         function convertSpeed() {
             const kmh = parseFloat(document.getElementById('kmh').value);
-            if (!isNaN(kmh)) {
-                const mph = (kmh * 0.621371).toFixed(4);
-                document.getElementById('mph').value = mph;
-                document.getElementById('kmhResult').textContent = `= ${mph} mph`;
-            }
-        }
-
-        function convertSpeedFromMph() {
             const mph = parseFloat(document.getElementById('mph').value);
-            if (!isNaN(mph)) {
-                const kmh = (mph / 0.621371).toFixed(4);
-                document.getElementById('kmh').value = kmh;
-                document.getElementById('mphResult').textContent = `= ${kmh} km/h`;
+            
+            if (!isNaN(kmh)) {
+                document.getElementById('mph').value = (kmh * 0.621371).toFixed(4);
+            } else if (!isNaN(mph)) {
+                document.getElementById('kmh').value = (mph * 1.60934).toFixed(4);
             }
         }
 
-        // 翻譯
-        function translateText() {
-            const text = document.getElementById('translateInput').value;
-            if (!text) { alert('請輸入文字'); return; }
-            const output = document.getElementById('translateOutput');
-            output.innerHTML = '⏳ 翻譯中...';
-            output.style.display = 'block';
-            setTimeout(() => {
-                output.innerHTML = `<strong>原文:</strong> ${text}<br><br>💡 <strong>提示:</strong> 建議使用 Google 翻譯、有道翻譯獲得準確結果。`;
-            }, 500);
+        // ==================== 3️⃣ 機率計算 (核心功能!) ====================
+        /**
+         * 機率計算核心邏輯
+         * - 支持軟保底（在指定抽數後增加機率）
+         * - 支持硬保底（到達保底次數必定獲得）
+         * - 計算期望值和概率分佈
+         */
+        function calculateProbability() {
+            try {
+                const baseRate = parseFloat(document.getElementById('baseProbRate').value) / 100;
+                const pityCount = parseInt(document.getElementById('pityCount').value);
+                const softPityStart = parseInt(document.getElementById('softPityStart').value);
+                const multiplier = parseFloat(document.getElementById('probMultiplier').value);
+                const totalDraws = parseInt(document.getElementById('totalDraws').value);
+
+                if (isNaN(baseRate) || isNaN(pityCount) || baseRate <= 0) {
+                    alert('請輸入有效的數據');
+                    return;
+                }
+
+                // 計算保底內的機率
+                const softPityChance = baseRate * multiplier;
+                
+                // 計算至少抽中一次的概率
+                const noWinProb = Math.pow(1 - baseRate, softPityStart - 1) * Math.pow(1 - softPityChance, pityCount - softPityStart);
+                const atLeastOnce = 1 - noWinProb;
+
+                // 計算完整保底輪數
+                const fullPityRounds = Math.floor(totalDraws / pityCount);
+                const remainingDraws = totalDraws % pityCount;
+
+                // 計算期望獲得次數
+                let expectedWins = fullPityRounds; // 硬保底
+                
+                // 每輪在軟保底區間的期望額外獲得
+                let extraWinsPerRound = 0;
+                for (let i = softPityStart - 1; i < pityCount; i++) {
+                    if (i < softPityStart - 1) {
+                        extraWinsPerRound += baseRate;
+                    } else {
+                        extraWinsPerRound += softPityChance;
+                    }
+                }
+                extraWinsPerRound = extraWinsPerRound / pityCount;
+                
+                expectedWins += fullPityRounds * extraWinsPerRound;
+
+                // 剩餘抽數的期望
+                let remainingWins = 0;
+                for (let i = 0; i < remainingDraws; i++) {
+                    if (i < softPityStart - 1) {
+                        remainingWins += baseRate;
+                    } else {
+                        remainingWins += softPityChance;
+                    }
+                }
+
+                expectedWins += remainingWins;
+
+                // 計算概率分佈
+                const probabilityDetails = `
+                    <strong>📊 機率分析結果</strong><br><br>
+                    <strong style="color: var(--primary);">基礎設定：</strong><br>
+                    • 基礎出現率：${(baseRate * 100).toFixed(2)}%<br>
+                    • 軟保底開始：第 ${softPityStart} 抽<br>
+                    • 軟保底倍增：${multiplier}x (${(softPityChance * 100).toFixed(2)}%)<br>
+                    • 硬保底次數：${pityCount} 抽<br><br>
+
+                    <strong style="color: var(--primary);">在 ${softPityStart} 抽內：</strong><br>
+                    • 不中獎概率：${(Math.pow(1 - baseRate, softPityStart - 1) * 100).toFixed(2)}%<br>
+                    • 至少中獎概率：${(Math.min(1, (1 - Math.pow(1 - baseRate, softPityStart - 1))) * 100).toFixed(2)}%<br><br>
+
+                    <strong style="color: var(--primary);">在 ${pityCount} 抽完整保底內：</strong><br>
+                    • 至少中獎概率：${(atLeastOnce * 100).toFixed(2)}%<br>
+                    • 平均需要抽數：${(1 / baseRate).toFixed(1)} 抽<br><br>
+
+                    <strong style="color: var(--success); font-size: 1.2rem;">計畫抽取 ${totalDraws} 次的預測：</strong><br>
+                    • 完整保底輪數：${fullPityRounds} 輪 (必定獲得)<br>
+                    • 剩餘抽數：${remainingDraws} 抽<br>
+                    • 期望獲得次數：<span style="color: var(--primary); font-size: 1.1rem;">${expectedWins.toFixed(2)}</span> 個<br>
+                    • 期望獲得次數 (保守估��)：${Math.floor(expectedWins)} - ${Math.ceil(expectedWins)} 個<br><br>
+
+                    <strong style="color: var(--warning);">💡 提示：</strong><br>
+                    • 期望值是平均情況，實際可能高於或低於此值<br>
+                    • 軟保底後每抽機率為基礎機率的 ${multiplier}x<br>
+                    • 到達 ${pityCount} 抽時保證獲得 1 個大獎
+                `;
+
+                document.getElementById('probResult').innerHTML = probabilityDetails;
+                document.getElementById('probResult').style.display = 'block';
+                
+                saveData();
+            } catch (error) {
+                alert('❌ 計算錯誤: ' + error.message);
+            }
         }
 
-        // 待辦
+        /**
+         * 模擬抽卡 - 用隨機模擬驗證理論計算
+         */
+        function simulatePulls() {
+            try {
+                const baseRate = parseFloat(document.getElementById('baseProbRate').value) / 100;
+                const pityCount = parseInt(document.getElementById('pityCount').value);
+                const softPityStart = parseInt(document.getElementById('softPityStart').value);
+                const multiplier = parseFloat(document.getElementById('probMultiplier').value);
+                const totalDraws = parseInt(document.getElementById('totalDraws').value);
+                const simCount = parseInt(document.getElementById('simulations').value);
+
+                if (isNaN(simCount) || simCount < 100) {
+                    alert('模擬次數至少需要 100');
+                    return;
+                }
+
+                const softPityChance = baseRate * multiplier;
+                const results = [];
+
+                // 運行模擬
+                for (let sim = 0; sim < simCount; sim++) {
+                    let wins = 0;
+                    let pityCounter = 0;
+
+                    for (let draw = 0; draw < totalDraws; draw++) {
+                        pityCounter++;
+                        let currentProb;
+
+                        // 判斷當前機率
+                        if (pityCounter >= softPityStart) {
+                            currentProb = softPityChance;
+                        } else {
+                            currentProb = baseRate;
+                        }
+
+                        // 硬保底
+                        if (pityCounter >= pityCount) {
+                            wins++;
+                            pityCounter = 0;
+                        } else if (Math.random() < currentProb) {
+                            wins++;
+                            pityCounter = 0;
+                        }
+                    }
+
+                    results.push(wins);
+                }
+
+                // 計算統計數據
+                const avgWins = results.reduce((a, b) => a + b, 0) / results.length;
+                const maxWins = Math.max(...results);
+                const minWins = Math.min(...results);
+                const variance = results.reduce((sum, val) => sum + Math.pow(val - avgWins, 2), 0) / results.length;
+                const stdDev = Math.sqrt(variance);
+
+                // 分佈統計
+                const distribution = {};
+                results.forEach(w => {
+                    distribution[w] = (distribution[w] || 0) + 1;
+                });
+
+                const sortedDistribution = Object.keys(distribution).sort((a, b) => a - b);
+                let distributionHTML = '<br><strong>獲得次數分佈：</strong><br>';
+                
+                sortedDistribution.slice(0, 10).forEach(wins => {
+                    const count = distribution[wins];
+                    const percent = ((count / simCount) * 100).toFixed(2);
+                    const barLength = Math.floor(count / simCount * 40);
+                    distributionHTML += `${wins}個: [${'█'.repeat(barLength)}] ${count}次 (${percent}%)<br>`;
+                });
+
+                const simResult = `
+                    <strong>🎲 模擬結果 (${simCount.toLocaleString()} 次模擬)</strong><br><br>
+                    <strong style="color: var(--primary);">統計數據：</strong><br>
+                    • 平均獲得次數：<span style="color: var(--success); font-size: 1.1rem;">${avgWins.toFixed(2)}</span> 個<br>
+                    • 最多獲得：${maxWins} 個<br>
+                    • 最少獲得：${minWins} 個<br>
+                    • 標準差：${stdDev.toFixed(2)}<br>
+                    • 波動範圍（±1σ）：${(avgWins - stdDev).toFixed(1)} ~ ${(avgWins + stdDev).toFixed(1)} 個<br><br>
+                    ${distributionHTML}
+                `;
+
+                document.getElementById('simResult').innerHTML = simResult;
+                document.getElementById('simResult').style.display = 'block';
+                saveData();
+            } catch (error) {
+                alert('❌ 模擬出錯: ' + error.message);
+            }
+        }
+
+        function clearProbabilityResults() {
+            document.getElementById('probResult').style.display = 'none';
+            document.getElementById('simResult').style.display = 'none';
+        }
+
+        // ==================== 4️⃣ 翻譯 ====================
+        function translateText() {
+            try {
+                const text = document.getElementById('translateInput').value.trim();
+                if (!text) {
+                    alert('請輸入要翻譯的文字');
+                    return;
+                }
+
+                const sourceLang = document.getElementById('sourceLang').value;
+                const targetLang = document.getElementById('targetLang').value;
+
+                // 使用 MyMemory 翻譯 API（免費）
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+
+                fetch(url)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.responseStatus === 200) {
+                            document.getElementById('translateOutput').innerHTML = `
+                                <strong>📝 翻譯結果</strong><br><br>
+                                <strong>原文 (${sourceLang})：</strong><br>
+                                ${text}<br><br>
+                                <strong style="color: var(--primary);">譯文 (${targetLang})：</strong><br>
+                                ${data.responseData.translatedText}
+                            `;
+                        } else {
+                            throw new Error('翻譯失敗');
+                        }
+                        document.getElementById('translateOutput').style.display = 'block';
+                    })
+                    .catch(err => {
+                        document.getElementById('translateOutput').innerHTML = 
+                            `<strong style="color: var(--danger);">❌ 翻譯出錯：${err.message}</strong>`;
+                        document.getElementById('translateOutput').style.display = 'block';
+                    });
+            } catch (error) {
+                alert('❌ 出錯: ' + error.message);
+            }
+        }
+
+        // ==================== 5️⃣ 待辦清單 ====================
         function addTodo() {
-            const text = document.getElementById('todoInput').value.trim();
-            if (!text) { alert('請輸入任務'); return; }
-            state.todos.push({
-                id: Date.now(),
-                text,
-                category: document.getElementById('todoCategory').value,
-                priority: document.getElementById('todoPriority').value,
-                completed: false
-            });
-            saveData();
-            renderTodos();
-            document.getElementById('todoInput').value = '';
+            try {
+                const input = document.getElementById('todoInput').value.trim();
+                if (!input) return;
+
+                state.todos.push({
+                    id: Date.now(),
+                    text: input,
+                    done: false,
+                    createdAt: new Date().toLocaleString()
+                });
+
+                document.getElementById('todoInput').value = '';
+                renderTodos();
+                saveData();
+            } catch (error) {
+                console.error('添加待辦出錯:', error);
+            }
         }
 
         function renderTodos() {
             const list = document.getElementById('todoList');
             if (state.todos.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有任務</p>';
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light);">還沒有任務</p>';
                 return;
             }
+
             list.innerHTML = state.todos.map(todo => `
-                <div class="list-item">
-                    <div class="list-content">
-                        <h4><input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})" style="margin-right: 8px;"> <span style="text-decoration: ${todo.completed ? 'line-through' : 'none'};">${todo.text}</span></h4>
-                        <p>${todo.category} • ${todo.priority}</p>
-                    </div>
-                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="deleteTodo(${todo.id})">刪除</button>
+                <div class="list-item" style="opacity: ${todo.done ? 0.6 : 1};">
+                    <span style="flex: 1;">
+                        <input type="checkbox" ${todo.done ? 'checked' : ''} 
+                               onchange="toggleTodo(${todo.id})"
+                               style="margin-right: 10px; cursor: pointer;">
+                        <span style="text-decoration: ${todo.done ? 'line-through' : 'none'};">
+                            ${todo.text}
+                        </span>
+                    </span>
+                    <button onclick="deleteTodo(${todo.id})" class="btn-secondary" 
+                            style="padding: 5px 10px; font-size: 0.9rem;">🗑️ 刪</button>
                 </div>
             `).join('');
         }
 
         function toggleTodo(id) {
             const todo = state.todos.find(t => t.id === id);
-            if (todo) todo.completed = !todo.completed;
-            saveData();
-            renderTodos();
+            if (todo) {
+                todo.done = !todo.done;
+                renderTodos();
+                saveData();
+            }
         }
 
         function deleteTodo(id) {
             state.todos = state.todos.filter(t => t.id !== id);
-            saveData();
             renderTodos();
+            saveData();
         }
 
-        // 筆記
+        // ==================== 6️⃣ 筆記 ====================
         function addNote() {
-            const title = document.getElementById('noteTitle').value.trim();
-            const content = document.getElementById('noteContent').value.trim();
-            if (!title || !content) { alert('請輸入標題和內容'); return; }
-            state.notes.push({
-                id: Date.now(),
-                title,
-                content,
-                createdAt: new Date().toLocaleString('zh-TW')
-            });
-            saveData();
-            renderNotes();
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
+            try {
+                const title = document.getElementById('noteTitle').value.trim();
+                const content = document.getElementById('noteContent').value.trim();
+
+                if (!title || !content) {
+                    alert('請輸入標題和內容');
+                    return;
+                }
+
+                state.notes.push({
+                    id: Date.now(),
+                    title,
+                    content,
+                    createdAt: new Date().toLocaleString()
+                });
+
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteContent').value = '';
+                renderNotes();
+                saveData();
+            } catch (error) {
+                console.error('添加筆記出錯:', error);
+            }
         }
 
         function renderNotes() {
             const list = document.getElementById('notesList');
             if (state.notes.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有筆記</p>';
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light);">還沒有筆記</p>';
                 return;
             }
+
             list.innerHTML = state.notes.map(note => `
                 <div class="list-item" style="flex-direction: column; align-items: flex-start;">
-                    <div class="list-content" style="width: 100%;">
-                        <h4 style="color: var(--primary);">${note.title}</h4>
-                        <p>${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</p>
-                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 8px;">📅 ${note.createdAt}</p>
+                    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; color: var(--primary);">${note.title}</h3>
+                        <button onclick="deleteNote(${note.id})" class="btn-secondary" 
+                                style="padding: 5px 10px; font-size: 0.9rem;">🗑️ 刪</button>
                     </div>
-                    <button class="btn-secondary" style="padding: 6px 12px; margin-top: 10px;" onclick="deleteNote(${note.id})">刪除</button>
+                    <p style="margin: 8px 0; white-space: pre-wrap; color: var(--text-light); font-size: 0.95rem;">${note.content.substring(0, 100)}...</p>
+                    <span style="font-size: 0.85rem; color: var(--text-light);">${note.createdAt}</span>
                 </div>
             `).join('');
         }
 
         function deleteNote(id) {
             state.notes = state.notes.filter(n => n.id !== id);
-            saveData();
             renderNotes();
+            saveData();
         }
 
-        // 計時器
+        // ==================== 7️⃣ 計時器 ====================
         function startTimer() {
             if (state.isTimerRunning) return;
-            if (state.timerSeconds === 0) {
-                state.timerSeconds = parseInt(document.getElementById('timerMin').value || 0) * 60 + parseInt(document.getElementById('timerSec').value || 0);
+
+            const min = parseInt(document.getElementById('timerMin').value) || 0;
+            const sec = parseInt(document.getElementById('timerSec').value) || 0;
+            state.timerSeconds = min * 60 + sec;
+
+            if (state.timerSeconds <= 0) {
+                alert('請輸入有效的時間');
+                return;
             }
-            if (state.timerSeconds <= 0) { alert('請輸入時間'); return; }
+
             state.isTimerRunning = true;
-            document.getElementById('timerStartBtn').style.display = 'none';
-            document.getElementById('timerPauseBtn').style.display = 'inline-block';
+            updateTimerDisplay();
+
             state.timerInterval = setInterval(() => {
                 state.timerSeconds--;
                 updateTimerDisplay();
+
                 if (state.timerSeconds <= 0) {
                     clearInterval(state.timerInterval);
                     state.isTimerRunning = false;
+                    playNotification();
                     alert('⏰ 時間到！');
-                    document.getElementById('timerStartBtn').style.display = 'inline-block';
-                    document.getElementById('timerPauseBtn').style.display = 'none';
                 }
             }, 1000);
         }
 
         function pauseTimer() {
-            clearInterval(state.timerInterval);
             state.isTimerRunning = false;
-            document.getElementById('timerStartBtn').style.display = 'inline-block';
-            document.getElementById('timerPauseBtn').style.display = 'none';
+            clearInterval(state.timerInterval);
         }
 
         function resetTimer() {
-            clearInterval(state.timerInterval);
             state.isTimerRunning = false;
+            clearInterval(state.timerInterval);
             state.timerSeconds = 0;
-            document.getElementById('timerStartBtn').style.display = 'inline-block';
-            document.getElementById('timerPauseBtn').style.display = 'none';
-            updateTimerDisplay();
+            document.getElementById('timerDisplay').textContent = '00:00';
         }
 
         function updateTimerDisplay() {
             const min = Math.floor(state.timerSeconds / 60);
             const sec = state.timerSeconds % 60;
-            document.getElementById('timerDisplay').textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = 
+                `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
         }
 
-        // 支出
+        function playNotification() {
+            // 簡單的提示音（如果瀏覽器允許）
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = 800;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // ==================== 8️⃣ 支出記錄 ====================
         function addExpense() {
-            const amount = parseFloat(document.getElementById('expenseAmount').value);
-            if (!amount || amount <= 0) { alert('請輸入金額'); return; }
-            state.expenses.push({
-                id: Date.now(),
-                amount,
-                date: document.getElementById('expenseDate').value,
-                category: document.getElementById('expenseCategory').value,
-                note: document.getElementById('expenseNote').value
-            });
-            saveData();
-            renderExpenses();
-            document.getElementById('expenseAmount').value = '';
-            document.getElementById('expenseNote').value = '';
+            try {
+                const amount = parseFloat(document.getElementById('expenseAmount').value);
+                const category = document.getElementById('expenseCategory').value.trim() || '其他';
+
+                if (!amount || amount <= 0) {
+                    alert('請輸入有效的金額');
+                    return;
+                }
+
+                state.expenses.push({
+                    id: Date.now(),
+                    amount,
+                    category,
+                    date: new Date().toLocaleDateString(),
+                    timestamp: new Date()
+                });
+
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expenseCategory').value = '';
+                renderExpenses();
+                saveData();
+            } catch (error) {
+                console.error('添加支出出錯:', error);
+            }
         }
 
         function renderExpenses() {
-            const total = state.expenses.reduce((sum, e) => sum + e.amount, 0);
-            document.getElementById('totalExpense').textContent = `¥${total.toFixed(2)}`;
             const list = document.getElementById('expenseList');
+            const total = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+
             if (state.expenses.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有支出</p>';
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light);">還沒有記錄支出</p>';
                 return;
             }
-            list.innerHTML = state.expenses.map(e => `
-                <div class="list-item">
-                    <div class="list-content">
-                        <h4>${e.category}</h4>
-                        <p>📅 ${e.date} ${e.note ? '| ' + e.note : ''}</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 1.2rem; color: var(--danger); font-weight: bold;">¥${e.amount.toFixed(2)}</div>
-                        <button class="btn-secondary" style="padding: 6px 12px; margin-top: 8px;" onclick="deleteExpense(${e.id})">刪除</button>
-                    </div>
+
+            const byCategory = {};
+            state.expenses.forEach(e => {
+                byCategory[e.category] = (byCategory[e.category] || 0) + e.amount;
+            });
+
+            let categoryHTML = '<strong style="color: var(--primary);">按分類統計：</strong><br>';
+            Object.entries(byCategory).forEach(([cat, sum]) => {
+                categoryHTML += `• ${cat}: ¥${sum.toFixed(2)}<br>`;
+            });
+
+            list.innerHTML = `
+                <div class="stat-box">
+                    💰 總支出：¥${total.toFixed(2)}<br>
+                    🏷️ 共 ${Object.keys(byCategory).length} 個分類<br>
+                    ${categoryHTML}
                 </div>
-            `).join('');
+                ${state.expenses.map(e => `
+                    <div class="list-item">
+                        <span>
+                            <strong>${e.category}</strong><br>
+                            <span style="color: var(--text-light); font-size: 0.9rem;">${e.date}</span>
+                        </span>
+                        <span style="text-align: right;">
+                            <strong style="color: var(--primary); font-size: 1.1rem;">¥${e.amount.toFixed(2)}</strong><br>
+                            <button onclick="deleteExpense(${e.id})" class="btn-secondary" 
+                                    style="padding: 2px 8px; font-size: 0.8rem; margin-top: 5px;">🗑️</button>
+                        </span>
+                    </div>
+                `).join('')}
+            `;
         }
 
         function deleteExpense(id) {
             state.expenses = state.expenses.filter(e => e.id !== id);
-            saveData();
             renderExpenses();
+            saveData();
         }
 
-        // 二維碼
+        // ==================== 9️⃣ 二維碼 ====================
         function generateQR() {
-            const text = document.getElementById('qrInput').value.trim();
-            if (!text) { alert('請輸入內容'); return; }
-            const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
-            document.getElementById('qrOutput').innerHTML = `
-                <img src="${url}" style="max-width: 300px; border-radius: 10px; border: 2px solid var(--border); padding: 10px;">
-                <br><a href="${url}" download="qrcode.png" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px;">⬇️ 下載</a>
-            `;
+            try {
+                const text = document.getElementById('qrInput').value.trim();
+                if (!text) {
+                    alert('請輸入要編碼的文字');
+                    return;
+                }
+
+                document.getElementById('qrOutput').innerHTML = '';
+                new QRCode(document.getElementById('qrOutput'), {
+                    text: text,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#667eea',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (error) {
+                alert('❌ 生成二維碼失敗: ' + error.message);
+            }
         }
 
-        // 密碼
+        // ==================== 🔟 密碼生成 ====================
         function generatePasswords() {
-            const length = parseInt(document.getElementById('pwdLength').value);
-            const count = parseInt(document.getElementById('pwdCount').value);
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-            let passwords = [];
-            for (let i = 0; i < count; i++) {
-                let pwd = '';
-                for (let j = 0; j < length; j++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
-                passwords.push(pwd);
+            try {
+                const length = parseInt(document.getElementById('pwdLength').value) || 16;
+                const useUppercase = document.getElementById('pwdUppercase').checked;
+                const useSymbols = document.getElementById('pwdSymbols').checked;
+
+                let chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+                if (useUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+                let passwords = [];
+                for (let i = 0; i < 5; i++) {
+                    let pwd = '';
+                    for (let j = 0; j < length; j++) {
+                        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    passwords.push(pwd);
+                }
+
+                document.getElementById('passwordList').innerHTML = passwords.map((pwd, i) => `
+                    <div class="list-item">
+                        <code style="font-family: 'Courier New'; letter-spacing: 1px;">${pwd}</code>
+                        <button onclick="navigator.clipboard.writeText('${pwd}'); alert('已複製!')" 
+                                class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">📋 複製</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                alert('❌ 生成密碼失敗: ' + error.message);
             }
-            document.getElementById('passwordList').innerHTML = passwords.map(pwd => `
-                <div class="list-item">
-                    <code style="font-size: 1.1rem; font-weight: bold; flex: 1; word-break: break-all;">${pwd}</code>
-                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="navigator.clipboard.writeText('${pwd}'); alert('✅ 已複製');">📋 複製</button>
-                </div>
-            `).join('');
         }
 
-        // BMI
+        // ==================== 1️⃣1️⃣ 健康 ====================
         function calculateBMI() {
-            const height = parseFloat(document.getElementById('bmiHeight').value) / 100;
-            const weight = parseFloat(document.getElementById('bmiWeight').value);
-            if (!height || !weight) { alert('請輸入身高和體重'); return; }
-            const bmi = weight / (height * height);
-            let category = '';
-            if (bmi < 18.5) category = '體重過輕';
-            else if (bmi < 25) category = '正常體重';
-            else if (bmi < 30) category = '體重過重';
-            else category = '肥胖';
-            document.getElementById('bmiResult').innerHTML = `<strong>BMI:</strong> ${bmi.toFixed(1)}<br><strong>分類:</strong> ${category}`;
-            document.getElementById('bmiResult').style.display = 'block';
-        }
+            try {
+                const height = parseFloat(document.getElementById('bmiHeight').value);
+                const weight = parseFloat(document.getElementById('bmiWeight').value);
 
-        // 年齡
-        function calculateAge() {
-            const birthDate = new Date(document.getElementById('birthDate').value);
-            if (!document.getElementById('birthDate').value) { alert('請輸入出生日期'); return; }
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-            const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-            if (nextBirthday < today) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
-            const daysUntil = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
-            document.getElementById('ageResult').innerHTML = `<strong>年齡:</strong> ${age} 歲<br><strong>距生日:</strong> 還有 ${daysUntil} 天 🎂`;
-            document.getElementById('ageResult').style.display = 'block';
-        }
+                if (!height || !weight || height <= 0 || weight <= 0) {
+                    alert('請輸入有效的身高和體重');
+                    return;
+                }
 
-        // 加密
-        function encryptText() {
-            const text = document.getElementById('cryptoInput').value;
-            const key = document.getElementById('cryptoKey').value;
-            if (!text || !key) { alert('請輸入文本和密鑰'); return; }
-            let result = '';
-            for (let i = 0; i < text.length; i++) {
-                result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+                const heightM = height / 100;
+                const bmi = weight / (heightM * heightM);
+                let category = '';
+                let color = '';
+
+                if (bmi < 18.5) {
+                    category = '體重過輕 ⚠️';
+                    color = '#ffd93d';
+                } else if (bmi < 25) {
+                    category = '正常體重 ✅';
+                    color = '#4caf50';
+                } else if (bmi < 30) {
+                    category = '體重過重 ⚠️';
+                    color = '#ffd93d';
+                } else {
+                    category = '肥胖 ❌';
+                    color = '#ff6b6b';
+                }
+
+                document.getElementById('bmiResult').innerHTML = `
+                    <strong style="font-size: 1.2rem;">BMI: ${bmi.toFixed(1)}</strong><br>
+                    <strong style="color: ${color}; font-size: 1.1rem;">分類：${category}</strong><br><br>
+                    <span style="color: var(--text-light); font-size: 0.95rem;">
+                    • 身高：${height} cm<br>
+                    • 體重：${weight} kg<br>
+                    • BMI 計算公式：體重(kg) ÷ 身高(m)²
+                    </span>
+                `;
+                document.getElementById('bmiResult').style.display = 'block';
+            } catch (error) {
+                alert('❌ 計算失敗: ' + error.message);
             }
-            document.getElementById('cryptoOutput').innerHTML = `<strong>✓ 加密結果:</strong>\n${btoa(result)}`;
-            document.getElementById('cryptoOutput').style.display = 'block';
+        }
+
+        // ==================== 1️⃣2️⃣ 加密 ====================
+        function encryptText() {
+            try {
+                const text = document.getElementById('cryptoInput').value;
+                if (!text) {
+                    alert('請輸入文字');
+                    return;
+                }
+
+                const encrypted = btoa(text);
+                document.getElementById('cryptoOutput').innerHTML = `
+                    <strong>🔐 加密結果 (Base64)：</strong><br>
+                    <code style="word-break: break-all; font-family: 'Courier New';">${encrypted}</code><br><br>
+                    <button onclick="navigator.clipboard.writeText('${encrypted}'); alert('已複製!')" 
+                            class="btn-secondary" style="margin-top: 10px;">📋 複製加密結果</button>
+                `;
+                document.getElementById('cryptoOutput').style.display = 'block';
+            } catch (error) {
+                alert('❌ 加密失敗: ' + error.message);
+            }
         }
 
         function decryptText() {
-            const encrypted = document.getElementById('cryptoInput').value;
-            const key = document.getElementById('cryptoKey').value;
-            if (!encrypted || !key) { alert('請輸入密文和密鑰'); return; }
             try {
-                const text = atob(encrypted);
-                let result = '';
-                for (let i = 0; i < text.length; i++) {
-                    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+                const text = document.getElementById('cryptoInput').value;
+                if (!text) {
+                    alert('請輸入加密文字');
+                    return;
                 }
-                document.getElementById('cryptoOutput').innerHTML = `<strong>✓ 解密結果:</strong>\n${result}`;
+
+                const decrypted = atob(text);
+                document.getElementById('cryptoOutput').innerHTML = `
+                    <strong>🔓 解密結果：</strong><br>
+                    <code style="word-break: break-all; font-family: 'Courier New';">${decrypted}</code><br><br>
+                    <button onclick="navigator.clipboard.writeText('${decrypted}'); alert('已複製!')" 
+                            class="btn-secondary" style="margin-top: 10px;">📋 複製解密結果</button>
+                `;
                 document.getElementById('cryptoOutput').style.display = 'block';
-            } catch(e) {
-                alert('❌ 解密失敗');
+            } catch (error) {
+                document.getElementById('cryptoOutput').innerHTML = 
+                    '<strong style="color: var(--danger);">❌ 解密失敗：輸入不是有效的 Base64 編碼</strong>';
+                document.getElementById('cryptoOutput').style.display = 'block';
             }
         }
 
-        // 健身
+        // ==================== 1️⃣3️⃣ 健身 ====================
         function addFitness() {
-            const date = document.getElementById('fitnessDate').value;
-            const exercise = document.getElementById('fitnessExercise').value.trim();
-            const duration = parseInt(document.getElementById('fitnessDuration').value);
-            const calorie = parseInt(document.getElementById('fitnessCalorie').value);
-            if (!exercise || !duration || !calorie) { alert('請完整填寫'); return; }
-            state.fitness.push({ id: Date.now(), date, exercise, duration, calorie });
-            saveData();
-            renderFitness();
-            document.getElementById('fitnessExercise').value = '';
-            document.getElementById('fitnessDuration').value = '';
-            document.getElementById('fitnessCalorie').value = '';
+            try {
+                const date = document.getElementById('fitnessDate').value;
+                const exercise = document.getElementById('fitnessExercise').value.trim();
+                const duration = parseInt(document.getElementById('fitnessDuration').value);
+                const calorie = parseInt(document.getElementById('fitnessCalorie').value) || 0;
+
+                if (!exercise || !duration || duration <= 0) {
+                    alert('請填寫完整資訊');
+                    return;
+                }
+
+                state.fitness.push({
+                    id: Date.now(),
+                    exercise,
+                    duration,
+                    calorie,
+                    date,
+                    timestamp: new Date(date)
+                });
+
+                document.getElementById('fitnessExercise').value = '';
+                document.getElementById('fitnessDuration').value = '';
+                document.getElementById('fitnessCalorie').value = '';
+                renderFitness();
+                saveData();
+            } catch (error) {
+                console.error('添加健身記錄出錯:', error);
+            }
         }
 
         function renderFitness() {
             const list = document.getElementById('fitnessList');
-            const total = state.fitness.reduce((sum, f) => sum + f.calorie, 0);
-            let html = `<div class="stat-box"><div class="number">🔥${total}</div><div style="font-size: 0.9rem;">總卡路里</div></div>`;
+            const totalCalorie = state.fitness.reduce((sum, f) => sum + f.calorie, 0);
+            const totalDuration = state.fitness.reduce((sum, f) => sum + f.duration, 0);
+
             if (state.fitness.length === 0) {
-                html += '<p style="text-align: center; color: var(--text-light); padding: 20px;">📭 還沒有記錄</p>';
-            } else {
-                html += state.fitness.map(f => `
-                    <div class="list-item">
-                        <div class="list-content"><h4>${f.exercise}</h4><p>📅 ${f.date} • ⏱️ ${f.duration} 分</p></div>
-                        <div style="text-align: right;"><div style="font-size: 1.2rem; color: var(--danger); font-weight: bold;">🔥 ${f.calorie}</div><button class="btn-secondary" style="padding: 6px 12px; margin-top: 8px;" onclick="deleteFitness(${f.id})">刪除</button></div>
-                    </div>
-                `).join('');
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light);">還沒有健身記錄</p>';
+                return;
             }
-            list.innerHTML = html;
+
+            list.innerHTML = `
+                <div class="stat-box">
+                    🔥 總卡路里：${totalCalorie} 卡<br>
+                    ⏱️ 總時間：${totalDuration} 分鐘 (${(totalDuration / 60).toFixed(1)} 小時)<br>
+                    📝 記錄數：${state.fitness.length} 次
+                </div>
+                ${state.fitness.map(f => `
+                    <div class="list-item">
+                        <span>
+                            <strong>${f.exercise}</strong><br>
+                            <span style="color: var(--text-light); font-size: 0.9rem;">${f.date} - ${f.duration} 分鐘</span>
+                        </span>
+                        <span style="text-align: right;">
+                            <strong style="color: var(--success);">🔥 ${f.calorie} 卡</strong><br>
+                            <button onclick="deleteFitness(${f.id})" class="btn-secondary" 
+                                    style="padding: 2px 8px; font-size: 0.8rem; margin-top: 5px;">🗑️</button>
+                        </span>
+                    </div>
+                `).join('')}
+            `;
         }
 
         function deleteFitness(id) {
             state.fitness = state.fitness.filter(f => f.id !== id);
+            renderFitness();
             saveData();
-            renderFitness();
         }
 
-        // 統計
+        // ==================== 1️⃣4️⃣ 統計 ====================
         function showStats() {
-            const todoCount = state.todos.length;
-            const todoCompleted = state.todos.filter(t => t.completed).length;
-            const totalExpense = state.expenses.reduce((sum, e) => sum + e.amount, 0);
-            const totalCalorie = state.fitness.reduce((sum, f) => sum + f.calorie, 0);
-            document.getElementById('statsOutput').innerHTML = `
-                <div class="stat-box"><div class="number">${todoCount}</div><div style="font-size: 0.9rem;">任務總數</div></div>
-                <div class="stat-box"><div class="number">${todoCompleted}/${todoCount}</div><div style="font-size: 0.9rem;">完成率</div></div>
-                <div class="stat-box"><div class="number">¥${totalExpense.toFixed(2)}</div><div style="font-size: 0.9rem;">支出</div></div>
-                <div class="stat-box"><div class="number">🔥${totalCalorie}</div><div style="font-size: 0.9rem;">卡路里</div></div>
-            `;
-        }
-        // ===== 概率計算 =====
-        function calculateProbability() {
-           const probRate = parseFloat(document.getElementById('probRate').value);
-           const pityCount = parseInt(document.getElementById('pityCount').value);
-           const totalDraws = parseInt(document.getElementById('totalDraws').value);
+            try {
+                const completedTodos = state.todos.filter(t => t.done).length;
+                const totalExpense = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+                const totalCalorie = state.fitness.reduce((sum, f) => sum + f.calorie, 0);
+                const totalFitnessTime = state.fitness.reduce((sum, f) => sum + f.duration, 0);
 
-        if (!probRate || probRate <= 0 || probRate > 100) { 
-           alert('請輸入有效的機率(0-100)'); 
-           return; 
-        }
-        if (!pityCount || pityCount <= 0) { 
-            alert('請輸入有效的保底次數'); 
-            return; 
-        }
-        if (!totalDraws || totalDraws <= 0) { 
-            alert('請輸入有效的總抽數'); 
-            return; 
-        }
+                const completionRate = state.todos.length ? ((completedTodos / state.todos.length) * 100).toFixed(1) : 0;
 
-            // 將百分比轉換為小數
-        const p = probRate / 100;
-    
-        // 1. 計算能完整保底輪的次數
-        const fullPityRounds = Math.floor(totalDraws / pityCount);
+                document.getElementById('statsOutput').innerHTML = `
+                    <div class="stat-box" style="font-size: 1rem; line-height: 1.8;">
+                        <strong style="font-size: 1.3rem;">📊 統計報告</strong><br><br>
+                        
+                        <strong>📝 待辦任務：</strong><br>
+                        • 完成率：${completionRate}% (${completedTodos}/${state.todos.length})<br>
+                        <div class="progress-bar" style="background: var(--border);">
+                            <div class="progress-fill" style="width: ${completionRate}%;"></div>
+                        </div><br>
 
-        // 2. 計算保底內的期望次數
-        // 在保底距離內，期望獲得大獎的次數
-        const expectedInPity = 1 - Math.pow(1 - p, pityCount - 1); // 保底內至少中一次的概率
-     
-        // 3. 計算剩餘的抽數
-         const remainingDraws = totalDraws % pityCount;
-        const draws = remainingDraws + (fullPityRounds * (pityCount - 1));
-    const E = draws * p + fullPityRounds;
+                        <strong>📌 筆記數：</strong> ${state.notes.length} 篇<br><br>
 
-    const PT = Math.round(p + (1/pityCount),2);
-    const PD = PT * pityCount;
-            
-        // ===== 修正的概率計算 (正確考慮保底) =====
-function calculateProbability() {
-    const probRate = parseFloat(document.getElementById('probRate').value);
-    const pityCount = parseInt(document.getElementById('pityCount').value);
-    const totalDraws = parseInt(document.getElementById('totalDraws').value);
+                        <strong>💰 支出管理：</strong><br>
+                        • 總支出：¥${totalExpense.toFixed(2)}<br>
+                        • 平均每次：¥${state.expenses.length ? (totalExpense / state.expenses.length).toFixed(2) : 0}<br>
+                        • 記錄數：${state.expenses.length} 筆<br><br>
 
-    if (!probRate || probRate <= 0 || probRate > 100) { 
-        alert('請輸入有效的機率(0-100)'); 
-        return; 
-    }
-    if (!pityCount || pityCount <= 0) { 
-        alert('請輸入有效的保底次數'); 
-        return; 
-    }
-    if (!totalDraws || totalDraws <= 0) { 
-        alert('請輸入有效的總抽數'); 
-        return; 
-    }
-
-    // 將百分比轉換為小數
-    const p = probRate / 100;
-    
-    // ===== 核心計算：考慮保底的概率分析 =====
-    
-    // 1. 計算保底內的期望次數
-    // 在保底距離內，期望獲得大獎的次數
-    const expectedInPity = 1 - Math.pow(1 - p, pityCount); // 保底內至少中一次的概率
-    
-    // 2. 計算能完整保底輪的次數
-    const fullPityRounds = Math.floor(totalDraws / pityCount);
-    
-    // 3. 計算剩餘的抽數
-    const remainingDraws = totalDraws % pityCount;
-    
-    // 4. 計算保底內必定獲得的大獎次數（每個保底輪至少1個）
-    const guaranteedPrizes = fullPityRounds; // 完整保底輪的數量
-    
-    // 5. 計算完整保底輪內的額外大獎（超過保底的概率獲得）
-    // 每輪保底內，除了保底的1個外，還能通過概率額外獲得
-    let extraPrizesInFullRounds = 0;
-    if (fullPityRounds > 0) {
-        // 期望在fullPityRounds輪中額外獲得多少個
-        extraPrizesInFullRounds = fullPityRounds * (expectedInPity - 1);
-    }
-    
-    // 6. 計算剩餘抽數中的期望大獎
-    let prizesInRemaining = 0;
-    if (remainingDraws > 0) {
-        prizesInRemaining = 1 - Math.pow(1 - p, remainingDraws);
-    }
-    
-    // 7. 總期望大獎次數
-    const totalExpectedPrizes = guaranteedPrizes + extraPrizesInFullRounds + prizesInRemaining;
-    
-    // 8. 至少中獎一次的概率
-    // 由於有保底機制，只要totalDraws >= pityCount就必定中獎
-    let probAtLeastOnce = 0;
-    if (totalDraws >= pityCount) {
-        probAtLeastOnce = 1.0; // 100% 會觸發保底
-    } else {
-        probAtLeastOnce = 1 - Math.pow(1 - p, totalDraws);
-    }
-    
-    // 9. 期望所需的抽數（不考慮保底限制，純概率）
-    const expectedDrawsWithoutPity = 1 / p;
-    
-    // 10. 考慮保底後的期望所需抽數
-    const expectedDrawsWithPity = (pityCount + expectedDrawsWithoutPity) / 2;
-
-    // ===== 生成詳細報告 =====
-    const resultHTML = `
-        <div style="margin-bottom: 20px;">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">📊 計算結果</h3>
-            
-            <div class="stat-box" style="margin-bottom: 15px;">
-                <div class="number">${totalExpectedPrizes.toFixed(2)}</div>
-                <div>期望能獲得的大獎次數</div>
-            </div>
-
-            <div class="stat-box" style="margin-bottom: 15px;">
-                <div class="number">${(probAtLeastOnce * 100).toFixed(2)}%</div>
-                <div>至少獲得1個大獎的概率</div>
-            </div>
-
-            <div class="stat-box" style="margin-bottom: 15px;">
-                <div class="number">${expectedDrawsWithPity.toFixed(1)}</div>
-                <div>期望所需的抽數（含保底）</div>
-            </div>
-
-            <div style="background: rgba(102,126,234,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary); margin-bottom: 20px;">
-                <h4 style="color: var(--primary); margin-bottom: 15px;">📈 詳細分析</h4>
-                
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px;">
-                    <strong>基礎參數：</strong><br>
-                    • 單次大獎機率：${probRate}%<br>
-                    • 保底機制：每${pityCount}次必定獲得1個<br>
-                    • 計劃總抽數：${totalDraws}
-                </div>
-
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(76,175,80,0.1); border-radius: 8px; border-left: 3px solid #4caf50;">
-                    <strong>🎯 保底機制分析：</strong><br>
-                    • 完整保底輪數：${fullPityRounds} 輪<br>
-                    • 保底必定獲得：${guaranteedPrizes} 個大獎<br>
-                    • 剩餘抽數：${remainingDraws} 次
-                </div>
-
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(255,193,7,0.1); border-radius: 8px; border-left: 3px solid #ffd93d;">
-                    <strong>✨ 額外收穫分析：</strong><br>
-                    • 在保底輪內額外獲得：${extraPrizesInFullRounds.toFixed(2)} 個<br>
-                    • 在剩餘抽數中獲得：${prizesInRemaining.toFixed(2)} 個<br>
-                    • <strong style="color: var(--primary);">總共期望獲得：${totalExpectedPrizes.toFixed(2)} 個</strong>
-                </div>
-
-                <div style="padding: 10px; background: rgba(255,107,107,0.1); border-radius: 8px; border-left: 3px solid #ff6b6b;">
-                    <strong>💡 概率論述：</strong><br>
-                    • 純概率下期望抽數：${expectedDrawsWithoutPity.toFixed(1)} 次/個<br>
-                    • 考慮保底後期望抽數：${expectedDrawsWithPity.toFixed(1)} 次/個<br>
-                    • 保底幫你節省約：${(expectedDrawsWithoutPity - expectedDrawsWithPity).toFixed(1)} 次抽數
-                </div>
-            </div>
-
-            <div style="padding: 15px; background: rgba(0,255,0,0.05); border-radius: 10px;">
-                <strong>📌 結論：</strong><br>
-                以${probRate}%的機率進行${totalDraws}次抽取，<br>
-                在保底機制的保護下，你有<span style="color: var(--primary); font-weight: bold;">${(probAtLeastOnce * 100).toFixed(2)}%</span>的把握至少獲得1個大獎，<br>
-                <strong>期望能夠獲得<span style="color: var(--primary);">${totalExpectedPrizes.toFixed(2)}</span>個大獎</strong>。
-            </div>
-        </div>
-    `;
-
-    document.getElementById('probResult').innerHTML = resultHTML;
-    document.getElementById('probResult').style.display = 'block';
-
-    // 生成概率曲線圖（考慮保底）
-    drawProbabilityChartWithPity(p, pityCount, totalDraws);
-}
-
-function drawProbabilityChartWithPity(p, pityCount, totalDraws) {
-    const canvas = document.getElementById('probabilityCanvas');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    const width = canvas.parentElement.offsetWidth - 40;
-    const height = 300;
-    
-    canvas.width = width;
-    canvas.height = height;
-
-    // 設定背景
-    ctx.fillStyle = 'rgba(102,126,234,0.05)';
-    ctx.fillRect(0, 0, width, height);
-
-    // 邊距
-    const padding = 50;
-    const graphWidth = width - 2 * padding;
-    const graphHeight = height - 2 * padding;
-
-    // 計算數據點（考慮保底）
-    const steps = Math.min(totalDraws, 150);
-    const points = [];
-    
-    for (let i = 1; i <= steps; i++) {
-        const x = (i / steps) * totalDraws;
-        let y = 0;
-        
-        // 計算考慮保底的實際概率
-        const fullRounds = Math.floor(x / pityCount);
-        const remaining = x % pityCount;
-        
-        // 保底輪數越多，中獎概率越接近100%
-        if (fullRounds > 0) {
-            // 已觸發保底，確保至少1個大獎
-            y = 1.0;
-        } else {
-            // 還未到達保底，純概率
-            y = 1 - Math.pow(1 - p, x);
-        }
-        
-        points.push({ x: x, y: y });
-    }
-
-    // 繪製坐標軸
-    ctx.strokeStyle = '#999';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(padding, height - padding);
-    ctx.lineTo(width - padding / 2, height - padding);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(padding, padding / 2);
-    ctx.lineTo(padding, height - padding);
-    ctx.stroke();
-
-    // 繪製保底線（參考線）
-    ctx.strokeStyle = 'rgba(255,193,7,0.3)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    const pityX = padding + (pityCount / totalDraws) * graphWidth;
-    ctx.beginPath();
-    ctx.moveTo(pityX, padding / 2);
-    ctx.lineTo(pityX, height - padding);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 繪製概率曲線
-    ctx.strokeStyle = '#667eea';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        const canvasX = padding + (point.x / totalDraws) * graphWidth;
-        const canvasY = height - padding - point.y * graphHeight;
-        if (i === 0) ctx.moveTo(canvasX, canvasY);
-        else ctx.lineTo(canvasX, canvasY);
-    }
-    ctx.stroke();
-
-    // 標籤：保底位置
-    ctx.fillStyle = '#ffd93d';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(`保底(${pityCount})`, pityX, height - padding + 20);
-
-    // 繪製刻度和標籤
-    ctx.fillStyle = '#666';
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    
-    // X軸標籤
-    ctx.fillText('0', padding, height - padding + 20);
-    ctx.fillText(Math.round(totalDraws / 2), padding + graphWidth / 2, height - padding + 20);
-    ctx.fillText(totalDraws, width - padding / 2, height - padding + 20);
-    
-    // Y軸標籤
-    ctx.textAlign = 'right';
-    ctx.fillText('0%', padding - 10, height - padding + 5);
-    ctx.fillText('50%', padding - 10, height - padding - graphHeight / 2 + 5);
-    ctx.fillText('100%', padding - 10, padding / 2 + 5);
-
-    // 軸標籤
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 14px Arial';
-    ctx.fillText('抽取次數', width / 2, height - 10);
-    
-    ctx.save();
-    ctx.translate(15, height / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('中獎概率', 0, 0);
-    ctx.restore();
-
-    document.getElementById('probChart').style.display = 'block';
-}
-        function renderAll() {
-            renderTodos();
-            renderNotes();
-            renderExpenses();
-            renderFitness();
-            updateTimerDisplay();
+                        <strong>💪 健身成績：</strong><br>
+                        • 總卡路里：${totalCalorie} 卡<br>
+                        • 總運動時間：${totalFitnessTime} 分鐘 (${(totalFitnessTime / 60).toFixed(1)} 小時)<br>
+                        • 平均每次：${state.fitness.length ? (totalCalorie / state.fitness.length).toFixed(0) : 0} 卡 / ${state.fitness.length ? (totalFitnessTime / state.fitness.length).toFixed(1) : 0} 分鐘<br>
+                        • 記錄數：${state.fitness.length} 次
+                    </div>
+                `;
+            } catch (error) {
+                alert('❌ 生成報告失敗: ' + error.message);
+            }
         }
 
-        window.addEventListener('load', init);
+        // ==================== 深色模式 ====================
+        function toggleDarkMode() {
+            state.darkMode = !state.darkMode;
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', state.darkMode);
+        }
+
+        function loadDarkMode() {
+            const saved = localStorage.getItem('darkMode');
+            if (saved === 'true') {
+                state.darkMode = true;
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        // ==================== 數據存儲 ====================
+        function saveData() {
+            try {
+                localStorage.setItem('appState', JSON.stringify(state));
+            } catch (error) {
+                console.error('保存數據失敗:', error);
+            }
+        }
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('appState');
+                if (saved) {
+                    const loaded = JSON.parse(saved);
+                    Object.assign(state, loaded);
+                    // 重新渲染所有列表
+                    if (state.todos.length > 0) renderTodos();
+                    if (state.notes.length > 0) renderNotes();
+                    if (state.expenses.length > 0) renderExpenses();
+                    if (state.fitness.length > 0) renderFitness();
+                }
+            } catch (error) {
+                console.error('加載數據失敗:', error);
+            }
+        }
+
+        function exportData() {
+            try {
+                const dataStr = JSON.stringify(state, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `生活工具套件數據備份_${new Date().toLocaleDateString()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('✅ 數據已導出');
+            } catch (error) {
+                alert('❌ 導出失敗: ' + error.message);
+            }
+        }
+
+        function importData() {
+            try {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        try {
+                            const imported = JSON.parse(event.target.result);
+                            Object.assign(state, imported);
+                            saveData();
+                            location.reload();
+                            alert('✅ 數據導入成功！');
+                        } catch (error) {
+                            alert('❌ 導入失敗：文件格式不正確');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                document.body.appendChild(input);
+                input.click();
+                document.body.removeChild(input);
+            } catch (error) {
+                alert('❌ 導入失敗: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>
