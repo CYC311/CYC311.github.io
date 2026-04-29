@@ -607,12 +607,13 @@
         <!-- ========== 1️⃣5️⃣ 數學計算 ========== -->
         <div id="stumath" class="tab-content">
         <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
-            <label for="pointInput">輸入計算點 a (x 座標):</label>
-            <input type="number" id="pointInput" value="1" step="any">
-        
-        <button onclick="calculateCalculus()">計算導函數與切線</button>
-    
-        <div id="resultArea" class="result">
+            <div class="card">
+                <h2>🧮 計算機</h2>
+                <label for="pointInput">輸入計算點 a (x 座標):</label>
+                <input type="number" id="pointInput" value="x^3 - 2^2 + 5" step="any">
+                <button onclick="calculateCalculus()">計算導函數與切線</button>
+                <div id="calcResult" class="result-box" style="display: none;"></div>
+                <div id="resultArea" class="result">
             <p><strong>原函數 f(x)：</strong> <span id="resFunc"></span></p>
             <p><strong>導函數 f'(x)：</strong> <span id="resDeriv"></span></p>
             <hr>
@@ -620,6 +621,9 @@
             <p><strong>切線斜率 m：</strong> <span id="resSlope"></span></p>
             <p><strong>切線方程式：</strong> <br><span id="resTangent" class="highlight"></span></p>
         </div>
+            </div>
+
+        
         </div>
     </div>
     <script>
@@ -1559,6 +1563,9 @@
                 // 2. 取得 DOM 元素與使用者輸入
                 const funcStr = document.getElementById('stumath').value;
                 const a = parseFloat(document.getElementById('pointInput').value);
+                const rawFunc = document.getElementById('func').value;
+                alert(rawFunc);
+                const node = math.parse(rawFunc)
 
                 const resultArea = document.getElementById('resultArea');
                 resultArea.style.display = 'block';
