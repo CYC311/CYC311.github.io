@@ -606,7 +606,8 @@
     </div>
         <!-- ========== 1️⃣5️⃣ 數學計算 ========== -->
         <div id="stumath" class="tab-content">
-        <label for="pointInput">輸入計算點 a (x 座標):</label>
+        <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
+            <label for="pointInput">輸入計算點 a (x 座標):</label>
             <input type="number" id="pointInput" value="1" step="any">
         
         <button onclick="calculateCalculus()">計算導函數與切線</button>
