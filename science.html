@@ -53,4 +53,58 @@
     <script>
         const elements = {
             "1-1":"H", "1-18":"He",
-            "2-1":"Li", "2-2":"Be", "2-1
+            "2-1":"Li", "2-2":"Be", "2-13":"B", "2-14":"C", "2-15":"N", "2-16":"O", "2-17":"F", "2-18":"Ne",
+            "3-1":"Na", "3-2":"Mg", "3-13":"Al", "3-14":"Si", "3-15":"P", "3-16":"S", "3-17":"Cl", "3-18":"Ar",
+            // 第四週期 (全)
+            "4-1":"K", "4-2":"Ca", "4-3":"Sc", "4-4":"Ti", "4-5":"V", "4-6":"Cr", "4-7":"Mn", "4-8":"Fe", "4-9":"Co", "4-10":"Ni", "4-11":"Cu", "4-12":"Zn", "4-13":"Ga", "4-14":"Ge", "4-15":"As", "4-16":"Se", "4-17":"Br", "4-18":"Kr",
+            "5-1":"Rb", "5-2":"Sr", "5-13":"In", "5-14":"Sn", "5-15":"Sb", "5-16":"Te", "5-17":"I", "5-18":"Xe",
+            "6-1":"Cs", "6-2":"Ba", "6-13":"Tl", "6-14":"Pb", "6-15":"Bi", "6-16":"Po", "6-17":"At", "6-18":"Rn",
+            "7-1":"Fr", "7-2":"Ra", "7-13":"Nh", "7-14":"Fl", "7-15":"Mc", "7-16":"Lv", "7-17":"Ts", "7-18":"Og"
+        };
+
+        const atomicNums = {
+            "1-1":1, "1-18":2, "2-1":3, "2-2":4, "2-13":5, "2-14":6, "2-15":7, "2-16":8, "2-17":9, "2-18":10,
+            "3-1":11, "3-2":12, "3-13":13, "3-14":14, "3-15":15, "3-16":16, "3-17":17, "3-18":18,
+            "4-1":19, "4-2":20, "4-3":21, "4-4":22, "4-5":23, "4-6":24, "4-7":25, "4-8":26, "4-9":27, "4-10":28, "4-11":29, "4-12":30, "4-13":31, "4-14":32, "4-15":33, "4-16":34, "4-17":35, "4-18":36,
+            "5-1":37, "5-2":38, "5-13":49, "5-14":50, "5-15":51, "5-16":52, "5-17":53, "5-18":54,
+            "6-1":55, "6-2":56, "6-13":81, "6-14":82, "6-15":83, "6-16":84, "6-17":85, "6-18":86,
+            "7-1":87, "7-2":88, "7-13":113, "7-14":114, "7-15":115, "7-16":116, "7-17":117, "7-18":118
+        };
+
+        const targetGroups = [1, 2, 13, 14, 15, 16, 17, 18];
+        const targetPeriod = 4;
+
+        function render() {
+            const table = document.getElementById('table');
+            for (let r = 1; r <= 7; r++) {
+                for (let c = 1; c <= 18; c++) {
+                    const pos = `${r}-${c}`;
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (targetGroups.includes(c) || r === targetPeriod) {
+                        if(elements[pos]) {
+                            cell.classList.add('target');
+                            cell.innerHTML = `<div class="num">${atomicNums[pos]}</div><input type="text" id="in-${pos}" autocomplete="off">`;
+                        }
+                    }
+                    table.appendChild(cell);
+                }
+            }
+        }
+
+        function check() {
+            for (let key in elements) {
+                const el = document.getElementById(`in-${key}`);
+                if (el) {
+                    if (el.value.trim().toLowerCase() === elements[key].toLowerCase()) {
+                        el.parentElement.className = 'cell target correct';
+                    } else {
+                        el.parentElement.className = 'cell target wrong';
+                    }
+                }
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
