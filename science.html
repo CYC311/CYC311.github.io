@@ -2,109 +2,205 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>元素週期表填空：第四週期與主族</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>118元素週期表：終極填空挑戰</title>
     <style>
         :root {
-            --bg-color: #f5f6fa;
-            --cell-bg: #ffffff;
-            --accent: #4a90e2;
-            --correct: #2ecc71;
-            --wrong: #e74c3c;
+            --bg-color: #f4f7f6;
+            --correct-color: #27ae60;
+            --wrong-color: #e74c3c;
+            --cell-size: 50px;
+            --accent: #2980b9;
         }
-        body { font-family: system-ui, sans-serif; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; padding: 40px; }
-        .grid {
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #2c3e50; }
+        
+        .controls {
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-check { background: var(--accent); color: white; }
+        .btn-reset { background: #95a5a6; color: white; }
+        button:hover { opacity: 0.8; transform: translateY(-1px); }
+
+        /* 核心週期表網格 */
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+            padding: 10px;
+        }
+
+        .periodic-table {
             display: grid;
-            grid-template-columns: repeat(18, 55px);
-            grid-template-rows: repeat(7, 65px);
-            gap: 6px;
-            background: #dfe6e9;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            grid-template-columns: repeat(18, var(--cell-size));
+            /* 7列主表 + 1列空行 + 2列鑭錒系 */
+            grid-template-rows: repeat(10, calc(var(--cell-size) * 1.2));
+            gap: 4px;
         }
-        .cell { background: transparent; border-radius: 4px; display: flex; flex-direction: column; position: relative; }
-        .target { background: var(--cell-bg); border: 2px solid #b2bec3; transition: 0.3s; }
-        .target:focus-within { border-color: var(--accent); transform: scale(1.05); z-index: 10; }
-        .num { font-size: 10px; margin: 4px 0 0 5px; color: #636e72; }
+
+        .cell {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .cell:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+        }
+
+        /* 標記鑭系與錒系佔位符 */
+        .placeholder {
+            background: #eee;
+            border-style: dashed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #999;
+        }
+
+        .num {
+            font-size: 10px;
+            margin: 2px 0 0 4px;
+            color: #7f8c8d;
+            pointer-events: none;
+        }
+
         input {
-            width: 100%; height: 100%; border: none; background: transparent;
-            text-align: center; font-size: 18px; font-weight: bold; outline: none;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            outline: none;
             text-transform: capitalize;
         }
-        .correct { background: var(--correct) !important; color: white; border-color: #27ae60; }
-        .wrong { background: var(--wrong) !important; color: white; border-color: #c0392b; }
+
+        /* 狀態顏色 */
+        .correct { background-color: var(--correct-color) !important; color: white; border-color: #1e8449; }
+        .wrong { background-color: var(--wrong-color) !important; color: white; border-color: #a93226; }
         .correct input, .wrong input, .correct .num, .wrong .num { color: white; }
-        .btns { margin-top: 30px; }
-        button { padding: 12px 24px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; color: white; margin: 0 10px; }
+
+        .footer { margin-top: 30px; font-size: 12px; color: #95a5a6; }
     </style>
 </head>
 <body>
 
-    <h2 style="margin-bottom: 5px;">第四週期 + 主族元素挑戰</h2>
-    <p style="color: #636e72; margin-bottom: 25px;">特別注意：第四週期包含 3d 過渡金屬 (原子序 21-30)</p>
-
-    <div id="table" class="grid"></div>
-
-    <div class="btns">
-        <button style="background: var(--accent)" onclick="check()">檢查答案</button>
-        <button style="background: #95a5a6" onclick="location.reload()">重新開始</button>
+    <div class="header">
+        <h1>終極元素週期表填空 (1-18)</h1>
+        <p>挑戰填寫所有 118 個元素符號</p>
     </div>
 
+    <div class="controls">
+        <button class="btn-check" onclick="checkAnswers()">提交檢查</button>
+        <button class="btn-reset" onclick="location.reload()">重新開始</button>
+        <div id="score-display"></div>
+    </div>
+
+    <div class="table-container">
+        <div id="table" class="periodic-table"></div>
+    </div>
+
+    <div class="footer">注意：鑭系與錒系位於表格下方。</div>
+
     <script>
-        const elements = {
-            "1-1":"H", "1-18":"He",
-            "2-1":"Li", "2-2":"Be", "2-13":"B", "2-14":"C", "2-15":"N", "2-16":"O", "2-17":"F", "2-18":"Ne",
-            "3-1":"Na", "3-2":"Mg", "3-13":"Al", "3-14":"Si", "3-15":"P", "3-16":"S", "3-17":"Cl", "3-18":"Ar",
-            // 第四週期 (全)
-            "4-1":"K", "4-2":"Ca", "4-3":"Sc", "4-4":"Ti", "4-5":"V", "4-6":"Cr", "4-7":"Mn", "4-8":"Fe", "4-9":"Co", "4-10":"Ni", "4-11":"Cu", "4-12":"Zn", "4-13":"Ga", "4-14":"Ge", "4-15":"As", "4-16":"Se", "4-17":"Br", "4-18":"Kr",
-            "5-1":"Rb", "5-2":"Sr", "5-13":"In", "5-14":"Sn", "5-15":"Sb", "5-16":"Te", "5-17":"I", "5-18":"Xe",
-            "6-1":"Cs", "6-2":"Ba", "6-13":"Tl", "6-14":"Pb", "6-15":"Bi", "6-16":"Po", "6-17":"At", "6-18":"Rn",
-            "7-1":"Fr", "7-2":"Ra", "7-13":"Nh", "7-14":"Fl", "7-15":"Mc", "7-16":"Lv", "7-17":"Ts", "7-18":"Og"
-        };
+        const elementsData = [
+            // 原子序, 符號, Row, Column
+            [1,"H",1,1],[2,"He",1,18],
+            [3,"Li",2,1],[4,"Be",2,2],[5,"B",2,13],[6,"C",2,14],[7,"N",2,15],[8,"O",2,16],[9,"F",2,17],[10,"Ne",2,18],
+            [11,"Na",3,1],[12,"Mg",3,2],[13,"Al",3,13],[14,"Si",3,14],[15,"P",3,15],[16,"S",3,16],[17,"Cl",3,17],[18,"Ar",3,18],
+            [19,"K",4,1],[20,"Ca",4,2],[21,"Sc",4,3],[22,"Ti",4,4],[23,"V",4,5],[24,"Cr",4,6],[25,"Mn",4,7],[26,"Fe",4,8],[27,"Co",4,9],[28,"Ni",4,10],[29,"Cu",4,11],[30,"Zn",4,12],[31,"Ga",4,13],[32,"Ge",4,14],[33,"As",4,15],[34,"Se",4,16],[35,"Br",4,17],[36,"Kr",4,18],
+            [37,"Rb",5,1],[38,"Sr",5,2],[39,"Y",5,3],[40,"Zr",5,4],[41,"Nb",5,5],[42,"Mo",5,6],[43,"Tc",5,7],[44,"Ru",5,8],[45,"Rh",5,9],[46,"Pd",5,10],[47,"Ag",5,11],[48,"Cd",5,12],[49,"In",5,13],[50,"Sn",5,14],[51,"Sb",5,15],[52,"Te",5,16],[53,"I",5,17],[54,"Xe",5,18],
+            [55,"Cs",6,1],[56,"Ba",6,2],[72,"Hf",6,4],[73,"Ta",6,5],[74,"W",6,6],[75,"Re",6,7],[76,"Os",6,8],[77,"Ir",6,9],[78,"Pt",6,10],[79,"Au",6,11],[80,"Hg",6,12],[81,"Tl",6,13],[82,"Pb",6,14],[83,"Bi",6,15],[84,"Po",6,16],[85,"At",6,17],[86,"Rn",6,18],
+            [87,"Fr",7,1],[88,"Ra",7,2],[104,"Rf",7,4],[105,"Db",7,5],[106,"Sg",7,6],[107,"Bh",7,7],[108,"Hs",7,8],[109,"Mt",7,9],[110,"Ds",7,10],[111,"Rg",7,11],[112,"Cn",7,12],[113,"Nh",7,13],[114,"Fl",7,14],[115,"Mc",7,15],[116,"Lv",7,16],[117,"Ts",7,17],[118,"Og",7,18],
+            // 鑭系 (Row 9)
+            [57,"La",9,4],[58,"Ce",9,5],[59,"Pr",9,6],[60,"Nd",9,7],[61,"Pm",9,8],[62,"Sm",9,9],[63,"Eu",9,10],[64,"Gd",9,11],[65,"Tb",9,12],[66,"Dy",9,13],[67,"Ho",9,14],[68,"Er",9,15],[69,"Tm",9,16],[70,"Yb",9,17],[71,"Lu",9,18],
+            // 錒系 (Row 10)
+            [89,"Ac",10,4],[90,"Th",10,5],[91,"Pa",10,6],[92,"U",10,7],[93,"Np",10,8],[94,"Pu",10,9],[95,"Am",10,10],[96,"Cm",10,11],[97,"Bk",10,12],[98,"Cf",10,13],[99,"Es",10,14],[100,"Fm",10,15],[101,"Md",10,16],[102,"No",10,17],[103,"Lr",10,18]
+        ];
 
-        const atomicNums = {
-            "1-1":1, "1-18":2, "2-1":3, "2-2":4, "2-13":5, "2-14":6, "2-15":7, "2-16":8, "2-17":9, "2-18":10,
-            "3-1":11, "3-2":12, "3-13":13, "3-14":14, "3-15":15, "3-16":16, "3-17":17, "3-18":18,
-            "4-1":19, "4-2":20, "4-3":21, "4-4":22, "4-5":23, "4-6":24, "4-7":25, "4-8":26, "4-9":27, "4-10":28, "4-11":29, "4-12":30, "4-13":31, "4-14":32, "4-15":33, "4-16":34, "4-17":35, "4-18":36,
-            "5-1":37, "5-2":38, "5-13":49, "5-14":50, "5-15":51, "5-16":52, "5-17":53, "5-18":54,
-            "6-1":55, "6-2":56, "6-13":81, "6-14":82, "6-15":83, "6-16":84, "6-17":85, "6-18":86,
-            "7-1":87, "7-2":88, "7-13":113, "7-14":114, "7-15":115, "7-16":116, "7-17":117, "7-18":118
-        };
-
-        const targetGroups = [1, 2, 13, 14, 15, 16, 17, 18];
-        const targetPeriod = 4;
-
-        function render() {
+        function initTable() {
             const table = document.getElementById('table');
-            for (let r = 1; r <= 7; r++) {
-                for (let c = 1; c <= 18; c++) {
-                    const pos = `${r}-${c}`;
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    if (targetGroups.includes(c) || r === targetPeriod) {
-                        if(elements[pos]) {
-                            cell.classList.add('target');
-                            cell.innerHTML = `<div class="num">${atomicNums[pos]}</div><input type="text" id="in-${pos}" autocomplete="off">`;
-                        }
-                    }
-                    table.appendChild(cell);
-                }
-            }
+            
+            // 建立 118 個元素的格子
+            elementsData.forEach(([num, sym, r, c]) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.gridRow = r;
+                cell.style.gridColumn = c;
+                cell.innerHTML = `
+                    <div class="num">${num}</div>
+                    <input type="text" data-ans="${sym}" id="input-${num}" autocomplete="off">
+                `;
+                table.appendChild(cell);
+            });
+
+            // 加入鑭系、錒系的入口提示佔位
+            const laHint = document.createElement('div');
+            laHint.className = 'cell placeholder';
+            laHint.style.gridRow = 6; laHint.style.gridColumn = 3;
+            laHint.innerText = "57-71";
+            table.appendChild(laHint);
+
+            const acHint = document.createElement('div');
+            acHint.className = 'cell placeholder';
+            acHint.style.gridRow = 7; acHint.style.gridColumn = 3;
+            acHint.innerText = "89-103";
+            table.appendChild(acHint);
         }
 
-        function check() {
-            for (let key in elements) {
-                const el = document.getElementById(`in-${key}`);
-                if (el) {
-                    if (el.value.trim().toLowerCase() === elements[key].toLowerCase()) {
-                        el.parentElement.className = 'cell target correct';
-                    } else {
-                        el.parentElement.className = 'cell target wrong';
-                    }
+        function checkAnswers() {
+            let correct = 0;
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                const userVal = input.value.trim().toLowerCase();
+                const correctVal = input.dataset.ans.toLowerCase();
+                
+                if (userVal === correctVal) {
+                    input.parentElement.className = 'cell correct';
+                    correct++;
+                } else if (userVal !== "") {
+                    input.parentElement.className = 'cell wrong';
                 }
-            }
+            });
+            document.getElementById('score-display').innerText = `目前得分：${correct} / 118`;
         }
-        render();
+
+        initTable();
     </script>
 </body>
 </html>
