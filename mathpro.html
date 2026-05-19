@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandAbyss 綜合分析引擎 Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --accent-alt: #10b981;
+            --border: #334155;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { text-align: center; color: var(--accent); letter-spacing: 2px;}
+        .container { max-width: 1000px; margin: 0 auto; }
+        .tabs {
+            display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); overflow-x: auto;
+        }
+        .tab-btn {
+            background: transparent; color: var(--text-color); border: none;
+            padding: 10px 20px; font-size: 1.1em; cursor: pointer; transition: 0.3s; white-space: nowrap;
+        }
+        .tab-btn.active { border-bottom: 3px solid var(--accent); color: var(--accent); font-weight: bold; }
+        .panel { display: none; background: var(--panel-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .panel.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .input-group { margin-bottom: 15px; display: flex; align-items: center; }
+        .input-group label { flex: 1; font-weight: bold; }
+        .input-group input, .input-group textarea {
+            flex: 1.5; padding: 8px; background: var(--bg-color); border: 1px solid var(--border);
+            color: white; border-radius: 4px; font-family: monospace;
+        }
+        button.calc-btn {
+            background: var(--accent); color: white; border: none; padding: 10px 20px;
+            border-radius: 4px; cursor: pointer; font-size: 1em; width: 100%; margin-top: 10px; font-weight: bold; transition: 0.2s;
+        }
+        button.calc-btn:hover { background: var(--accent-hover); }
+        .btn-alt { background: var(--accent-alt) !important; }
+        .btn-alt:hover { filter: brightness(1.1); }
+        .result-box {
+            margin-top: 20px; padding: 15px; background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent); border-radius: 4px; white-space: pre-wrap; font-family: monospace; font-size: 1.1em;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GrandAbyss 綜合分析引擎 Pro</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('math')">高階數學與微積分</button>
+        <button class="tab-btn" onclick="switchTab('science')">科學實驗與數據分析</button>
+        <button class="tab-btn" onclick="switchTab('gacha')">動態機率抽卡分析</button>
+    </div>
+
+    <div id="math" class="panel active">
+        <h2>微積分與空間向量分析</h2>
+        <div class="grid-2">
+            <div>
+                <h3>函數分析 (導數與積分)</h3>
+                <div class="input-group"><label>輸入函數 f(x):</label><input type="text" id="math-func" value="x^3 - 2*x + sin(x)"></div>
+                <div class="input-group"><label>計算點 x = </label><input type="number" id="math-x" value="2"></div>
+                <button class="calc-btn" onclick="calcMath()">執行函數分析</button>
+            </div>
+            <div>
+                <h3>空間向量 (共面與歪斜距離)</h3>
+                <p style="font-size: 0.85em; color: #94a3b8; margin-top:-10px;">提示：v1 設為兩線起點向量 (P1P2)，v2, v3 為兩方向向量。</p>
+                <div class="input-group"><label>向量 v1 (x,y,z):</label><input type="text" id="vec-1" value="1, 0, 1"></div>
+                <div class="input-group"><label>向量 v2 (x,y,z):</label><input type="text" id="vec-2" value="0, 1, 1"></div>
+                <div class="input-group"><label>向量 v3 (x,y,z):</label><input type="text" id="vec-3" value="1, -1, 0"></div>
+                <button class="calc-btn" onclick="calcVector()">計算體積與最短距離</button>
+            </div>
+        </div>
+        <div id="math-result" class="result-box">等待計算...</div>
+    </div>
+
+    <div id="science" class="panel">
+        <h2>物理實驗與化學動力學</h2>
+        <div class="grid-2">
+            <div>
+                <h3>實驗數據 A 類不確定度評估</h3>
+                <div class="input-group" style="align-items: flex-start;">
+                    <label>輸入測量數據<br><small>(以逗號隔開)</small>:</label>
+                    <textarea id="sci-data" rows="3">10.2, 10.4, 10.1, 10.3, 10.5</textarea>
+                </div>
+                <button class="calc-btn btn-alt" onclick="calcUncertainty()">計算不確定度</button>
+            </div>
+            <div>
+                <h3>化學反應動力學 (半衰期)</h3>
+                <div class="input-group"><label>速率常數 k :</label><input type="number" id="sci-k" value="0.693" step="0.001"></div>
+                <div class="input-group"><label>初始濃度 [A]₀ :</label><input type="number" id="sci-a0" value="1.0" step="0.1"></div>
+                <button class="calc-btn btn-alt" onclick="calcKinetics()">計算半衰期 (t₁/₂)</button>
+            </div>
+        </div>
+        <div id="science-result" class="result-box" style="border-left-color: var(--accent-alt);">等待計算...</div>
+    </div>
+
+    <div id="gacha" class="panel">
+        <h2>動態機率與期望值分析系統</h2>
+        <div class="grid-2">
+            <div>
+                <div class="input-group"><label>基礎機率 (%):</label><input type="number" id="g-base" value="0.8" step="0.1"></div>
+                <div class="input-group"><label>硬保底抽數:</label><input type="number" id="g-hard" value="80"></div>
+                <div class="input-group"><label>軟保底起始:</label><input type="number" id="g-soft-start" value="65"></div>
+                <div class="input-group"><label>軟保底步進 (%):</label><input type="number" id="g-soft-step" value="6.0" step="0.1"></div>
+            </div>
+            <div>
+                <div class="input-group"><label>大獎 UP 機率 (%):</label><input type="number" id="g-up-rate" value="50"></div>
+                <div class="input-group"><label>小獎後必出大獎數:</label><input type="number" id="g-guarantee" value="1"></div>
+                <div class="input-group"><label>投入總抽數:</label><input type="number" id="g-pulls" value="160"></div>
+            </div>
+        </div>
+        <button class="calc-btn" onclick="calcGacha()">進行機率解析</button>
+        <div id="gacha-result" class="result-box">等待計算...</div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // --- 數學引擎 ---
+    function calcMath() { /* 與原版相同 */
+        try {
+            const funcStr = document.getElementById('math-func').value;
+            const xVal = parseFloat(document.getElementById('math-x').value);
+            const node = math.parse(funcStr);
+            const code = node.compile();
+            const fx = code.evaluate({x: xVal});
+            const derivative = math.derivative(funcStr, 'x').evaluate({x: xVal});
+            let integral = 0; const steps = 1000; const dx = xVal / steps;
+            for(let i=0; i<steps; i++) integral += code.evaluate({x: i * dx}) * dx;
+
+            document.getElementById('math-result').innerText = 
+                `【函數分析報告】\nf(${xVal}) = ${fx.toFixed(4)}\nf'(${xVal}) = ${derivative.toFixed(4)}\n∫f(x)dx (0到${xVal}) ≈ ${integral.toFixed(4)}`;
+        } catch (e) { document.getElementById('math-result').innerText = "數學表達式錯誤！"; }
+    }
+
+    function calcVector() {
+        try {
+            const parseVec = (str) => str.split(',').map(Number);
+            const v1 = parseVec(document.getElementById('vec-1').value); // P1P2
+            const v2 = parseVec(document.getElementById('vec-2').value); // d1
+            const v3 = parseVec(document.getElementById('vec-3').value); // d2
+            
+            const det = math.det([v1, v2, v3]);
+            // 計算 v2 和 v3 的外積 (cross product)
+            const crossProduct = math.cross(v2, v3);
+            const crossMagnitude = math.norm(crossProduct);
+            
+            let result = `【空間向量分析報告】\n`;
+            result += `純量三重積 (Det) = ${det.toFixed(4)}\n`;
+            result += `外積絕對值 |d1 x d2| = ${crossMagnitude.toFixed(4)}\n\n`;
+            
+            if (Math.abs(det) < 1e-9) {
+                result += `=> Det 為 0，三向量【共面】，兩直線交於一點！\n最短距離 = 0`;
+            } else {
+                const distance = Math.abs(det) / crossMagnitude;
+                result += `=> Det 不為 0，這代表兩直線【歪斜】。\n`;
+                result += `⚡ 歪斜線最短距離 = |Det| / |d1 x d2| = ${distance.toFixed(4)}`;
+            }
+            document.getElementById('math-result').innerText = result;
+        } catch (e) { document.getElementById('math-result').innerText = "向量格式錯誤！請確保格式為 x, y, z"; }
+    }
+
+    // --- 科學引擎 (新增) ---
+    function calcUncertainty() {
+        try {
+            const dataStr = document.getElementById('sci-data').value;
+            const data = dataStr.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+            const n = data.length;
+            if(n < 2) throw new Error("至少需要兩筆數據");
+            
+            const mean = math.mean(data);
+            const std = math.std(data, 'unbiased'); // 樣本標準差 (n-1)
+            const typeA = std / Math.sqrt(n); // A類不確定度 = S / √n
+            
+            document.getElementById('science-result').innerText = 
+                `【實驗數據分析】\n測量次數 (n) = ${n}\n平均值 (Mean) = ${mean.toFixed(4)}\n樣本標準差 (S) = ${std.toFixed(4)}\n\n⚡ A 類不確定度 (u_A) = ${typeA.toFixed(4)}`;
+        } catch (e) { document.getElementById('science-result').innerText = "數據解析錯誤，請確認使用半形逗號隔開數字！"; }
+    }
+
+    function calcKinetics() {
+        const k = parseFloat(document.getElementById('sci-k').value);
+        const a0 = parseFloat(document.getElementById('sci-a0').value);
+        if(k <= 0) { document.getElementById('science-result').innerText = "k 值必須大於 0"; return; }
+
+        let result = `【化學反應半衰期估算】\nk = ${k}, [A]₀ = ${a0}\n\n`;
+        result += `零級反應 (t₁/₂ = [A]₀ / 2k) : ${(a0 / (2*k)).toFixed(4)}\n`;
+        result += `一級反應 (t₁/₂ = ln2 / k)   : ${(Math.log(2) / k).toFixed(4)}\n`;
+        result += `二級反應 (t₁/₂ = 1 / k[A]₀) : ${(1 / (k * a0)).toFixed(4)}`;
+        document.getElementById('science-result').innerText = result;
+    }
+
+    // --- 抽卡引擎 (原版壓縮) ---
+    function calcGacha() {
+        const baseRate = parseFloat(document.getElementById('g-base').value)/100;
+        const hardPity = parseInt(document.getElementById('g-hard').value);
+        const softStart = parseInt(document.getElementById('g-soft-start').value);
+        const softStep = parseFloat(document.getElementById('g-soft-step').value)/100;
+        const upRate = parseFloat(document.getElementById('g-up-rate').value)/100;
+        const guarantee = parseInt(document.getElementById('g-guarantee').value);
+        const totalPulls = parseInt(document.getElementById('g-pulls').value);
+
+        let expPullsAny = 0; let cumProb = 1;
+        for (let i = 1; i <= hardPity; i++) {
+            let rate = i >= softStart ? baseRate + (i - softStart + 1)*softStep : baseRate;
+            if (rate > 1 || i === hardPity) rate = 1;
+            expPullsAny += i * (cumProb * rate);
+            cumProb *= (1 - rate);
+        }
+        
+        let expFiveStarsForUP = 0; let failProb = 1 - upRate; let tempExp = 0; let curChain = 1;
+        for (let i = 1; i <= guarantee; i++) { tempExp += i * (curChain * upRate); curChain *= failProb; }
+        expFiveStarsForUP = tempExp + (guarantee + 1) * curChain;
+        const expPullsUP = expPullsAny * expFiveStarsForUP;
+
+        document.getElementById('gacha-result').innerText = 
+            `【抽卡期望值分析】\n單出五星期望: ${expPullsAny.toFixed(2)} 抽 (綜合機率: ${(100/expPullsAny).toFixed(2)}%)\n大獎(UP)期望: ${expPullsUP.toFixed(2)} 抽 (綜合機率: ${(100/expPullsUP).toFixed(2)}%)\n\n投入 ${totalPulls} 抽預估：\n預計出五星總數: ${(totalPulls/expPullsAny).toFixed(2)} 隻\n預計得【大獎】: ${(totalPulls/expPullsUP).toFixed(2)} 隻`;
+    }
+</script>
+
+</body>
+</html>
