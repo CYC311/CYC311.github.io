@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandAbyss Sovereign Matrix v2 | 學測全科自然與數學演算矩陣</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <style>
+        :root {
+            --bg-main: #0b0f19; --panel-bg: #141d30; --panel-brd: #223452;
+            --text-main: #f8fafc; --text-muted: #64748b;
+            --cyan: #38bdf8; --emerald: #34d399; --purple: #c084fc; --amber: #fbbf24; --rose: #f43f5e;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.4; }
+        .wrapper { max-width: 1400px; margin: 0 auto; }
+        header { text-align: center; padding: 15px 0; border-bottom: 1px solid var(--panel-brd); margin-bottom: 20px; }
+        header h1 { margin: 0; color: var(--cyan); font-size: 2.2em; letter-spacing: 4px; font-weight: 900; }
+        header p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 0.95em; }
+        
+        /* 一級分頁導覽 */
+        .main-tabs { display: flex; gap: 8px; border-bottom: 2px solid var(--panel-brd); margin-bottom: 15px; padding-bottom: 5px; overflow-x: auto; }
+        .tab-btn { background: none; border: none; color: var(--text-muted); padding: 10px 20px; font-size: 1.05em; cursor: pointer; font-weight: 700; transition: 0.2s; border-radius: 4px; }
+        .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
+        .tab-btn.active { color: var(--cyan); background: rgba(56, 189, 248, 0.08); border-bottom: 3px solid var(--cyan); }
+        
+        /* 二級子分頁導覽 */
+        .sub-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 6px; overflow-x: auto; }
+        .sub-btn { background: none; border: none; color: var(--text-muted); padding: 6px 14px; font-size: 0.9em; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; }
+        .sub-btn:hover { color: var(--text-main); }
+        .sub-btn.active { background: var(--panel-brd); color: white; }
+
+        .main-panel, .sub-panel { display: none; }
+        .main-panel.active, .sub-panel.active { display: block; animation: fadeIn 0.35s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 版面網格與卡片 */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
+        .card { background: var(--panel-bg); border: 1px solid var(--panel-brd); border-radius: 8px; padding: 18px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+        .card h3 { margin-top: 0; font-size: 1.15em; padding-bottom: 6px; border-bottom: 1px dashed var(--panel-brd); margin-bottom: 12px; }
+        
+        /* 表單元素 */
+        .field { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+        .field label { font-size: 0.88em; font-weight: 600; color: #cbd5e1; }
+        .field input, .field select, .field textarea {
+            background: var(--bg-main); border: 1px solid var(--panel-brd); color: #fff;
+            padding: 7px 10px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em;
+        }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* 按鈕樣式 */
+        .fire-btn { width: 100%; border: none; padding: 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.95em; transition: 0.2s; margin-top: 5px; }
+        .fire-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+        .c-math { background: var(--cyan); color: #000; }
+        .c-sci { background: var(--emerald); color: #000; }
+        .c-gacha { background: var(--purple); color: #fff; }
+
+        /* 主控台輸出 */
+        .terminal { grid-column: 1 / -1; background: #05080f; border-left: 4px solid var(--cyan); border-radius: 4px; padding: 14px; font-family: 'Consolas', monospace; font-size: 0.92em; white-space: pre-wrap; line-height: 1.5; color: #e2e8f0; max-height: 450px; overflow-y: auto; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8); }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <h1>GRANDABYSS SOVEREIGN MATRIX v2</h1>
+        <p>多維度學測全考點學術控制台 & 高階動態機率量子模擬器</p>
+    </header>
+
+    <div class="main-tabs">
+        <button class="tab-btn active" onclick="chgMainTab('m-math')">學測數學矩陣樞紐</button>
+        <button class="tab-btn" onclick="chgMainTab('m-sci')">學測物理化學樞紐</button>
+        <button class="tab-btn" onclick="chgMainTab('m-gacha')">極限動態抽卡模擬器</button>
+    </div>
+
+    <div id="m-math" class="main-panel active">
+        <div class="sub-tabs">
+            <button class="sub-btn active" onclick="chgSubTab('m-math', 'sm-alg')">數與式/多項式/函數</button>
+            <button class="sub-btn" onclick="chgSubTab('m-math', 'sm-geo')">幾何/向量/統計數據</button>
+            <button class="sub-btn" onclick="chgSubTab('m-math', 'sm-prob')">機率/貝氏定理/三角函數</button>
+        </div>
+
+        <div id="sm-alg" class="sub-panel active">
+            <div class="grid-3">
+                <div class="card">
+                    <h3 style="color:var(--cyan)">三次函數特徵與極值分析</h3>
+                    <div class="field"><label>函數 f(x) [支援標準多項式描述]:</label><input type="text" id="mat-poly" value="x^3 - 3*x^2 + 2"></div>
+                    <div class="field"><label>餘式定理求值點 x = c :</label><input type="number" id="mat-c" value="3"></div>
+                    <button class="fire-btn c-math" onclick="runCubicAnalysis()">執行多項式特徵解算</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--cyan)">算幾不等式與絕對值界限</h3>
+                    <div class="row-2">
+                        <div class="field"><label>絕對值中心 c :</label><input type="number" id="mat-abs-c" value="3"></div>
+                        <div class="field"><label>半徑距離 r :</label><input type="number" id="mat-abs-r" value="5"></div>
+                    </div>
+                    <div class="field"><label>算幾不等式已知和 (A+B):</label><input type="number" id="mat-am" value="16"></div>
+                    <button class="fire-btn c-math" onclick="runInequalityAbs()">求解界限範圍</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--cyan)">指數對數與年金複利</h3>
+                    <div class="field"><label>對數真數輸入 log_10(x):</label><input type="number" id="mat-log-x" value="2"></div>
+                    <div class="row-2">
+                        <div class="field"><label>本金 (PV):</label><input type="number" id="mat-pv" value="50000"></div>
+                        <div class="field"><label>年化利率 (%):</label><input type="number" id="mat-rate" value="2.0" step="0.1"></div>
+                    </div>
+                    <button class="fire-btn c-math" onclick="runExpLogModel()">計算對數與資產級數</button>
+                </div>
+                <div class="terminal" id="out-math-alg">[System] 多項式與代數模組就緒。</div>
+            </div>
+        </div>
+
+        <div id="sm-geo" class="sub-panel">
+            <div class="grid-3">
+                <div class="card">
+                    <h3 style="color:var(--cyan)">二維數據分析與直線關係</h3>
+                    <div class="field"><label>X 變量數據集 (逗號分隔):</label><input type="text" id="mat-st-x" value="50,60,70,80,90"></div>
+                    <div class="field"><label>Y 變量數據集 (逗號分隔):</label><input type="text" id="mat-st-y" value="150,155,165,175,180"></div>
+                    <button class="fire-btn c-math" onclick="runStatisticalMatrix()">計算相關係數與迴歸線</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--cyan)">平面/空間向量與正射影</h3>
+                    <div class="field"><label>主要向量 A (x, y, z):</label><input type="text" id="mat-v-a" value="2, 3, 4"></div>
+                    <div class="field"><label>投影基底向量 B (x, y, z):</label><input type="text" id="mat-v-b" value="1, 0, 2"></div>
+                    <button class="fire-btn c-math" onclick="runVectorProjection()">求解內積與正射影</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--cyan)">圓方程式與直線關係</h3>
+                    <div class="field"><label>圓心坐標 (h, k) 與半徑 r:</label><input type="text" id="mat-circle" value="0, 0, 5"></div>
+                    <div class="field"><label>直線方程式 ax + by + c = 0:</label><input type="text" id="mat-line" value="3, -4, 0"></div>
+                    <button class="fire-btn c-math" onclick="runCircleLineRelation()">剖析圓線幾何拓樸</button>
+                </div>
+                <div class="terminal" id="out-math-geo">[System] 空間統計幾何模組已掛載。</div>
+            </div>
+        </div>
+
+        <div id="sm-prob" class="sub-panel">
+            <div class="grid-3">
+                <div class="card">
+                    <h3 style="color:var(--cyan)">貝氏定理條件機率矩陣</h3>
+                    <div class="field"><label>事件 A 發生之先驗機率 P(A):</label><input type="number" id="mat-p-a" value="0.01" step="0.001"></div>
+                    <div class="row-2">
+                        <div class="field"><label>精準度 P(B|A):</label><input type="number" id="mat-p-ba" value="0.95" step="0.01"></div>
+                        <div class="field"><label>誤報率 P(B|A'):</label><input type="number" id="mat-p-bfa" value="0.05" step="0.01"></div>
+                    </div>
+                    <button class="fire-btn c-math" onclick="runBayesianEngine()">反推貝氏條件機率</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--cyan)">解三角形：海龍公式與正餘弦</h3>
+                    <div class="field"><label>三角形三邊長 a, b, c :</label><input type="text" id="mat-tri-sides" value="5, 6, 7"></div>
+                    <button class="fire-btn c-math" onclick="runTriangleSolver()">求解面積與夾角</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--cyan)">排列組合與期望值</h3>
+                    <div class="row-2">
+                        <div class="field"><label>相異物總數 n :</label><input type="number" id="mat-perm-n" value="5"></div>
+                        <div class="field"><label>選取物數 r :</label><input type="number" id="mat-perm-r" value="2"></div>
+                    </div>
+                    <button class="fire-btn c-math" onclick="runCombinatorics()">解算 P(n,r) 與 C(n,r)</button>
+                </div>
+                <div class="terminal" id="out-math-prob">[System] 機率與三角函數模組初始化成功。</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="m-sci" class="main-panel">
+        <div class="sub-tabs">
+            <button class="sub-btn active" onclick="chgSubTab('m-sci', 'sm-phys')">物理：運動/交互作用/量子</button>
+            <button class="sub-btn" onclick="chgSubTab('m-sci', 'sm-chem')">化學：結構/計量/溶液反應</button>
+        </div>
+
+        <div id="sm-phys" class="sub-panel active">
+            <div class="grid-3">
+                <div class="card">
+                    <h3 style="color:var(--emerald)">物體運動與完全彈性碰撞</h3>
+                    <div class="row-2">
+                        <div class="field"><label>m1 (kg) & v1 (m/s):</label><input type="text" id="phy-m1v1" value="5, 10"></div>
+                        <div class="field"><label>m2 (kg) & v2 (m/s):</label><input type="text" id="phy-m2v2" value="3, -2"></div>
+                    </div>
+                    <button class="fire-btn c-sci" onclick="runPhysicsCollision()">計算碰撞後狀態</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--emerald)">基本交互作用：萬有引力與庫倫力</h3>
+                    <div class="row-2">
+                        <div class="field"><label>荷電/質量 1 :</label><input type="number" id="phy-q1" value="1e-6"></div>
+                        <div class="field"><label>荷電/質量 2 :</label><input type="number" id="phy-q2" value="2e-6"></div>
+                    </div>
+                    <div class="field"><label>核心距離 r (m):</label><input type="number" id="phy-force-r" value="0.1"></div>
+                    <button class="fire-btn c-sci" onclick="runFundamentalForces()">求解場力強度</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--emerald)">量子現象：光子能量與光電效應</h3>
+                    <div class="field"><label>入射光波長 λ (nm):</label><input type="number" id="phy-wave" value="400"></div>
+                    <div class="field"><label>金屬功函數 W (eV):</label><input type="number" id="phy-work" value="2.1"></div>
+                    <button class="fire-btn c-sci" onclick="runQuantumPhotoelectric()">解算光子能量與光電子動能</button>
+                </div>
+                <div class="terminal" id="out-sci-phys">[System] 高階物理考點模組核心載入完畢。</div>
+            </div>
+        </div>
+
+        <div id="sm-chem" class="sub-panel">
+            <div class="grid-3">
+                <div class="card">
+                    <h3 style="color:var(--emerald)">原子結構與基態電子排列速查</h3>
+                    <div class="field"><label>輸入原子序 Z (1 ~ 30):</label><input type="number" id="ch-z" value="26"></div>
+                    <button class="fire-btn c-sci" onclick="runElectronConfiguration()">解剖電子殼層特徵</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--emerald)">化學反應計量與熱量變化 (ΔH)</h3>
+                    <p style="font-size:0.8em; color:var(--text-muted); margin:0 0 5px 0;">反應式：A + 3B → 2C, ΔH = -100 kJ/mol</p>
+                    <div class="row-2">
+                        <div class="field"><label>投入 A (mol):</label><input type="number" id="ch-mol-a" value="2"></div>
+                        <div class="field"><label>投入 B (mol):</label><input type="number" id="ch-mol-b" value="5"></div>
+                    </div>
+                    <button class="fire-btn c-sci" onclick="runChemicalStoichiometry()">極限計量與反應熱演算</button>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--emerald)">溶液酸鹼中和與 pH 值解算</h3>
+                    <div class="row-2">
+                        <div class="field"><label>強酸 [H+] 濃度 (M):</label><input type="number" id="ch-m-acid" value="0.1"></div>
+                        <div class="field"><label>強酸體積 (mL):</label><input type="number" id="ch-v-acid" value="100"></div>
+                    </div>
+                    <div class="row-2">
+                        <div class="field"><label>強鹼 [OH-] 濃度 (M):</label><input type="number" id="ch-m-base" value="0.05"></div>
+                        <div class="field"><label>強鹼體積 (mL):</label><input type="number" id="ch-v-base" value="100"></div>
+                    </div>
+                    <button class="fire-btn c-sci" onclick="runAcidBaseTitration()">進行混合酸鹼滴定解析</button>
+                </div>
+                <div class="terminal" id="out-sci-chem">[System] 化學構造與計量矩陣聯立成功。</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="m-gacha" class="main-panel">
+        <div class="grid-3">
+            <div class="card">
+                <h3 style="color:var(--purple)">量子概率骨架配置</h3>
+                <div class="row-2">
+                    <div class="field"><label>基礎中獎率 (%):</label><input type="number" id="gc-base" value="0.6" step="0.1"></div>
+                    <div class="field"><label>硬保底抽數:</label><input type="number" id="gc-hard" value="90"></div>
+                </div>
+                <div class="row-2">
+                    <div class="field"><label>當期大獎 UP 率 (%):</label><input type="number" id="gc-uprate" value="50"></div>
+                    <div class="field"><label>歪小獎後必出大獎次數:</label><input type="number" id="gc-guarantee" value="1"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="color:var(--purple)">彈性動態軟保底機制</h3>
+                <div class="field">
+                    <label>軟保底核心觸發模式:</label>
+                    <select id="gc-mode" onchange="adjustGachaUI()">
+                        <option value="linear">逐步線性提升 (例:原神、星鐵、鳴潮)</option>
+                        <option value="fixed">單次斷崖固定提升 (例:某抽後機率直接鎖死)</option>
+                        <option value="none">真空無軟保底 (全靠硬保底撐腰)</option>
+                    </select>
+                </div>
+                <div class="row-2">
+                    <div class="field"><label>臨界軟保底抽數:</label><input type="number" id="gc-soft-start" value="73"></div>
+                    <div class="field"><label id="gc-lbl-param">每步遞增值 (%):</label><input type="number" id="gc-param" value="6.0" step="0.1"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="color:var(--purple)">資源投入與矩陣驅動</h3>
+                <div class="field"><label>本次預算投入總抽數:</label><input type="number" id="gc-budget" value="180"></div>
+                <button class="fire-btn c-gacha" onclick="driveGachaEngine()">雙軌並行解析 (理論分析 + 萬次模擬)</button>
+            </div>
+            <div class="terminal" id="out-gacha" style="border-left-color: var(--purple);">[System] 泛用型多機制抽卡演算陣列就緒。</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 核心分頁切換控制代碼
+    function chgMainTab(id) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(id).classList.add('active');
+    }
+    function chgSubTab(mainId, subId) {
+        const p = document.getElementById(mainId);
+        p.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+        p.querySelectorAll('.sub-panel').forEach(panel => panel.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(subId).classList.add('active');
+    }
+    function adjustGachaUI() {
+        const m = document.getElementById('gc-mode').value;
+        const l = document.getElementById('gc-lbl-param');
+        if(m==='linear') l.innerText = "每步遞增值 (%):";
+        else if(m==='fixed') l.innerText = "達標後固定機率 (%):";
+        else l.innerText = "此模式無特殊參數:";
+    }
+
+    // ==================== 數學矩陣：代數與多項式 ====================
+    function runCubicAnalysis() {
+        try {
+            const expr = document.getElementById('mat-poly').value;
+            const c = parseFloat(document.getElementById('mat-c').value);
+            const node = math.parse(expr);
+            const rc = node.compile().evaluate({x: c}); // 餘式定理 f(c)
+
+            // 求導函數特徵
+            const d1 = math.derivative(expr, 'x');
+            const d2 = math.derivative(d1, 'x');
+            
+            // 對稱中心 (反曲點) 3次函數 f''(x) = 0 -> 6ax + 2b = 0
+            // 簡化計算：直接帶入點估算或展算
+            let log = `【三次函數與多項式餘式定理綜合報告】\n`;
+            log += `--------------------------------------------------\n`;
+            log += `1. 依據餘式定理 (Remainder Theorem):\n`;
+            log += `   👉 函數被 (x - ${c}) 除之餘式 f(${c}) = ${rc.toFixed(4)}\n\n`;
+            log += `2. 微分特徵分析:\n`;
+            log += `   👉 一階導函數 f'(x) = ${d1.toString()}\n`;
+            log += `   👉 二階導函數 f''(x) = ${d2.toString()}\n`;
+            log += `   👉 在 x = ${c} 處的切線斜率 m = ${d1.compile().evaluate({x:c}).toFixed(4)}\n`;
+            document.getElementById('out-math-alg').innerText = log;
+        } catch(e) { document.getElementById('out-math-alg').innerText = "[Error] 語法錯誤：" + e.message; }
+    }
+
+    function runInequalityAbs() {
+        const c = parseFloat(document.getElementById('mat-abs-c').value);
+        const r = parseFloat(document.getElementById('mat-abs-r').value);
+        const sumVal = parseFloat(document.getElementById('mat-am').value);
+
+        let log = `【算幾不等式與絕對值範圍解析】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `1. 絕對值不等式 |x - ${c}| ≤ ${r} 展開:\n`;
+        log += `   👉 解集範圍: ${c - r} ≤ x ≤ ${c + r}\n\n`;
+        
+        if (sumVal > 0) {
+            // 算幾不等式 (A+B)/2 >= sqrt(A*B) -> A*B <= ((A+B)/2)^2
+            const maxProd = Math.pow(sumVal / 2, 2);
+            log += `2. 依據算幾不等式 (AM-GM Inequality):\n`;
+            log += `   👉 已知兩正數之和為 ${sumVal}\n`;
+            log += `   👉 兩數乘積之【最大值】為: (${sumVal}/2)² = ${maxProd.toFixed(4)}\n`;
+            log += `   👉 當且僅當兩數相等 (皆為 ${sumVal/2}) 時，等號成立。`;
+        }
+        document.getElementById('out-math-alg').innerText = log;
+    }
+
+    function runExpLogModel() {
+        const x = parseFloat(document.getElementById('mat-log-x').value);
+        const pv = parseFloat(document.getElementById('mat-pv').value);
+        const rate = parseFloat(document.getElementById('mat-rate').value)/100;
+
+        let log = `【指數對數與金融複利計算報告】\n`;
+        log += `--------------------------------------------------\n`;
+        if (x > 0) {
+            log += `1. 對數運算律 (Logarithmic Laws):\n`;
+            log += `   👉 常用對數 log_10(${x}) = ${Math.log10(x).toFixed(6)}\n`;
+            log += `   👉 自然對數 ln(${x}) = ${Math.log(x).toFixed(6)}\n\n`;
+        }
+        log += `2. 應用問題：資產複利滾存模型 (學測必考)\n`;
+        log += `   👉 初始投入本金 = ${pv.toFixed(2)}\n`;
+        log += `   👉 10年後結算(年複利) = ${(pv * Math.pow(1+rate, 10)).toFixed(2)}\n`;
+        log += `   👉 20年後結算(年複利) = ${(pv * Math.pow(1+rate, 20)).toFixed(2)}`;
+        document.getElementById('out-math-alg').innerText = log;
+    }
+
+    // ==================== 數學矩陣：幾何與統計 ====================
+    function runStatisticalMatrix() {
+        try {
+            const X = document.getElementById('mat-st-x').value.split(',').map(Number);
+            const Y = document.getElementById('mat-st-y').value.split(',').map(Number);
+            if(X.length !== Y.length || X.length < 2) throw new Error("數據集維度不一致。");
+
+            const n = X.length;
+            const mx = math.mean(X), my = math.mean(Y);
+            const sx = math.std(X, 'uncorrected'), sy = math.std(Y, 'uncorrected');
+            
+            let num = 0, denX = 0, denY = 0;
+            for(let i=0; i<n; i++) {
+                num += (X[i] - mx) * (Y[i] - my);
+                denX += Math.pow(X[i] - mx, 2);
+                denY += Math.pow(Y[i] - my, 2);
+            }
+            const r = num / Math.sqrt(denX * denY);
+            const m = num / denX;
+            const k = my - m * mx;
+
+            let log = `【學測二維數據分析 & 最小平方迴歸線】\n`;
+            log += `--------------------------------------------------\n`;
+            log += `數據規模 n = ${n}\n`;
+            log += `X_Avg = ${mx.toFixed(2)}, Y_Avg = ${my.toFixed(2)}\n`;
+            log += `X 標準差 (σx) = ${sx.toFixed(4)}, Y 標準差 (飾y) = ${sy.toFixed(4)}\n`;
+            log += `🔥 相關係數 (r) = ${r.toFixed(6)}\n`;
+            log += `⚙️ 最小平方法迴歸線: y = ${m.toFixed(4)}x + (${k.toFixed(4)})`;
+            document.getElementById('out-math-geo').innerText = log;
+        } catch(e) { document.getElementById('out-math-geo').innerText = "[Error] " + e.message; }
+    }
+
+    function runVectorProjection() {
+        try {
+            const parseV = (s) => {
+                let a = s.split(',').map(Number);
+                while(a.length < 3) a.push(0); // 支援平面向量自動補0變成空間向量
+                return a;
+            };
+            const A = parseV(document.getElementById('mat-v-a').value);
+            const B = parseV(document.getElementById('mat-v-b').value);
+
+            const dot = math.dot(A, B);
+            const normB2 = Math.pow(math.norm(B), 2);
+            
+            // 正射影向量 ( (A·B)/|B|^2 ) * B
+            const projFactor = dot / normB2;
+            const projVector = B.map(n => n * projFactor);
+
+            let log = `【平面/空間向量內積與正射影解析】\n`;
+            log += `--------------------------------------------------\n`;
+            log += `向量 A = [${A.join(', ')}] | 向量 B = [${B.join(', ')}]\n\n`;
+            log += `👉 向量內積 (A · B) = ${dot.toFixed(4)}\n`;
+            log += `👉 向量 A 在 B 上的正射影長度 = ${(dot / math.norm(B)).toFixed(4)}\n`;
+            log += `🔥 正射影向量 = [${projVector.map(n=>n.toFixed(3)).join(', ')}]`;
+            document.getElementById('out-math-geo').innerText = log;
+        } catch(e) { document.getElementById('out-math-geo').innerText = "[Error] 格式錯誤"; }
+    }
+
+    function runCircleLineRelation() {
+        try {
+            const circleData = document.getElementById('mat-circle').value.split(',').map(Number);
+            const lineData = document.getElementById('mat-line').value.split(',').map(Number);
+            
+            const h = circleData[0], k = circleData[1], r = circleData[2];
+            const a = lineData[0], b = lineData[1], c = lineData[2];
+
+            // 點到直線距離公式 d = |ah + bk + c| / sqrt(a^2 + b^2)
+            const d = Math.abs(a*h + b*k + c) / Math.sqrt(a*a + b*b);
+
+            let log = `【圓方程式與直線關係幾何剖析】\n`;
+            log += `--------------------------------------------------\n`;
+            log += `圓心 = (${h}, ${k}), 半徑 r = ${r}\n`;
+            log += `👉 圓心到直線的垂直距離 d = ${d.toFixed(4)}\n\n`;
+            
+            if (d < r) {
+                const chord = 2 * Math.sqrt(r*r - d*d);
+                log += `🔥 幾何關係：【相交於兩點】(割線)\n`;
+                log += `   ⚡ 直線截圓之「弦長」 = 2*√(r² - d²) = ${chord.toFixed(4)}`;
+            } else if (Math.abs(d - r) < 1e-7) {
+                log += `🔥 幾何關係：【相切於一點】(切線)`;
+            } else {
+                log += `🔥 幾何關係：【不相交】(離空)`;
+            }
+            document.getElementById('out-math-geo').innerText = log;
+        } catch(e) { document.getElementById('out-math-geo').innerText = "[Error] 輸入解析失敗"; }
+    }
+
+    // ==================== 數學矩陣：機率與三角 ====================
+    function runBayesianEngine() {
+        const pa = parseFloat(document.getElementById('mat-p-a').value);
+        const pba = parseFloat(document.getElementById('mat-p-ba').value);
+        const pbfa = parseFloat(document.getElementById('mat-p-bfa').value);
+
+        const pfa = 1 - pa;
+        // P(B) = P(B|A)P(A) + P(B|A')P(A')
+        const pb = (pba * pa) + (pbfa * pfa);
+        // P(A|B) = P(B|A)P(A) / P(B)
+        const pab = (pba * pa) / pb;
+
+        let log = `【條件機率與貝氏定理限制級解算】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `先驗機率 P(A) = ${pa} | 互補機率 P(A') = ${pfa.toFixed(4)}\n`;
+        log += `👉 檢驗陽性總概率 P(B) = ${pb.toFixed(5)}\n\n`;
+        log += `🔥 貝氏定理核心逆推 (已知事件B發生，確實為A的條件機率)：\n`;
+        log += `   公式: P(A|B) = [P(B|A) * P(A)] / P(B)\n`;
+        log += `   📢 最終條件機率 P(A|B) = ${(pab*100).toFixed(4)}%`;
+        document.getElementById('out-math-prob').innerText = log;
+    }
+
+    function runTriangleSolver() {
+        try {
+            const sides = document.getElementById('mat-tri-sides').value.split(',').map(Number);
+            const a = sides[0], b = sides[1], c = sides[2];
+            if (a+b<=c || a+c<=b || b+c<=a) throw new Error("兩邊之和大於第三邊原則不成立。");
+
+            // 海龍公式
+            const s = (a + b + c) / 2;
+            const area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+
+            // 餘弦定理求角 A
+            const cosA = (b*b + c*c - a*a) / (2 * b * c);
+            const angleA = Math.acos(cosA) * 180 / Math.PI;
+
+            let log = `【解三角形幾何特徵報告 (海龍 & 餘弦定理)】\n`;
+            log += `--------------------------------------------------\n`;
+            log += `👉 半周長 (s) = ${s}\n`;
+            log += `🔥 海龍公式求得面積 = ${area.toFixed(4)}\n`;
+            log += `👉 餘弦定理求得內角 ∠A = ${angleA.toFixed(2)}°`;
+            document.getElementById('out-math-prob').innerText = log;
+        } catch(e) { document.getElementById('out-math-prob').innerText = "[Error] 邊長無法構成三角形"; }
+    }
+
+    function runCombinatorics() {
+        const n = parseInt(document.getElementById('mat-perm-n').value);
+        const r = parseInt(document.getElementById('mat-perm-r').value);
+        if(r > n) { document.getElementById('out-math-prob').innerText = "r 不可大於 n"; return; }
+
+        const fact = (num) => num <= 1 ? 1 : num * fact(num - 1);
+        const p = fact(n) / fact(n - r);
+        const c = p / fact(r);
+
+        let log = `【學測排列組合演算法矩陣】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `👉 排列數 P(${n}, ${r}) = ${p}\n`;
+        log += `👉 組合數 C(${n}, ${r}) = ${c}\n\n`;
+        log += `💡 期望值應用提示：若某獎項中獎機率為 1/C(${n},${r})，則單次抽中期望值為其倒數。`;
+        document.getElementById('out-math-prob').innerText = log;
+    }
+
+    // ==================== 物化樞紐：物理 ====================
+    function runPhysicsCollision() {
+        try {
+            const p1 = document.getElementById('phy-m1v1').value.split(',').map(Number);
+            const p2 = document.getElementById('phy-m2v2').value.split(',').map(Number);
+            const m1 = p1[0], v1 = p1[1];
+            const m2 = p2[0], v2 = p2[1];
+
+            // 碰撞公式
+            const v1_f = ((m1 - m2)/(m1 + m2))*v1 + ((2*m2)/(m1 + m2))*v2;
+            const v2_f = ((2*m1)/(m1 + m2))*v1 + ((m2 - m1)/(m1 + m2))*v2;
+
+            let log = `【一維完全彈性碰撞運動量矩陣報告】\n`;
+            log += `--------------------------------------------------\n`;
+            log += `👉 碰撞前總動量 = ${(m1*v1 + m2*v2).toFixed(2)} kg·m/s\n`;
+            log += `🔥 碰撞後 m1 速度 v1' = ${v1_f.toFixed(4)} m/s\n`;
+            log += `🔥 碰撞後 m2 速度 v2' = ${v2_f.toFixed(4)} m/s`;
+            document.getElementById('out-sci-phys').innerText = log;
+        } catch(e) { document.getElementById('out-sci-phys').innerText = "輸入格式錯誤"; }
+    }
+
+    function runFundamentalForces() {
+        const q1 = parseFloat(document.getElementById('phy-q1').value);
+        const q2 = parseFloat(document.getElementById('phy-q2').value);
+        const r = parseFloat(document.getElementById('phy-force-r').value);
+        
+        const G = 6.674e-11;
+        const k = 8.988e9;
+
+        const f_coulomb = (k * q1 * q2) / (r * r);
+        const f_gravity = (G * q1 * q2) / (r * r);
+
+        let log = `【宇宙基本交互作用力聯立模擬】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `距離 r = ${r} 公尺狀態下：\n`;
+        log += `🔥 若視為電荷，庫倫靜電力 F_e = ${f_coulomb.toExponential(4)} N\n`;
+        log += `🔥 若視為質量，萬有引力   F_g = ${f_gravity.toExponential(4)} N\n\n`;
+        log += `💡 結論：在微觀尺度下，電磁力強度遠大於萬有引力！`;
+        document.getElementById('out-sci-phys').innerText = log;
+    }
+
+    function runQuantumPhotoelectric() {
+        const wave = parseFloat(document.getElementById('phy-wave').value); // nm
+        const work = parseFloat(document.getElementById('phy-work').value); // eV
+        
+        // E = hc / \lambda
+        // h*c approx 1240 eV*nm
+        const e_photon = 1240 / wave;
+        const e_kinetic = e_photon - work;
+
+        let log = `【高二量子現象：光電效應與光子假說】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `👉 入射光子能量 E = hc/λ = ${e_photon.toFixed(3)} eV\n`;
+        log += `👉 金屬表面功函數 W = ${work.toFixed(3)} eV\n\n`;
+        
+        if (e_kinetic > 0) {
+            log += `🔥 狀態：【引發光電效應成功】！\n`;
+            log += `   ⚡ 逸出光電子之最大初動能 Ek_max = ${e_kinetic.toFixed(3)} eV`;
+        } else {
+            log += `❌ 狀態：【光電效應失敗】。原因：入射光子能量低於截止頻率功函數。`;
+        }
+        document.getElementById('out-sci-phys').innerText = log;
+    }
+
+    // ==================== 物化樞紐：化學 ====================
+    function runElectronConfiguration() {
+        const z = parseInt(document.getElementById('ch-z').value);
+        if(z<1 || z>30) { document.getElementById('out-sci-chem').innerText = "超出學測高一二(1~30號)原子序範圍"; return; }
+
+        // 殼層能階分配(學測定義主殼層 K, L, M, N)
+        let left = z;
+        let k = Math.min(left, 2); left -= k;
+        let l = Math.min(left, 8); left -= l;
+        // 注意 20號元素後過渡金屬電子排列特徵偏向副殼層，此處提供學測基礎主殼層模型
+        let m = 0, n = 0;
+        if (z <= 18) {
+            m = left; left = 0;
+        } else if (z === 19 || z === 20) {
+            m = left - (z - 18); n = z - 18;
+        } else {
+            // 21~30號過渡元素，最外層N多為2
+            n = 2; m = z - 2 - 8 - 2;
+        }
+
+        let log = `【高一化學：基態原子電子排列解析】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `原子序 Z = ${z}\n`;
+        log += `🔥 主殼層電子分佈情況：\n`;
+        log += `   K 殼層 = ${k} | L 殼層 = ${l} | M 殼層 = ${m} | N 殼層 = ${n}\n`;
+        log += `👉 最外層電子 (價電子數) ≈ ${n === 0 ? m : n} (決定其化學性質特性)`;
+        document.getElementById('out-sci-chem').innerText = log;
+    }
+
+    function runChemicalStoichiometry() {
+        const na = parseFloat(document.getElementById('ch-mol-a').value);
+        const nb = parseFloat(document.getElementById('ch-mol-b').value);
+
+        // A + 3B -> 2C
+        const cycleA = na / 1;
+        const cycleB = nb / 3;
+        let limit = "A";
+        let consumedA = 0, consumedB = 0, producedC = 0;
+
+        if (cycleA <= cycleB) {
+            limit = "A";
+            consumedA = na; consumedB = na * 3; producedC = na * 2;
+        } else {
+            limit = "B";
+            consumedB = nb; consumedA = nb / 3; producedC = (nb / 3) * 2;
+        }
+
+        let log = `【高二化學式與極限反應計量分析】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `💀 限量試劑判定 = 反應物 【${limit}】\n\n`;
+        log += `平衡結算表：\n`;
+        log += `   [A] 剩餘 = ${(na - consumedA).toFixed(3)} mol\n`;
+        log += `   [B] 剩餘 = ${(nb - consumedB).toFixed(3)} mol\n`;
+        log += `   [C] 生成 = ${producedC.toFixed(3)} mol\n\n`;
+        log += `🔥 反應焓變演算：\n`;
+        log += `   依每莫耳 A 反應釋放 100 kJ 熱量計算...\n`;
+        log += `   👉 本次反應熱變化量 ΔH = -${(consumedA * 100).toFixed(2)} kJ`;
+        document.getElementById('out-sci-chem').innerText = log;
+    }
+
+    function runAcidBaseTitration() {
+        const ma = parseFloat(document.getElementById('ch-m-acid').value);
+        const va = parseFloat(document.getElementById('ch-v-acid').value) / 1000;
+        const mb = parseFloat(document.getElementById('ch-m-base').value) / 1000; // 毫升修正
+        const vb = parseFloat(document.getElementById('ch-v-base').value) / 1000;
+
+        const molH = ma * (parseFloat(document.getElementById('ch-v-acid').value)/1000);
+        const molOH = parseFloat(document.getElementById('ch-m-base').value) * vb;
+        const totalV = va + vb;
+
+        let log = `【溶液與常見化學反應：酸鹼滴定解析】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `H+ 總莫耳數 = ${molH.toExponential(4)} | OH- 總莫耳數 = ${molOH.toExponential(4)}\n\n`;
+
+        if (molH > molOH) {
+            const finalH = (molH - molOH) / totalV;
+            log += `🔥 反應結果：酸過量\n`;
+            log += `   👉 混合後 [H+] 體積莫耳濃度 = ${finalH.toFixed(5)} M\n`;
+            log += `   👉 最終溶液 pH 值 = ${(-Math.log10(finalH)).toFixed(2)}`;
+        } else if (molOH > molH) {
+            const finalOH = (molOH - molH) / totalV;
+            const pOH = -Math.log10(finalOH);
+            log += `🔥 反應結果：鹼過量\n`;
+            log += `   👉 混合後 [OH-] 體積莫耳濃度 = ${finalOH.toFixed(5)} M\n`;
+            log += `   👉 最終溶液 pH 值 = ${(14 - pOH).toFixed(2)}`;
+        } else {
+            log += `🔥 反應結果：【完全中和】！pH 值 = 7.00`;
+        }
+        document.getElementById('out-sci-chem').innerText = log;
+    }
+
+    // ==================== 抽卡引擎：理論分析 + 萬次隨機模擬 ====================
+    function driveGachaEngine() {
+        const baseRate = parseFloat(document.getElementById('gc-base').value) / 100;
+        const hardPity = parseInt(document.getElementById('gc-hard').value);
+        const upRate = parseFloat(document.getElementById('gc-uprate').value) / 100;
+        const guarantee = parseInt(document.getElementById('gc-guarantee').value);
+        const mode = document.getElementById('gc-mode').value;
+        const softStart = parseInt(document.getElementById('gc-soft-start').value);
+        const param = parseFloat(document.getElementById('gc-param').value);
+        const budget = parseInt(document.getElementById('gc-budget').value);
+
+        // --- 軌道一：理論離散數學分佈求解 ---
+        let pmf = new Array(hardPity + 1).fill(0);
+        let survival = 1.0;
+        for(let i=1; i<=hardPity; i++) {
+            let r = baseRate;
+            if(mode === 'linear' && i >= softStart) r = baseRate + (i - softStart + 1)*(param/100);
+            else if(mode === 'fixed' && i >= softStart) r = param / 100;
+            if(r > 1 || i === hardPity) r = 1;
+            pmf[i] = survival * r;
+            survival *= (1 - r);
+        }
+        let expAny = 0; for(let i=1; i<=hardPity; i++) expAny += i * pmf[i];
+        let expFiveStarsForUP = (1 + (1 - upRate)); // 通用雙UP/50-50狀態期望大獎隻數
+        let expUP = expAny * expFiveStarsForUP;
+
+        // --- 軌道二：蒙特卡羅一萬次真實世界隨機模擬 (Monte Carlo Simulation) ---
+        let simTotalGold = 0;
+        let simTotalUP = 0;
+        const simRounds = 10000; // 模擬1萬個玩家投入相同預算
+
+        for(let sim=0; sim<simRounds; sim++) {
+            let currentPity = 0;
+            let isGuaranteed = false;
+            
+            for(let pull=1; pull<=budget; pull++) {
+                currentPity++;
+                let r = baseRate;
+                if(mode === 'linear' && currentPity >= softStart) r = baseRate + (currentPity - softStart + 1)*(param/100);
+                else if(mode === 'fixed' && currentPity >= softStart) r = param / 100;
+                
+                if(currentPity === hardPity) r = 1;
+
+                if(Math.random() < r) {
+                    simTotalGold++;
+                    currentPity = 0; // 重置保底
+                    
+                    // 判斷是否UP
+                    if(isGuaranteed || Math.random() < upRate) {
+                        simTotalUP++;
+                        isGuaranteed = false;
+                    } else {
+                        isGuaranteed = true; // 下次必中
+                    }
+                }
+            }
+        }
+
+        const simAvgGold = simTotalGold / simRounds;
+        const simAvgUP = simTotalUP / simRounds;
+
+        let log = `【GrandAbyss 量子動態機率雙軌驗證報告】\n`;
+        log += `--------------------------------------------------\n`;
+        log += `🔬 軌道 A：嚴格離散數學極限求和 (精確度 100%)\n`;
+        log += `   👉 單次出金(最高稀有度)期望值: ${expAny.toFixed(2)} 抽\n`;
+        log += `   👉 綜合中獎率 (含保底攤平): ${(100/expAny).toFixed(4)}%\n`;
+        log += `   🔥 特定大獎(UP)終極期望值: ${expUP.toFixed(2)} 抽\n\n`;
+        log += `🎮 軌道 B：蒙特卡羅隨機數模擬 (模擬 10,000 名玩家行為)\n`;
+        log += `   👉 每位玩家同樣手握 ${budget} 抽資源預算...\n`;
+        log += `   📊 平均每人斬獲【金光總數】: ${simAvgGold.toFixed(2)} 隻 (理論預期: ${(budget/(expAny)).toFixed(2)} 隻)\n`;
+        log += `   👑 平均每人搬回【UP大獎】: ${simAvgUP.toFixed(2)} 隻 (理論預期: ${(budget/expUP).toFixed(2)} 隻)\n`;
+        log += `   🤡 平均每人【淪為非酋歪掉】: ${(simAvgGold - simAvgUP).toFixed(2)} 隻\n`;
+        log += `--------------------------------------------------\n`;
+        log += `*科學結論：當模擬次數趨近無窮大時，軌道B的隨機落點必將完美收斂至軌道A。這就是學測機率大數法則的真諦！`;
+        
+        document.getElementById('out-gacha').innerText = log;
+    }
+</script>
+
+</body>
+</html>
