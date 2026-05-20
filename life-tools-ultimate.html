@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>生活工具套件 Ultimate - 智能助手</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root { 
+            --primary: #667eea; 
+            --secondary: #764ba2; 
+            --success: #4caf50;
+            --danger: #ff6b6b;
+            --warning: #ffd93d;
+            --info: #2196F3;
+            --bg: #ffffff; 
+            --text: #333;
+            --text-light: #666;
+            --border: #e0e0e0;
+            --shadow: 0 10px 30px rgba(0,0,0,0.2);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        body.dark-mode {
+            --bg: #1a1a1a;
+            --text: #f0f0f0;
+            --text-light: #b0b0b0;
+            --border: #333;
+        }
+        
+        html { scroll-behavior: smooth; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', 'Noto Sans CJK TC', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+            min-height: 100vh; 
+            padding: 12px; 
+            color: var(--text);
+            transition: all 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container { 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            position: relative;
+        }
+        
+        /* ===== 頂部欄 ===== */
+        header { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 20px;
+            animation: slideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header h1 { 
+            font-size: clamp(1.5rem, 5vw, 2.8rem); 
+            margin-bottom: 5px; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        
+        header .subtitle { 
+            font-size: 0.9rem; 
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+        
+        .header-controls { 
+            display: flex; 
+            gap: 8px; 
+            justify-content: center; 
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .header-controls button, .header-controls select {
+            padding: 9px 12px;
+            border: 2px solid white;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-controls button:hover, .header-controls select:hover { 
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .header-controls select {
+            padding: 9px 8px;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: white;
+        }
+        
+        .status-indicator .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* ===== 標籤欄 ===== */
+        .tabs-container {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border: 2px solid var(--border);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: nowrap;
+            min-width: min-content;
+        }
+        
+        .tab-btn {
+            padding: 10px 13px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            color: var(--text);
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .tab-btn:hover::before {
+            left: 100%;
+        }
+        
+        .tab-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+        
+        .tab-content { 
+            display: none; 
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active { display: block; }
+        
+        /* ===== 卡片 ===== */
+        .card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            border: 2px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+        
+        .card h2 { 
+            color: var(--primary); 
+            margin-bottom: 14px; 
+            font-size: 1.35rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+            position: relative;
+        }
+        
+        .card h2::before {
+            content: attr(data-icon);
+            margin-right: 8px;
+        }
+        
+        .card h3 {
+            color: var(--text);
+            margin-top: 12px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        /* ===== 輸入表單 ===== */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        
+        .input-row-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        input, select, textarea {
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(102,126,234,0.3);
+        }
+        
+        input::placeholder {
+            color: var(--text-light);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* ===== 按鈕 ===== */
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--primary);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: #b0b0b0;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* ===== 結果框 ===== */
+        .result-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin-top: 12px;
+            color: var(--text);
+            word-break: break-word;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 12px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        /* ===== 列表項 ===== */
+        .list-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(102,126,234,0.06);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            flex-wrap: wrap;
+        }
+        
+        .list-item:hover {
+            background: rgba(102,126,234,0.1);
+            transform: translateX(4px);
+        }
+        
+        .list-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+        
+        .list-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .list-item-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        /* ===== 徽章 ===== */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 4px;
+            background: var(--primary);
+            color: white;
+        }
+        
+        .badge.high { background: var(--danger); }
+        .badge.medium { background: var(--warning); color: #333; }
+        .badge.low { background: var(--success); }
+        .badge.tag { background: var(--info); }
+        
+        /* ===== 通知 ===== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            animation: slideInUp 0.3s ease;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); color: #333; }
+        .toast.info { background: var(--info); }
+        
+        /* ===== 空狀態 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+        
+        .empty-text {
+            font-size: 0.95rem;
+        }
+        
+        /* ===== 搜索框 ===== */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input, .search-box select {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        /* ===== 進度條 ===== */
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            transition: width 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        /* ===== 圖表容器 ===== */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        /* ===== 響應式設計 ===== */
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            header h1 { font-size: 1.5rem; }
+            .input-row, .input-row-3 { grid-template-columns: 1fr; }
+            .card { padding: 14px; }
+            .list-item { flex-direction: column; align-items: flex-start; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .tabs { gap: 4px; }
+            .tab-btn { padding: 8px 10px; font-size: 0.75rem; }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.2rem; }
+            .header-controls { gap: 6px; }
+            .header-controls button, .header-controls select { padding: 8px 10px; font-size: 0.75rem; }
+            .card { padding: 12px; margin-bottom: 10px; }
+            .btn-group { gap: 6px; }
+            .stat-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* ===== 輔助類 ===== */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt { margin-top: 12px; }
+        .mb { margin-bottom: 12px; }
+        .flex { display: flex; }
+        .flex-1 { flex: 1; }
+        .gap { gap: 10px; }
+        
+        /* ===== 黑暗模式調整 ===== */
+        body.dark-mode .result-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%);
+        }
+        
+        body.dark-mode .list-item {
+            background: rgba(102,126,234,0.12);
+        }
+        
+        body.dark-mode .list-item:hover {
+            background: rgba(102,126,234,0.18);
+        }
+        
+        /* ===== 列印樣式 ===== */
+        @media print {
+            .header-controls, .tabs-container, button { display: none; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body onload="app.init()">
+    <div class="container">
+        <header>
+            <h1>🛠️ 生活工具套件 Ultimate</h1>
+            <div class="subtitle">智能生活助手 - 一站式解決方案</div>
+            <div class="header-controls">
+                <button onclick="app.toggleDarkMode()" title="切換深色模式">🌙 深色</button>
+                <select id="langSelect" onchange="app.changeLanguage(this.value)" style="max-width: 100px;">
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="en">English</option>
+                </select>
+                <button onclick="app.showSettings()" title="設置">⚙️ 設置</button>
+                <button onclick="app.exportData()" title="導出數據">📤 導出</button>
+                <button onclick="app.importData()" title="導入數據">📥 導入</button>
+                <div class="status-indicator">
+                    <div class="dot"></div>
+                    <span id="statusText">已同步</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="app.switchTab('calculator', this)">🧮 計算</button>
+                <button class="tab-btn" onclick="app.switchTab('converter', this)">📏 轉換</button>
+                <button class="tab-btn" onclick="app.switchTab('translator', this)">🌐 翻譯</button>
+                <button class="tab-btn" onclick="app.switchTab('todo', this)">📝 待辦</button>
+                <button class="tab-btn" onclick="app.switchTab('notes', this)">📌 筆記</button>
+                <button class="tab-btn" onclick="app.switchTab('timer', this)">⏱️ 計時</button>
+                <button class="tab-btn" onclick="app.switchTab('expense', this)">💰 支出</button>
+                <button class="tab-btn" onclick="app.switchTab('qrcode', this)">📱 二維碼</button>
+                <button class="tab-btn" onclick="app.switchTab('password', this)">🔐 密碼</button>
+                <button class="tab-btn" onclick="app.switchTab('health', this)">⚖️ 健康</button>
+                <button class="tab-btn" onclick="app.switchTab('crypto', this)">🔒 加密</button>
+                <button class="tab-btn" onclick="app.switchTab('stats', this)">📊 統計</button>
+            </div>
+        </div>
+
+        <!-- ========== 計算機 ========== -->
+        <div id="calculator" class="tab-content active">
+            <div class="card">
+                <h2>🧮 科學計算機</h2>
+                <textarea id="calcInput" placeholder="輸入計算式... 支持: + - * / ( ) ^ sqrt() sin() cos() &#10;例如: 5 + 3 * 2 或 sqrt(16)" rows="2"></textarea>
+                <div class="btn-group">
+                    <button onclick="app.calculateResult()">📊 計算</button>
+                    <button class="btn-secondary" onclick="app.clearCalc()">清空</button>
+                    <button class="btn-secondary" onclick="app.toggleCalcHistory()">📋 歷史</button>
+                </div>
+                <div id="calcResult" class="result-box hidden"></div>
+                <div id="calcHistory" class="result-box hidden" style="max-height: 250px; font-size: 0.9rem;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 單位轉換 ========== -->
+        <div id="converter" class="tab-content">
+            <div class="card">
+                <h2>📏 單位轉換 (20+種)</h2>
+                
+                <h3>溫度</h3>
+                <div class="input-row">
+                    <div>
+                        <label>攝氏度(°C)</label>
+                        <input type="number" id="celsius" placeholder="°C" oninput="app.convertTemp()">
+                    </div>
+                    <div>
+                        <label>華氏度(°F)</label>
+                        <input type="number" id="fahrenheit" placeholder="°F" oninput="app.convertTemp()">
+                    </div>
+                    <div>
+                        <label>開爾文(K)</label>
+                        <input type="number" id="kelvin" placeholder="K" oninput="app.convertTemp()">
+                    </div>
+                </div>
+
+                <h3>距離</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公里(km)</label>
+                        <input type="number" id="km" placeholder="km" oninput="app.convertDistance()">
+                    </div>
+                    <div>
+                        <label>米(m)</label>
+                        <input type="number" id="meter" placeholder="m" oninput="app.convertDistance()">
+                    </div>
+                    <div>
+                        <label>英里(mi)</label>
+                        <input type="number" id="mile" placeholder="mi" oninput="app.convertDistance()">
+                    </div>
+                </div>
+
+                <h3>重量</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公斤(kg)</label>
+                        <input type="number" id="kg" placeholder="kg" oninput="app.convertWeight()">
+                    </div>
+                    <div>
+                        <label>克(g)</label>
+                        <input type="number" id="gram" placeholder="g" oninput="app.convertWeight()">
+                    </div>
+                    <div>
+                        <label>磅(lb)</label>
+                        <input type="number" id="lb" placeholder="lb" oninput="app.convertWeight()">
+                    </div>
+                </div>
+
+                <h3>容積</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公升(L)</label>
+                        <input type="number" id="liter" placeholder="L" oninput="app.convertVolume()">
+                    </div>
+                    <div>
+                        <label>毫升(mL)</label>
+                        <input type="number" id="ml" placeholder="mL" oninput="app.convertVolume()">
+                    </div>
+                    <div>
+                        <label>加侖(gal)</label>
+                        <input type="number" id="gallon" placeholder="gal" oninput="app.convertVolume()">
+                    </div>
+                </div>
+
+                <h3>面積</h3>
+                <div class="input-row">
+                    <div>
+                        <label>平方米(m²)</label>
+                        <input type="number" id="sqm" placeholder="m²" oninput="app.convertArea()">
+                    </div>
+                    <div>
+                        <label>平方英尺(ft²)</label>
+                        <input type="number" id="sqft" placeholder="ft²" oninput="app.convertArea()">
+                    </div>
+                </div>
+
+                <h3>速度</h3>
+                <div class="input-row">
+                    <div>
+                        <label>公里/小時(km/h)</label>
+                        <input type="number" id="kmh" placeholder="km/h" oninput="app.convertSpeed()">
+                    </div>
+                    <div>
+                        <label>米/秒(m/s)</label>
+                        <input type="number" id="ms" placeholder="m/s" oninput="app.convertSpeed()">
+                    </div>
+                    <div>
+                        <label>英里/小時(mph)</label>
+                        <input type="number" id="mph" placeholder="mph" oninput="app.convertSpeed()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 翻譯 ========== -->
+        <div id="translator" class="tab-content">
+            <div class="card">
+                <h2>🌐 翻譯工具</h2>
+                <textarea id="translateInput" placeholder="輸入要翻譯的文字..." rows="3"></textarea>
+                <div class="input-row">
+                    <div>
+                        <label>源語言</label>
+                        <select id="sourceLang">
+                            <option value="zh-TW">繁體中文</option>
+                            <option value="zh-CN">簡體中文</option>
+                            <option value="en">英文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韓文</option>
+                            <option value="es">西班牙文</option>
+                            <option value="fr">法文</option>
+                            <option value="de">德文</option>
+                            <option value="ru">俄文</option>
+                            <option value="pt">葡萄牙文</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>目標語言</label>
+                        <select id="targetLang">
+                            <option value="en">英文</option>
+                            <option value="zh-TW">繁體中文</option>
+                            <option value="zh-CN">簡體中文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韓文</option>
+                            <option value="es">西班牙文</option>
+                            <option value="fr">法文</option>
+                            <option value="de">德文</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="app.translateText()">🔄 翻譯</button>
+                <div id="translateOutput" class="result-box hidden"></div>
+            </div>
+        </div>
+
+        <!-- ========== 待辦清單 ========== -->
+        <div id="todo" class="tab-content">
+            <div class="card">
+                <h2>📝 待辦清單</h2>
+                <div class="search-box">
+                    <input type="text" id="todoSearch" placeholder="搜索待辦..." oninput="app.filterTodos()">
+                    <select id="todoPriority" onchange="app.filterTodos()">
+                        <option value="">全部優先級</option>
+                        <option value="high">⚡ 高</option>
+                        <option value="medium">→ 中</option>
+                        <option value="low">↓ 低</option>
+                    </select>
+                    <select id="todoStatus" onchange="app.filterTodos()">
+                        <option value="">全部狀態</option>
+                        <option value="pending">待辦</option>
+                        <option value="done">已完成</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <input type="text" id="todoInput" placeholder="輸入新任務..." onkeypress="if(event.key==='Enter')app.addTodo()">
+                    <select id="todoPriorityInput">
+                        <option value="medium">中優先級</option>
+                        <option value="high">高優先級</option>
+                        <option value="low">低優先級</option>
+                    </select>
+                    <button onclick="app.addTodo()">➕ 新增</button>
+                </div>
+                <div class="stat-box" style="margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px;">
+                        <div>✓ 已完成: <strong id="todoCompleted">0</strong>/<span id="todoTotal">0</span></div>
+                        <div>⏳ 待辦: <strong id="todoPending">0</strong></div>
+                        <div>📊 完成率: <strong id="todoProgress">0%</strong></div>
+                    </div>
+                    <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="progress-fill" id="todoProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div id="todoList"></div>
+            </div>
+        </div>
+
+        <!-- ========== 筆記 ========== -->
+        <div id="notes" class="tab-content">
+            <div class="card">
+                <h2>📌 筆記</h2>
+                <div class="search-box">
+                    <input type="text" id="noteSearch" placeholder="搜索筆記..." oninput="app.filterNotes()">
+                </div>
+                <input type="text" id="noteTitle" placeholder="標題..." style="margin-bottom: 10px;">
+                <textarea id="noteContent" placeholder="內容..." rows="3" style="margin-bottom: 10px;"></textarea>
+                <input type="text" id="noteTag" placeholder="標籤 (逗號分隔)..." style="margin-bottom: 10px;">
+                <button onclick="app.addNote()">💾 保存筆記</button>
+                <div id="notesList" style="margin-top: 14px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 計時器 ========== -->
+        <div id="timer" class="tab-content">
+            <div class="card">
+                <h2>⏱️ 計時器 & 番茄鐘</h2>
+                <div class="input-row">
+                    <div>
+                        <label>分鐘</label>
+                        <input type="number" id="timerMin" value="5" min="0">
+                    </div>
+                    <div>
+                        <label>秒</label>
+                        <input type="number" id="timerSec" value="0" min="0" max="59">
+                    </div>
+                </div>
+                <div style="font-size: 3.5rem; text-align: center; margin: 20px 0; font-weight: 700; font-family: 'Courier New'; color: var(--primary); letter-spacing: 2px;" id="timerDisplay">05:00</div>
+                <div class="btn-group" style="justify-content: center;">
+                    <button onclick="app.startTimer()">▶️ 開始</button>
+                    <button onclick="app.pauseTimer()" class="btn-secondary">⏸️ 暫停</button>
+                    <button onclick="app.resetTimer()" class="btn-secondary">🔄 重置</button>
+                    <button class="btn-sm" onclick="app.addQuickTimer(1)">+1分</button>
+                    <button class="btn-sm" onclick="app.addQuickTimer(5)">+5分</button>
+                </div>
+                <div style="margin-top: 16px; text-align: center;">
+                    <button class="btn-secondary btn-sm" onclick="app.startPomodoro()">🍅 番茄鐘 (25分)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 支出記錄 ========== -->
+        <div id="expense" class="tab-content">
+            <div class="card">
+                <h2>💰 支出記錄 & 分析</h2>
+                <div class="search-box">
+                    <input type="text" id="expenseSearch" placeholder="搜索分類..." oninput="app.filterExpenses()">
+                    <select id="expenseMonth" onchange="app.filterExpenses()">
+                        <option value="">全部月份</option>
+                        <option value="current">本月</option>
+                        <option value="last">上月</option>
+                        <option value="6month">6個月</option>
+                        <option value="12month">12個月</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div>
+                        <label>金額 (¥)</label>
+                        <input type="number" id="expenseAmount" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label>日期</label>
+                        <input type="date" id="expenseDate">
+                    </div>
+                    <div>
+                        <label>分類</label>
+                        <select id="expenseCategory">
+                            <option value="">-- 選擇或新建 --</option>
+                            <option value="食物">🍔 食物</option>
+                            <option value="交通">🚗 交通</option>
+                            <option value="娛樂">🎬 娛樂</option>
+                            <option value="購物">🛍️ 購物</option>
+                            <option value="醫療">⚕️ 醫療</option>
+                            <option value="教育">📚 教育</option>
+                            <option value="水電">💡 水電</option>
+                            <option value="其他">📦 其他</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="text" id="expenseCategoryInput" placeholder="輸入新分類..." style="margin-bottom: 10px;">
+                <button onclick="app.addExpense()">📝 記錄支出</button>
+                <div id="expenseStats" style="margin-top: 14px;"></div>
+                <div id="expenseList"></div>
+            </div>
+        </div>
+
+        <!-- ========== 二維碼 ========== -->
+        <div id="qrcode" class="tab-content">
+            <div class="card">
+                <h2>📱 二維碼生成</h2>
+                <textarea id="qrInput" placeholder="輸入要編碼的文字或URL..." rows="2"></textarea>
+                <div class="btn-group">
+                    <button onclick="app.generateQR()">🔄 生成二維碼</button>
+                    <button class="btn-secondary" onclick="app.downloadQR()">⬇️ 下載</button>
+                    <button class="btn-secondary" onclick="app.showQRHistory()">📋 歷史</button>
+                </div>
+                <div id="qrOutput" style="text-align: center; margin-top: 16px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 密碼生成 ========== -->
+        <div id="password" class="tab-content">
+            <div class="card">
+                <h2>🔐 密碼生成器</h2>
+                <div class="input-row-3">
+                    <div>
+                        <label>長度</label>
+                        <input type="number" id="pwdLength" value="16" min="8" max="64">
+                    </div>
+                    <label style="display: flex; align-items: center; margin-top: 20px;">
+                        <input type="checkbox" id="pwdUppercase" checked style="width: auto; margin-right: 8px;">
+                        大寫字母
+                    </label>
+                    <label style="display: flex; align-items: center; margin-top: 20px;">
+                        <input type="checkbox" id="pwdSymbols" checked style="width: auto; margin-right: 8px;">
+                        特殊符號
+                    </label>
+                </div>
+                <button onclick="app.generatePasswords()">🔄 生成密碼</button>
+                <div id="passwordList" style="margin-top: 14px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 健康數據 ========== -->
+        <div id="health" class="tab-content">
+            <div class="card">
+                <h2>⚖️ 健康計算</h2>
+                <div class="input-row">
+                    <div>
+                        <label>身高 (cm)</label>
+                        <input type="number" id="bmiHeight" placeholder="身高" min="50" max="300">
+                    </div>
+                    <div>
+                        <label>體重 (kg)</label>
+                        <input type="number" id="bmiWeight" placeholder="體重" min="20" max="500" step="0.1">
+                    </div>
+                </div>
+                <button onclick="app.calculateBMI()">📊 計算BMI</button>
+                <div id="bmiResult" class="result-box hidden"></div>
+                <h3 style="margin-top: 18px;">📈 BMI歷史記錄</h3>
+                <div id="healthHistory"></div>
+            </div>
+        </div>
+
+        <!-- ========== 加密 ========== -->
+        <div id="crypto" class="tab-content">
+            <div class="card">
+                <h2>🔒 加密/解密</h2>
+                <textarea id="cryptoInput" placeholder="輸入文字..." rows="3"></textarea>
+                <div class="input-row">
+                    <button onclick="app.encryptText()">🔐 加密 (Base64)</button>
+                    <button onclick="app.decryptText()">🔓 解密 (Base64)</button>
+                </div>
+                <div id="cryptoOutput" class="result-box hidden"></div>
+            </div>
+        </div>
+
+        <!-- ========== 統計分析 ========== -->
+        <div id="stats" class="tab-content">
+            <div class="card">
+                <h2>📊 統計分析 & 報告</h2>
+                <button onclick="app.showStats()">📈 生成完整報告</button>
+                <div id="statsOutput" style="margin-top: 14px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 應用主對象 ====================
+        const app = {
+            state: {
+                todos: [],
+                notes: [],
+                expenses: [],
+                health: [],
+                darkMode: false,
+                language: 'zh-TW',
+                calcHistory: [],
+                qrHistory: [],
+                timerInterval: null,
+                timerSeconds: 0,
+                isTimerRunning: false,
+                lastSyncTime: new Date()
+            },
+
+            // ==================== 初始化 ====================
+            init() {
+                this.loadData();
+                this.setDefaultDates();
+                this.loadDarkMode();
+                this.autoSync();
+                console.log('✅ 應用已初始化');
+                this.showToast('應用已加載');
+            },
+
+            // ==================== 數據管理 ====================
+            saveData() {
+                try {
+                    const compressed = this.compress(JSON.stringify(this.state));
+                    localStorage.setItem('lifeToolsData', compressed);
+                    document.getElementById('statusText').textContent = '已同步';
+                } catch (error) {
+                    console.error('保存失敗:', error);
+                    this.showToast('保存失敗', 'error');
+                }
+            },
+
+            loadData() {
+                try {
+                    const data = localStorage.getItem('lifeToolsData');
+                    if (data) {
+                        const decompressed = this.decompress(data);
+                        Object.assign(this.state, JSON.parse(decompressed));
+                    }
+                } catch (error) {
+                    console.error('加載失敗:', error);
+                }
+            },
+
+            compress(str) {
+                return btoa(str);
+            },
+
+            decompress(str) {
+                return atob(str);
+            },
+
+            autoSync() {
+                setInterval(() => {
+                    if (this.hasChanged) {
+                        this.saveData();
+                        this.hasChanged = false;
+                    }
+                }, 30000);
+            },
+
+            setDefaultDates() {
+                const today = new Date().toISOString().split('T')[0];
+                const elem = document.getElementById('expenseDate');
+                if (elem) elem.value = today;
+            },
+
+            // ==================== UI 交互 ====================
+            switchTab(tab, element) {
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                const targetTab = document.getElementById(tab);
+                if (targetTab) targetTab.classList.add('active');
+                
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                element.classList.add('active');
+            },
+
+            toggleDarkMode() {
+                this.state.darkMode = !this.state.darkMode;
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('lifeToolsDarkMode', this.state.darkMode);
+                this.showToast(this.state.darkMode ? '已啟用深色模式' : '已切換為淺色模式');
+            },
+
+            loadDarkMode() {
+                if (localStorage.getItem('lifeToolsDarkMode') === 'true' || 
+                    window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    this.state.darkMode = true;
+                    document.body.classList.add('dark-mode');
+                }
+            },
+
+            changeLanguage(lang) {
+                this.state.language = lang;
+                localStorage.setItem('lifeToolsLang', lang);
+                location.reload();
+            },
+
+            showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showToast('已複製到剪貼板');
+                });
+            },
+
+            // ==================== 計算機 ====================
+            calculateResult() {
+                try {
+                    const input = document.getElementById('calcInput').value.trim();
+                    if (!input) {
+                        this.showToast('請輸入計算式', 'error');
+                        return;
+                    }
+
+                    let expr = input.replace(/\^/g, '**');
+                    const mathFuncs = 'sqrt,sin,cos,tan,log,abs,floor,ceil,round,min,max,pow';
+                    mathFuncs.split(',').forEach(func => {
+                        expr = expr.replace(new RegExp(`\\b${func}\\b`, 'g'), `Math.${func}`);
+                    });
+
+                    const result = Function('"use strict"; return (' + expr + ')')();
+                    const resultBox = document.getElementById('calcResult');
+                    resultBox.innerHTML = `
+                        <strong>計算式：</strong> ${input}<br>
+                        <strong style="color: var(--primary); font-size: 1.1rem;">結果：${result}</strong><br>
+                        <button class="btn-sm" onclick="app.copyToClipboard('${result}')">📋 複製</button>
+                    `;
+                    resultBox.classList.remove('hidden');
+
+                    // 保存到歷史
+                    this.state.calcHistory.push({ expr: input, result: result, time: new Date().toLocaleTimeString() });
+                    if (this.state.calcHistory.length > 20) this.state.calcHistory.shift();
+                    this.hasChanged = true;
+                } catch (error) {
+                    const resultBox = document.getElementById('calcResult');
+                    resultBox.innerHTML = `<strong style="color: var(--danger);">❌ 錯誤：${error.message}</strong>`;
+                    resultBox.classList.remove('hidden');
+                }
+            },
+
+            clearCalc() {
+                document.getElementById('calcInput').value = '';
+                document.getElementById('calcResult').classList.add('hidden');
+            },
+
+            toggleCalcHistory() {
+                const historyDiv = document.getElementById('calcHistory');
+                if (historyDiv.classList.contains('hidden')) {
+                    historyDiv.innerHTML = this.state.calcHistory.slice().reverse()
+                        .map(h => `<div><strong>${h.expr}</strong> = ${h.result} <span style="font-size: 0.8rem; opacity: 0.7;">${h.time}</span></div>`)
+                        .join('');
+                    historyDiv.classList.remove('hidden');
+                } else {
+                    historyDiv.classList.add('hidden');
+                }
+            },
+
+            // ==================== 單位轉換 ====================
+            convertTemp() {
+                const celsius = parseFloat(document.getElementById('celsius').value);
+                const fahrenheit = parseFloat(document.getElementById('fahrenheit').value);
+                const kelvin = parseFloat(document.getElementById('kelvin').value);
+                
+                if (!isNaN(celsius)) {
+                    document.getElementById('fahrenheit').value = (celsius * 9/5 + 32).toFixed(2);
+                    document.getElementById('kelvin').value = (celsius + 273.15).toFixed(2);
+                } else if (!isNaN(fahrenheit)) {
+                    document.getElementById('celsius').value = ((fahrenheit - 32) * 5/9).toFixed(2);
+                    document.getElementById('kelvin').value = ((fahrenheit - 32) * 5/9 + 273.15).toFixed(2);
+                } else if (!isNaN(kelvin)) {
+                    document.getElementById('celsius').value = (kelvin - 273.15).toFixed(2);
+                    document.getElementById('fahrenheit').value = ((kelvin - 273.15) * 9/5 + 32).toFixed(2);
+                }
+            },
+
+            convertDistance() {
+                const km = parseFloat(document.getElementById('km').value);
+                const meter = parseFloat(document.getElementById('meter').value);
+                const mile = parseFloat(document.getElementById('mile').value);
+                
+                if (!isNaN(km)) {
+                    document.getElementById('meter').value = (km * 1000).toFixed(2);
+                    document.getElementById('mile').value = (km * 0.621371).toFixed(4);
+                } else if (!isNaN(meter)) {
+                    document.getElementById('km').value = (meter / 1000).toFixed(4);
+                    document.getElementById('mile').value = (meter / 1609.34).toFixed(4);
+                } else if (!isNaN(mile)) {
+                    document.getElementById('km').value = (mile * 1.60934).toFixed(4);
+                    document.getElementById('meter').value = (mile * 1609.34).toFixed(2);
+                }
+            },
+
+            convertWeight() {
+                const kg = parseFloat(document.getElementById('kg').value);
+                const gram = parseFloat(document.getElementById('gram').value);
+                const lb = parseFloat(document.getElementById('lb').value);
+                
+                if (!isNaN(kg)) {
+                    document.getElementById('gram').value = (kg * 1000).toFixed(2);
+                    document.getElementById('lb').value = (kg * 2.20462).toFixed(4);
+                } else if (!isNaN(gram)) {
+                    document.getElementById('kg').value = (gram / 1000).toFixed(4);
+                    document.getElementById('lb').value = (gram / 453.592).toFixed(4);
+                } else if (!isNaN(lb)) {
+                    document.getElementById('kg').value = (lb / 2.20462).toFixed(4);
+                    document.getElementById('gram').value = (lb / 2.20462 * 1000).toFixed(2);
+                }
+            },
+
+            convertVolume() {
+                const liter = parseFloat(document.getElementById('liter').value);
+                const ml = parseFloat(document.getElementById('ml').value);
+                const gallon = parseFloat(document.getElementById('gallon').value);
+                
+                if (!isNaN(liter)) {
+                    document.getElementById('ml').value = (liter * 1000).toFixed(2);
+                    document.getElementById('gallon').value = (liter * 0.264172).toFixed(4);
+                } else if (!isNaN(ml)) {
+                    document.getElementById('liter').value = (ml / 1000).toFixed(4);
+                    document.getElementById('gallon').value = (ml / 3785.41).toFixed(4);
+                } else if (!isNaN(gallon)) {
+                    document.getElementById('liter').value = (gallon * 3.78541).toFixed(4);
+                    document.getElementById('ml').value = (gallon * 3785.41).toFixed(2);
+                }
+            },
+
+            convertArea() {
+                const sqm = parseFloat(document.getElementById('sqm').value);
+                const sqft = parseFloat(document.getElementById('sqft').value);
+                
+                if (!isNaN(sqm)) {
+                    document.getElementById('sqft').value = (sqm * 10.764).toFixed(4);
+                } else if (!isNaN(sqft)) {
+                    document.getElementById('sqm').value = (sqft / 10.764).toFixed(4);
+                }
+            },
+
+            convertSpeed() {
+                const kmh = parseFloat(document.getElementById('kmh').value);
+                const ms = parseFloat(document.getElementById('ms').value);
+                const mph = parseFloat(document.getElementById('mph').value);
+                
+                if (!isNaN(kmh)) {
+                    document.getElementById('ms').value = (kmh / 3.6).toFixed(4);
+                    document.getElementById('mph').value = (kmh * 0.621371).toFixed(4);
+                } else if (!isNaN(ms)) {
+                    document.getElementById('kmh').value = (ms * 3.6).toFixed(4);
+                    document.getElementById('mph').value = (ms * 2.23694).toFixed(4);
+                } else if (!isNaN(mph)) {
+                    document.getElementById('kmh').value = (mph * 1.60934).toFixed(4);
+                    document.getElementById('ms').value = (mph / 2.23694).toFixed(4);
+                }
+            },
+
+            // ==================== 翻譯 ====================
+            translateText() {
+                try {
+                    const text = document.getElementById('translateInput').value.trim();
+                    if (!text) {
+                        this.showToast('請輸入要翻譯的文字', 'error');
+                        return;
+                    }
+
+                    const sourceLang = document.getElementById('sourceLang').value;
+                    const targetLang = document.getElementById('targetLang').value;
+
+                    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+
+                    fetch(url)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.responseStatus === 200) {
+                                document.getElementById('translateOutput').innerHTML = `
+                                    <strong>原文：</strong><br>
+                                    ${text}<br><br>
+                                    <strong style="color: var(--primary);">譯文：</strong><br>
+                                    ${data.responseData.translatedText}<br><br>
+                                    <button class="btn-sm" onclick="app.copyToClipboard('${data.responseData.translatedText}')">📋 複製</button>
+                                `;
+                            } else {
+                                throw new Error('翻譯失敗');
+                            }
+                            document.getElementById('translateOutput').classList.remove('hidden');
+                        })
+                        .catch(err => {
+                            document.getElementById('translateOutput').innerHTML = `<strong style="color: var(--danger);">❌ 翻譯出錯：${err.message}</strong>`;
+                            document.getElementById('translateOutput').classList.remove('hidden');
+                        });
+                } catch (error) {
+                    this.showToast('出錯: ' + error.message, 'error');
+                }
+            },
+
+            // ==================== 待辦清單 ====================
+            addTodo() {
+                try {
+                    const input = document.getElementById('todoInput').value.trim();
+                    if (!input) return;
+
+                    this.state.todos.push({
+                        id: Date.now(),
+                        text: input,
+                        priority: document.getElementById('todoPriorityInput').value,
+                        done: false,
+                        createdAt: new Date().toLocaleString()
+                    });
+
+                    document.getElementById('todoInput').value = '';
+                    this.renderTodos();
+                    this.saveData();
+                    this.showToast('待辦已添加');
+                    this.hasChanged = true;
+                } catch (error) {
+                    this.showToast('添加失敗', 'error');
+                }
+            },
+
+            filterTodos() {
+                const search = document.getElementById('todoSearch').value.toLowerCase();
+                const priority = document.getElementById('todoPriority').value;
+                const status = document.getElementById('todoStatus').value;
+                
+                const filtered = this.state.todos.filter(todo => 
+                    todo.text.toLowerCase().includes(search) &&
+                    (!priority || todo.priority === priority) &&
+                    (!status || (status === 'done' ? todo.done : !todo.done))
+                );
+                
+                this.renderTodos(filtered);
+            },
+
+            renderTodos(todos = this.state.todos) {
+                const list = document.getElementById('todoList');
+                const completed = this.state.todos.filter(t => t.done).length;
+                const total = this.state.todos.length;
+                const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+                
+                document.getElementById('todoCompleted').textContent = completed;
+                document.getElementById('todoPending').textContent = total - completed;
+                document.getElementById('todoTotal').textContent = total;
+                document.getElementById('todoProgress').textContent = progress + '%';
+                document.getElementById('todoProgressBar').style.width = progress + '%';
+
+                if (todos.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">沒有待辦事項</div></div>';
+                    return;
+                }
+
+                const priorityMap = { high: '⚡ 高', medium: '→ 中', low: '↓ 低' };
+                const priorityClass = { high: 'high', medium: 'medium', low: 'low' };
+
+                list.innerHTML = todos
+                    .sort((a, b) => {
+                        const priorityOrder = { high: 3, medium: 2, low: 1 };
+                        return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+                    })
+                    .map(todo => `
+                    <div class="list-item" style="opacity: ${todo.done ? 0.6 : 1};">
+                        <div class="list-item-content" style="flex: 1;">
+                            <input type="checkbox" ${todo.done ? 'checked' : ''} 
+                                   onchange="app.toggleTodo(${todo.id})"
+                                   style="margin-right: 8px; cursor: pointer;">
+                            <span class="badge ${priorityClass[todo.priority]}">${priorityMap[todo.priority]}</span>
+                            <span style="text-decoration: ${todo.done ? 'line-through' : 'none'};">
+                                ${todo.text}
+                            </span>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn-sm btn-danger" onclick="app.deleteTodo(${todo.id})">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            toggleTodo(id) {
+                const todo = this.state.todos.find(t => t.id === id);
+                if (todo) {
+                    todo.done = !todo.done;
+                    this.renderTodos();
+                    this.saveData();
+                    this.hasChanged = true;
+                }
+            },
+
+            deleteTodo(id) {
+                this.state.todos = this.state.todos.filter(t => t.id !== id);
+                this.renderTodos();
+                this.saveData();
+                this.showToast('已刪除待辦');
+                this.hasChanged = true;
+            },
+
+            // ==================== 筆記 ====================
+            addNote() {
+                try {
+                    const title = document.getElementById('noteTitle').value.trim();
+                    const content = document.getElementById('noteContent').value.trim();
+                    const tag = document.getElementById('noteTag').value.trim();
+
+                    if (!title || !content) {
+                        this.showToast('請輸入標題和內容', 'error');
+                        return;
+                    }
+
+                    this.state.notes.push({
+                        id: Date.now(),
+                        title,
+                        content,
+                        tags: tag ? tag.split(',').map(t => t.trim()) : [],
+                        createdAt: new Date().toLocaleString()
+                    });
+
+                    document.getElementById('noteTitle').value = '';
+                    document.getElementById('noteContent').value = '';
+                    document.getElementById('noteTag').value = '';
+                    this.renderNotes();
+                    this.saveData();
+                    this.showToast('筆記已保存');
+                    this.hasChanged = true;
+                } catch (error) {
+                    this.showToast('保存失敗', 'error');
+                }
+            },
+
+            filterNotes() {
+                const search = document.getElementById('noteSearch').value.toLowerCase();
+                const filtered = this.state.notes.filter(note => 
+                    note.title.toLowerCase().includes(search) ||
+                    note.content.toLowerCase().includes(search) ||
+                    note.tags.some(tag => tag.toLowerCase().includes(search))
+                );
+                this.renderNotes(filtered);
+            },
+
+            renderNotes(notes = this.state.notes) {
+                const list = document.getElementById('notesList');
+                
+                if (notes.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">沒有筆記</div></div>';
+                    return;
+                }
+
+                list.innerHTML = notes.map(note => `
+                    <div class="list-item" style="flex-direction: column; align-items: flex-start;">
+                        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h3 style="margin: 0; color: var(--primary);">${note.title}</h3>
+                            <button class="btn-sm btn-danger" onclick="app.deleteNote(${note.id})">🗑️</button>
+                        </div>
+                        ${note.tags.length > 0 ? `<div style="margin-bottom: 8px;">${note.tags.map(tag => `<span class="badge tag">${tag}</span>`).join('')}</div>` : ''}
+                        <p style="margin: 0; white-space: pre-wrap; color: var(--text-light); font-size: 0.9rem;">${note.content.substring(0, 150)}...</p>
+                        <span style="font-size: 0.8rem; color: var(--text-light); margin-top: 8px;">${note.createdAt}</span>
+                    </div>
+                `).join('');
+            },
+
+            deleteNote(id) {
+                this.state.notes = this.state.notes.filter(n => n.id !== id);
+                this.renderNotes();
+                this.saveData();
+                this.showToast('筆記已刪除');
+                this.hasChanged = true;
+            },
+
+            // ==================== 計時器 ====================
+            startTimer() {
+                if (this.state.isTimerRunning) return;
+
+                const min = parseInt(document.getElementById('timerMin').value) || 0;
+                const sec = parseInt(document.getElementById('timerSec').value) || 0;
+                this.state.timerSeconds = min * 60 + sec;
+
+                if (this.state.timerSeconds <= 0) {
+                    this.showToast('請輸入有效的時間', 'error');
+                    return;
+                }
+
+                this.state.isTimerRunning = true;
+                this.updateTimerDisplay();
+
+                this.state.timerInterval = setInterval(() => {
+                    this.state.timerSeconds--;
+                    this.updateTimerDisplay();
+
+                    if (this.state.timerSeconds <= 0) {
+                        clearInterval(this.state.timerInterval);
+                        this.state.isTimerRunning = false;
+                        this.playNotification();
+                        this.showToast('⏰ 時間到！');
+                    }
+                }, 1000);
+            },
+
+            pauseTimer() {
+                this.state.isTimerRunning = false;
+                clearInterval(this.state.timerInterval);
+            },
+
+            resetTimer() {
+                this.state.isTimerRunning = false;
+                clearInterval(this.state.timerInterval);
+                this.state.timerSeconds = 0;
+                document.getElementById('timerDisplay').textContent = '00:00';
+            },
+
+            addQuickTimer(minutes) {
+                if (this.state.isTimerRunning) {
+                    this.state.timerSeconds += minutes * 60;
+                } else {
+                    document.getElementById('timerMin').value = (parseInt(document.getElementById('timerMin').value) || 0) + minutes;
+                }
+                this.updateTimerDisplay();
+            },
+
+            startPomodoro() {
+                document.getElementById('timerMin').value = 25;
+                document.getElementById('timerSec').value = 0;
+                this.updateTimerDisplay();
+                this.startTimer();
+                this.showToast('番茄鐘已開始 (25分鐘)');
+            },
+
+            updateTimerDisplay() {
+                const min = Math.floor(this.state.timerSeconds / 60);
+                const sec = this.state.timerSeconds % 60;
+                document.getElementById('timerDisplay').textContent = 
+                    `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            },
+
+            playNotification() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                } catch (e) {
+                    console.log('音頻不可用');
+                }
+            },
+
+            // ==================== 支出記錄 ====================
+            addExpense() {
+                try {
+                    const amount = parseFloat(document.getElementById('expenseAmount').value);
+                    let category = document.getElementById('expenseCategory').value.trim();
+                    const categoryInput = document.getElementById('expenseCategoryInput').value.trim();
+                    
+                    if (categoryInput) {
+                        category = categoryInput;
+                        document.getElementById('expenseCategoryInput').value = '';
+                    }
+
+                    if (!amount || amount <= 0) {
+                        this.showToast('請輸入有效的金額', 'error');
+                        return;
+                    }
+
+                    if (!category) {
+                        this.showToast('請選擇或輸入分類', 'error');
+                        return;
+                    }
+
+                    this.state.expenses.push({
+                        id: Date.now(),
+                        amount,
+                        category,
+                        date: new Date().toLocaleDateString(),
+                        timestamp: new Date()
+                    });
+
+                    document.getElementById('expenseAmount').value = '';
+                    document.getElementById('expenseCategory').value = '';
+                    this.renderExpenses();
+                    this.saveData();
+                    this.showToast('支出已記錄');
+                    this.hasChanged = true;
+                } catch (error) {
+                    this.showToast('記錄失敗', 'error');
+                }
+            },
+
+            filterExpenses() {
+                const search = document.getElementById('expenseSearch').value.toLowerCase();
+                const month = document.getElementById('expenseMonth').value;
+                
+                let filtered = this.state.expenses.filter(expense => 
+                    expense.category.toLowerCase().includes(search)
+                );
+
+                if (month) {
+                    const now = new Date();
+                    const currentMonth = now.getMonth();
+                    const currentYear = now.getFullYear();
+                    
+                    filtered = filtered.filter(expense => {
+                        const expenseDate = new Date(expense.timestamp);
+                        if (month === 'current') {
+                            return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+                        } else if (month === 'last') {
+                            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+                            const lastYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+                            return expenseDate.getMonth() === lastMonth && expenseDate.getFullYear() === lastYear;
+                        } else if (month === '6month') {
+                            const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+                            return expenseDate >= sixMonthsAgo;
+                        } else if (month === '12month') {
+                            const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                            return expenseDate >= oneYearAgo;
+                        }
+                        return true;
+                    });
+                }
+
+                this.renderExpenses(filtered);
+            },
+
+            renderExpenses(expenses = this.state.expenses) {
+                const list = document.getElementById('expenseList');
+                const statsDiv = document.getElementById('expenseStats');
+                
+                const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+                
+                if (expenses.length === 0) {
+                    statsDiv.innerHTML = '';
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">沒有支出記錄</div></div>';
+                    return;
+                }
+
+                const byCategory = {};
+                expenses.forEach(e => {
+                    byCategory[e.category] = (byCategory[e.category] || 0) + e.amount;
+                });
+
+                const categoryStats = Object.entries(byCategory)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([cat, sum]) => {
+                        const percent = total > 0 ? ((sum / total) * 100).toFixed(1) : 0;
+                        return `<div style="margin: 6px 0; display: flex; justify-content: space-between;">
+                            <span>🏷️ ${cat}</span>
+                            <span><strong>¥${sum.toFixed(2)}</strong> (${percent}%)</span>
+                        </div>`;
+                    })
+                    .join('');
+
+                statsDiv.innerHTML = `
+                    <div class="stat-box">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">💰 總支出：<strong>¥${total.toFixed(2)}</strong></div>
+                        <div style="font-size: 0.9rem; margin-bottom: 10px;">分類統計：${Object.keys(byCategory).length} 個</div>
+                        ${categoryStats}
+                    </div>
+                `;
+
+                list.innerHTML = expenses
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(e => `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <strong style="color: var(--primary);">${e.category}</strong><br>
+                            <span style="color: var(--text-light); font-size: 0.85rem;">${e.date}</span>
+                        </div>
+                        <div class="list-item-actions" style="flex-direction: column; text-align: right;">
+                            <strong style="color: var(--primary); font-size: 1rem;">¥${e.amount.toFixed(2)}</strong>
+                            <button class="btn-sm btn-danger" onclick="app.deleteExpense(${e.id})">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            deleteExpense(id) {
+                this.state.expenses = this.state.expenses.filter(e => e.id !== id);
+                this.renderExpenses();
+                this.saveData();
+                this.showToast('支出已刪除');
+                this.hasChanged = true;
+            },
+
+            // ==================== 二維碼 ====================
+            generateQR() {
+                try {
+                    const text = document.getElementById('qrInput').value.trim();
+                    if (!text) {
+                        this.showToast('請輸入要編碼的文字', 'error');
+                        return;
+                    }
+
+                    document.getElementById('qrOutput').innerHTML = '';
+                    new QRCode(document.getElementById('qrOutput'), {
+                        text: text,
+                        width: 256,
+                        height: 256,
+                        colorDark: '#667eea',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+
+                    this.state.qrHistory.push({ text: text, time: new Date().toLocaleTimeString() });
+                    if (this.state.qrHistory.length > 10) this.state.qrHistory.shift();
+                    this.showToast('二維碼已生成');
+                } catch (error) {
+                    this.showToast('生成失敗: ' + error.message, 'error');
+                }
+            },
+
+            downloadQR() {
+                try {
+                    const canvas = document.querySelector('#qrOutput canvas');
+                    if (!canvas) {
+                        this.showToast('請先生成二維碼', 'error');
+                        return;
+                    }
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL();
+                    link.download = 'qrcode-' + Date.now() + '.png';
+                    link.click();
+                    this.showToast('二維碼已下載');
+                } catch (error) {
+                    this.showToast('下載失敗', 'error');
+                }
+            },
+
+            showQRHistory() {
+                const historyText = this.state.qrHistory.slice().reverse()
+                    .map(h => `<div>${h.text} <span style="font-size: 0.8rem; opacity: 0.7;">${h.time}</span></div>`)
+                    .join('');
+                
+                const output = document.getElementById('qrOutput');
+                output.innerHTML = `<div style="text-align: left; padding: 10px; background: rgba(102,126,234,0.1); border-radius: 6px;">${historyText || '沒有歷史記錄'}</div>`;
+            },
+
+            // ==================== 密碼生成 ====================
+            generatePasswords() {
+                try {
+                    const length = parseInt(document.getElementById('pwdLength').value) || 16;
+                    const useUppercase = document.getElementById('pwdUppercase').checked;
+                    const useSymbols = document.getElementById('pwdSymbols').checked;
+
+                    let chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+                    if (useUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+                    let passwords = [];
+                    for (let i = 0; i < 3; i++) {
+                        let pwd = '';
+                        for (let j = 0; j < length; j++) {
+                            pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+                        }
+                        passwords.push(pwd);
+                    }
+
+                    const list = document.getElementById('passwordList');
+                    list.innerHTML = passwords.map((pwd, idx) => `
+                        <div class="list-item">
+                            <span style="font-family: monospace; flex: 1; word-break: break-all;">${pwd}</span>
+                            <div class="list-item-actions">
+                                <button class="btn-sm btn-secondary" onclick="app.copyToClipboard('${pwd}')">📋 複製</button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    this.showToast('密碼已生成');
+                } catch (error) {
+                    this.showToast('生成失敗', 'error');
+                }
+            },
+
+            // ==================== 健康計算 ====================
+            calculateBMI() {
+                try {
+                    const height = parseFloat(document.getElementById('bmiHeight').value);
+                    const weight = parseFloat(document.getElementById('bmiWeight').value);
+
+                    if (!height || !weight || height <= 0 || weight <= 0) {
+                        this.showToast('請輸入有效的身高和體重', 'error');
+                        return;
+                    }
+
+                    const heightM = height / 100;
+                    const bmi = (weight / (heightM * heightM)).toFixed(1);
+
+                    let category = '';
+                    let color = '';
+                    if (bmi < 18.5) {
+                        category = '體重過輕 (Underweight)';
+                        color = '#2196F3';
+                    } else if (bmi < 25) {
+                        category = '正常體重 (Normal)';
+                        color = '#4caf50';
+                    } else if (bmi < 30) {
+                        category = '超重 (Overweight)';
+                        color = '#ffd93d';
+                    } else {
+                        category = '肥胖 (Obese)';
+                        color = '#ff6b6b';
+                    }
+
+                    this.state.health.push({
+                        id: Date.now(),
+                        bmi: parseFloat(bmi),
+                        height,
+                        weight,
+                        category,
+                        date: new Date().toLocaleString()
+                    });
+
+                    const resultBox = document.getElementById('bmiResult');
+                    resultBox.innerHTML = `
+                        <strong style="font-size: 1.1rem;">BMI: ${bmi}</strong><br>
+                        <strong style="color: ${color}; font-size: 1rem;">${category}</strong><br>
+                        <small>身高: ${height}cm | 體重: ${weight}kg</small>
+                    `;
+                    resultBox.classList.remove('hidden');
+                    
+                    this.renderHealthHistory();
+                    this.saveData();
+                    this.showToast('BMI已計算');
+                    this.hasChanged = true;
+                } catch (error) {
+                    this.showToast('計算失敗', 'error');
+                }
+            },
+
+            renderHealthHistory() {
+                const history = document.getElementById('healthHistory');
+                
+                if (this.state.health.length === 0) {
+                    history.innerHTML = '<p style="color: var(--text-light);">暫無記錄</p>';
+                    return;
+                }
+
+                const sorted = [...this.state.health].sort((a, b) => new Date(b.date) - new Date(a.date));
+                history.innerHTML = sorted.slice(0, 5).map(record => {
+                    let color = '';
+                    if (record.bmi < 18.5) color = '#2196F3';
+                    else if (record.bmi < 25) color = '#4caf50';
+                    else if (record.bmi < 30) color = '#ffd93d';
+                    else color = '#ff6b6b';
+
+                    return `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <strong style="color: ${color};">BMI: ${record.bmi}</strong> - ${record.category}<br>
+                            <small style="color: var(--text-light);">${record.date}</small>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn-sm btn-danger" onclick="app.deleteHealthRecord(${record.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            },
+
+            deleteHealthRecord(id) {
+                this.state.health = this.state.health.filter(h => h.id !== id);
+                this.renderHealthHistory();
+                this.saveData();
+                this.hasChanged = true;
+            },
+
+            // ==================== 加密 ====================
+            encryptText() {
+                try {
+                    const text = document.getElementById('cryptoInput').value;
+                    if (!text) {
+                        this.showToast('請輸入文字', 'error');
+                        return;
+                    }
+                    const encrypted = btoa(text);
+                    document.getElementById('cryptoOutput').innerHTML = `
+                        <strong>加密結果：</strong><br>
+                        ${encrypted}<br>
+                        <button class="btn-sm" onclick="app.copyToClipboard('${encrypted}')">📋 複製</button>
+                    `;
+                    document.getElementById('cryptoOutput').classList.remove('hidden');
+                } catch (error) {
+                    this.showToast('加密失敗', 'error');
+                }
+            },
+
+            decryptText() {
+                try {
+                    const text = document.getElementById('cryptoInput').value.trim();
+                    if (!text) {
+                        this.showToast('請輸入文字', 'error');
+                        return;
+                    }
+                    const decrypted = atob(text);
+                    document.getElementById('cryptoOutput').innerHTML = `
+                        <strong>解密結果：</strong><br>
+                        ${decrypted}<br>
+                        <button class="btn-sm" onclick="app.copyToClipboard('${decrypted}')">📋 複製</button>
+                    `;
+                    document.getElementById('cryptoOutput').classList.remove('hidden');
+                } catch (error) {
+                    this.showToast('解密失敗：格式可能不正確', 'error');
+                }
+            },
+
+            // ==================== 統計分析 ====================
+            showStats() {
+                try {
+                    const totalTodos = this.state.todos.length;
+                    const completedTodos = this.state.todos.filter(t => t.done).length;
+                    const totalExpense = this.state.expenses.reduce((sum, e) => sum + e.amount, 0);
+                    const avgExpense = this.state.expenses.length > 0 ? totalExpense / this.state.expenses.length : 0;
+                    const totalNotes = this.state.notes.length;
+                    const recentBMI = this.state.health.length > 0 ? this.state.health[this.state.health.length - 1].bmi : 'N/A';
+
+                    const statsOutput = document.getElementById('statsOutput');
+                    statsOutput.innerHTML = `
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${completedTodos}/${totalTodos}</div>
+                                <div class="stat-label">待辦完成率</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">¥${totalExpense.toFixed(2)}</div>
+                                <div class="stat-label">總支出</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">¥${avgExpense.toFixed(2)}</div>
+                                <div class="stat-label">平均支出</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${totalNotes}</div>
+                                <div class="stat-label">筆記總數</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${recentBMI}</div>
+                                <div class="stat-label">最新 BMI</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${this.state.health.length}</div>
+                                <div class="stat-label">健康記錄</div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (this.state.expenses.length > 0) {
+                        const byCategory = {};
+                        this.state.expenses.forEach(e => {
+                            byCategory[e.category] = (byCategory[e.category] || 0) + e.amount;
+                        });
+
+                        let table = '<h3 style="margin-top: 18px;">📊 支出分類統計</h3>';
+                        table += '<table style="width: 100%; border-collapse: collapse;">';
+                        table += '<tr style="background: var(--primary); color: white;"><th style="padding: 8px; border: 1px solid var(--border); text-align: left;">分類</th><th style="padding: 8px; border: 1px solid var(--border);">金額</th><th style="padding: 8px; border: 1px solid var(--border);">占比</th></tr>';
+                        Object.entries(byCategory).sort((a, b) => b[1] - a[1]).forEach(([cat, sum]) => {
+                            const percent = ((sum / totalExpense) * 100).toFixed(1);
+                            table += `<tr><td style="padding: 8px; border: 1px solid var(--border);">${cat}</td><td style="padding: 8px; border: 1px solid var(--border);">¥${sum.toFixed(2)}</td><td style="padding: 8px; border: 1px solid var(--border);">${percent}%</td></tr>`;
+                        });
+                        table += '</table>';
+                        statsOutput.innerHTML += table;
+                    }
+                } catch (error) {
+                    this.showToast('統計分析失敗', 'error');
+                }
+            },
+
+            // ==================== 數據管理 ====================
+            exportData() {
+                try {
+                    const dataStr = JSON.stringify(this.state, null, 2);
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `life-tools-backup-${new Date().toISOString().split('T')[0]}.json`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    this.showToast('數據已導出');
+                } catch (error) {
+                    this.showToast('導出失敗', 'error');
+                }
+            },
+
+            importData() {
+                try {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = e => {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = event => {
+                            try {
+                                const imported = JSON.parse(event.target.result);
+                                Object.assign(this.state, imported);
+                                this.saveData();
+                                location.reload();
+                                this.showToast('數據已導入');
+                            } catch (error) {
+                                this.showToast('導入失敗：文件格式不正確', 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+                    input.click();
+                } catch (error) {
+                    this.showToast('導入失敗', 'error');
+                }
+            },
+
+            showSettings() {
+                this.showToast('設置面板開發中...');
+            }
+        };
+
+        // 自動保存每30秒
+        setInterval(() => {
+            if (app.hasChanged) {
+                app.saveData();
+                app.hasChanged = false;
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
