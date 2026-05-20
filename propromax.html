@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GrandAbyss Sovereign Matrix v7.0 | 奧米加完全體</title>
+    <title>GrandAbyss Sovereign Matrix v7.5 | 奧米加昇華版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <style>
         /* 核心視覺變數庫 */
@@ -13,12 +13,11 @@
             --txt-main: #c9d1d9; --txt-mut: #8b949e; --txt-lit: #f0f6fc;
             --accent-math: #38bdf8; --accent-phys: #34d399; --accent-chem: #fbbf24; 
             --accent-music: #f472b6; --accent-gacha: #a78bfa;
-            --term-bg: #010409; --term-txt: #00ff00; --term-err: #ff7b72;
         }
 
         /* 基礎全域設定 */
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-deep); color: var(--txt-main); margin: 0; padding: 20px; line-height: 1.6; overflow-y: scroll; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-deep); color: var(--txt-main); margin: 0; padding: 20px; line-height: 1.6; }
         .wrapper { max-width: 1600px; margin: 0 auto; }
         
         /* 頂部標題 */
@@ -43,12 +42,12 @@
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 40px; }
         
         /* 卡片設計 */
-        .card { background: var(--bg-card); border: 1px solid var(--brd-main); border-radius: 12px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: transform 0.2s; }
+        .card { background: var(--bg-card); border: 1px solid var(--brd-main); border-radius: 12px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; transition: border-color 0.2s; display: flex; flex-direction: column; }
         .card:hover { border-color: rgba(255,255,255,0.2); }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; border-radius: 12px 12px 0 0; }
         .card.m-card::before { background: var(--accent-math); }
         .card.p-card::before { background: var(--accent-phys); }
         .card.c-card::before { background: var(--accent-chem); }
@@ -65,22 +64,28 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         label { display: block; font-size: 0.85em; color: var(--txt-mut); margin-bottom: 4px; font-weight: 600; }
         input, select { width: 100%; background: var(--bg-deep); border: 1px solid var(--brd-main); color: var(--txt-lit); padding: 10px; border-radius: 6px; font-family: 'Consolas', monospace; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--txt-mut); box-shadow: 0 0 8px rgba(255,255,255,0.1); }
+        input:focus, select:focus { border-color: var(--txt-mut); box-shadow: 0 0 8px rgba(255,255,255,0.1); }
         
         /* 執行按鈕 */
-        .btn-exec { width: 100%; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 1em; cursor: pointer; transition: all 0.2s; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; color: #000; }
+        .btn-exec { width: 100%; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 1em; cursor: pointer; transition: all 0.2s; margin-top: auto; text-transform: uppercase; letter-spacing: 1px; color: #000; }
         .btn-exec:active { transform: scale(0.98); }
         .btn-math { background: var(--accent-math); } .btn-phys { background: var(--accent-phys); }
         .btn-chem { background: var(--accent-chem); } .btn-music { background: var(--accent-music); }
         .btn-gacha { background: var(--accent-gacha); }
 
-        /* 終端機控制台 */
-        .terminal-container { background: var(--term-bg); border: 1px solid var(--brd-main); border-radius: 10px; margin-top: 20px; padding: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .terminal-header { color: var(--txt-mut); font-size: 0.9em; border-bottom: 1px solid var(--brd-main); padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .terminal-output { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.95em; color: var(--term-txt); white-space: pre-wrap; height: 350px; overflow-y: auto; line-height: 1.5; }
-        .terminal-output .sys { color: #8b949e; }
-        .terminal-output .err { color: var(--term-err); }
-        .terminal-output .highlight { color: #fff; font-weight: bold; background: rgba(255,255,255,0.1); padding: 0 4px; border-radius: 3px; }
+        /* 獨立結果觀測窗 (新UI核心) */
+        .result-box { margin-top: 15px; padding: 15px; background: rgba(1, 4, 9, 0.8); border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.95em; white-space: pre-wrap; display: none; line-height: 1.5; border-left: 4px solid; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .result-box.active { display: block; animation: expandDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes expandDown { from { opacity: 0; transform: scaleY(0.9); transform-origin: top; } to { opacity: 1; transform: scaleY(1); transform-origin: top; } }
+        
+        .m-card .result-box { border-left-color: var(--accent-math); color: #e5f5ff; }
+        .p-card .result-box { border-left-color: var(--accent-phys); color: #e6fffa; }
+        .c-card .result-box { border-left-color: var(--accent-chem); color: #fffbeb; }
+        .mu-card .result-box { border-left-color: var(--accent-music); color: #fdf2f8; }
+        .g-card .result-box { border-left-color: var(--accent-gacha); color: #f5f3ff; }
+        
+        .highlight { font-weight: bold; padding: 0 4px; border-radius: 3px; background: rgba(255,255,255,0.1); }
+        .err { color: #ff7b72; font-weight: bold; }
 
         /* 滾動條美化 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -94,7 +99,7 @@
 <div class="wrapper">
     <header>
         <h1>GrandAbyss Sovereign Matrix</h1>
-        <p>Omnipotent Calculation Engine v7.0 | 全域科學與機率演算樞紐</p>
+        <p>Omnipotent Calculation Engine v7.5 | 模組化直觀演算樞紐</p>
     </header>
 
     <div class="nav-container" id="main-nav">
@@ -108,68 +113,49 @@
     <div id="m-math" class="panel active">
         <div class="grid-layout">
             <div class="card m-card">
-                <h3>一元二次公式解 (精確根式保留)</h3>
+                <h3>一元二次公式解</h3>
                 <div class="form-row">
                     <div class="form-group"><label>二次項 a:</label><input type="number" id="m_quad_a" value="1"></div>
                     <div class="form-group"><label>一次項 b:</label><input type="number" id="m_quad_b" value="-5"></div>
                 </div>
                 <div class="form-group"><label>常數項 c:</label><input type="number" id="m_quad_c" value="6"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.solveQuadratic()">執行化簡</button>
+                <button class="btn-exec btn-math" onclick="MathEngine.solveQuadratic('res_quad')">執行化簡</button>
+                <div class="result-box" id="res_quad"></div>
             </div>
 
             <div class="card m-card">
                 <h3>函數切線推導 (微積分)</h3>
                 <div class="form-group"><label>多項式 f(x):</label><input type="text" id="m_poly_f" value="x^3 - 4*x^2 + x + 6"></div>
                 <div class="form-group"><label>切點 x = c:</label><input type="number" id="m_poly_c" value="2"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcCalculus()">推導切線</button>
+                <button class="btn-exec btn-math" onclick="MathEngine.calcCalculus('res_calc')">推導切線</button>
+                <div class="result-box" id="res_calc"></div>
             </div>
 
             <div class="card m-card">
-                <h3>空間向量外積與力矩 (A × B)</h3>
+                <h3>空間向量外積與力矩</h3>
                 <div class="form-group"><label>向量 A (x, y, z):</label><input type="text" id="m_vec_a" value="2, 3, -1"></div>
                 <div class="form-group"><label>向量 B (x, y, z):</label><input type="text" id="m_vec_b" value="1, -2, 4"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcCrossProduct()">計算外積</button>
-            </div>
-
-            <div class="card m-card">
-                <h3>內積與正射影</h3>
-                <div class="form-group"><label>主要向量 A (x, y):</label><input type="text" id="m_proj_a" value="3, 4"></div>
-                <div class="form-group"><label>投影基底 B (x, y):</label><input type="text" id="m_proj_b" value="5, 0"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcProjection()">計算投影</button>
-            </div>
-
-            <div class="card m-card">
-                <h3>矩陣乘法與行列式</h3>
-                <div class="form-group"><label>方陣 A (分號分列):</label><input type="text" id="m_mat_a" value="1, 2; 3, 4"></div>
-                <div class="form-group"><label>方陣 B:</label><input type="text" id="m_mat_b" value="2, 0; 1, 2"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcMatrix()">矩陣演算</button>
-            </div>
-
-            <div class="card m-card">
-                <h3>貝氏定理 (條件機率反推)</h3>
-                <div class="form-row">
-                    <div class="form-group"><label>P(A) 先驗:</label><input type="number" id="m_bayes_pa" value="0.01" step="0.01"></div>
-                    <div class="form-group"><label>P(B|A) 準確度:</label><input type="number" id="m_bayes_pba" value="0.99" step="0.01"></div>
-                </div>
-                <div class="form-group"><label>P(B|A') 誤報率:</label><input type="number" id="m_bayes_pbfa" value="0.05" step="0.01"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcBayes()">解算後驗機率</button>
+                <button class="btn-exec btn-math" onclick="MathEngine.calcCrossProduct('res_cross')">計算外積</button>
+                <div class="result-box" id="res_cross"></div>
             </div>
 
             <div class="card m-card">
                 <h3>圓與直線距離解析</h3>
                 <div class="form-group"><label>圓心 (h, k) 與 半徑 r:</label><input type="text" id="m_circle" value="0, 0, 5"></div>
                 <div class="form-group"><label>直線 ax + by + c = 0:</label><input type="text" id="m_line" value="3, -4, 15"></div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcCircleLine()">計算幾何關係</button>
+                <button class="btn-exec btn-math" onclick="MathEngine.calcCircleLine('res_circle')">計算幾何關係</button>
+                <div class="result-box" id="res_circle"></div>
             </div>
-
+            
             <div class="card m-card">
-                <h3>數值定積分 (面積)</h3>
-                <div class="form-group"><label>被積函數 f(x):</label><input type="text" id="m_int_f" value="sin(x)"></div>
+                <h3>貝氏定理 (條件機率)</h3>
                 <div class="form-row">
-                    <div class="form-group"><label>下限 a:</label><input type="number" id="m_int_a" value="0"></div>
-                    <div class="form-group"><label>上限 b (可輸入pi):</label><input type="text" id="m_int_b" value="3.14159"></div>
+                    <div class="form-group"><label>P(A) 先驗:</label><input type="number" id="m_bayes_pa" value="0.01" step="0.01"></div>
+                    <div class="form-group"><label>P(B|A) 準確度:</label><input type="number" id="m_bayes_pba" value="0.99" step="0.01"></div>
                 </div>
-                <button class="btn-exec btn-math" onclick="MathEngine.calcIntegral()">執行積分</button>
+                <div class="form-group"><label>P(B|A') 誤報率:</label><input type="number" id="m_bayes_pbfa" value="0.05" step="0.01"></div>
+                <button class="btn-exec btn-math" onclick="MathEngine.calcBayes('res_bayes')">解算後驗機率</button>
+                <div class="result-box" id="res_bayes"></div>
             </div>
         </div>
     </div>
@@ -177,40 +163,36 @@
     <div id="m-phys" class="panel">
         <div class="grid-layout">
             <div class="card p-card">
-                <h3>二維拋物線運動 (Kinematics)</h3>
+                <h3>二維拋物線運動</h3>
                 <div class="form-row">
                     <div class="form-group"><label>初速 v0 (m/s):</label><input type="number" id="p_proj_v" value="20"></div>
                     <div class="form-group"><label>仰角 θ (度):</label><input type="number" id="p_proj_deg" value="45"></div>
                 </div>
-                <div class="form-group"><label>重力加速度 g:</label><input type="number" id="p_proj_g" value="9.81" step="0.01"></div>
-                <button class="btn-exec btn-phys" onclick="PhysEngine.calcProjectile()">計算飛行軌跡</button>
+                <div class="form-group"><label>重力 g:</label><input type="number" id="p_proj_g" value="9.81" step="0.01"></div>
+                <button class="btn-exec btn-phys" onclick="PhysEngine.calcProjectile('res_proj')">計算飛行軌跡</button>
+                <div class="result-box" id="res_proj"></div>
             </div>
 
             <div class="card p-card">
                 <h3>一維完全彈性碰撞</h3>
                 <div class="form-row">
-                    <div class="form-group"><label>m1 (kg), v1 (m/s):</label><input type="text" id="p_col_1" value="2, 5"></div>
-                    <div class="form-group"><label>m2 (kg), v2 (m/s):</label><input type="text" id="p_col_2" value="3, -4"></div>
+                    <div class="form-group"><label>m1(kg), v1(m/s):</label><input type="text" id="p_col_1" value="2, 5"></div>
+                    <div class="form-group"><label>m2(kg), v2(m/s):</label><input type="text" id="p_col_2" value="3, -4"></div>
                 </div>
-                <button class="btn-exec btn-phys" onclick="PhysEngine.calcCollision()">計算末速</button>
+                <button class="btn-exec btn-phys" onclick="PhysEngine.calcCollision('res_col')">計算末速</button>
+                <div class="result-box" id="res_col"></div>
             </div>
 
             <div class="card p-card">
-                <h3>電磁學：帶電粒子受力</h3>
+                <h3>電磁學：洛倫茲力</h3>
                 <div class="form-group"><label>電荷 q (C):</label><input type="text" id="p_em_q" value="1.6e-19"></div>
                 <div class="form-row">
                     <div class="form-group"><label>速度 v (m/s):</label><input type="text" id="p_em_v" value="1e5"></div>
                     <div class="form-group"><label>磁場 B (T):</label><input type="text" id="p_em_b" value="0.5"></div>
                 </div>
                 <div class="form-group"><label>夾角 θ (度):</label><input type="number" id="p_em_deg" value="90"></div>
-                <button class="btn-exec btn-phys" onclick="PhysEngine.calcLorentz()">計算洛倫茲力</button>
-            </div>
-            
-            <div class="card p-card">
-                <h3>量子：光電效應方程式</h3>
-                <div class="form-group"><label>入射波長 λ (nm):</label><input type="number" id="p_photo_wave" value="300"></div>
-                <div class="form-group"><label>金屬功函數 W (eV):</label><input type="number" id="p_photo_w" value="2.5"></div>
-                <button class="btn-exec btn-phys" onclick="PhysEngine.calcPhotoelectric()">計算最大動能</button>
+                <button class="btn-exec btn-phys" onclick="PhysEngine.calcLorentz('res_lor')">計算受力</button>
+                <div class="result-box" id="res_lor"></div>
             </div>
         </div>
     </div>
@@ -220,31 +202,23 @@
             <div class="card c-card">
                 <h3>基態原子軌域組態</h3>
                 <div class="form-group"><label>原子序 Z (1~36):</label><input type="number" id="c_elec_z" value="29"></div>
-                <button class="btn-exec btn-chem" onclick="ChemEngine.calcElectron()">推演電子排列</button>
+                <button class="btn-exec btn-chem" onclick="ChemEngine.calcElectron('res_elec')">推演排列</button>
+                <div class="result-box" id="res_elec"></div>
             </div>
 
             <div class="card c-card">
-                <h3>強酸鹼中和與 pH 值</h3>
-                <div class="form-row">
-                    <div class="form-group"><label>酸 [H+] M, V(mL):</label><input type="text" id="c_ph_acid" value="0.1, 50"></div>
-                    <div class="form-group"><label>鹼 [OH-] M, V(mL):</label><input type="text" id="c_ph_base" value="0.2, 30"></div>
-                </div>
-                <button class="btn-exec btn-chem" onclick="ChemEngine.calcTitration()">計算終點 pH</button>
-            </div>
-
-            <div class="card c-card">
-                <h3>反應速率動力學 (Rate Law)</h3>
-                <p style="font-size:0.8em; color:var(--txt-mut); margin-top:0;">R = k[A]ᵐ[B]ⁿ</p>
+                <h3>反應速率動力學</h3>
                 <div class="form-row">
                     <div class="form-group"><label>速率常數 k:</label><input type="number" id="c_rate_k" value="0.05"></div>
                     <div class="form-group"><label>[A] 濃度 M:</label><input type="number" id="c_rate_a" value="0.1"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>[A] 反應級數 m:</label><input type="number" id="c_rate_m" value="1"></div>
-                    <div class="form-group"><label>[B] 濃度 M:</label><input type="number" id="c_rate_b" value="0.2"></div>
+                    <div class="form-group"><label>A 級數 m:</label><input type="number" id="c_rate_m" value="1"></div>
+                    <div class="form-group"><label>B 級數 n:</label><input type="number" id="c_rate_n" value="2"></div>
                 </div>
-                <div class="form-group"><label>[B] 反應級數 n:</label><input type="number" id="c_rate_n" value="2"></div>
-                <button class="btn-exec btn-chem" onclick="ChemEngine.calcKinetics()">計算瞬時速率</button>
+                <div class="form-group"><label>[B] 濃度 M:</label><input type="number" id="c_rate_b" value="0.2"></div>
+                <button class="btn-exec btn-chem" onclick="ChemEngine.calcKinetics('res_kinetics')">計算瞬時速率</button>
+                <div class="result-box" id="res_kinetics"></div>
             </div>
         </div>
     </div>
@@ -253,7 +227,6 @@
         <div class="grid-layout">
             <div class="card mu-card">
                 <h3>自然大調和弦級數解析</h3>
-                <p style="font-size:0.8em; color:var(--txt-mut); margin-top:0;">適用於 BandLab 編曲和弦推導</p>
                 <div class="form-group">
                     <label>選擇大調主音 (Root Key):</label>
                     <select id="mu_key">
@@ -262,64 +235,63 @@
                         <option value="F">F Major</option><option value="Bb">Bb Major</option>
                     </select>
                 </div>
-                <button class="btn-exec btn-music" onclick="MusicEngine.calcChords()">生成 I-VII 級和弦表</button>
-            </div>
-            
-            <div class="card mu-card">
-                <h3>十二平均律頻率轉換</h3>
-                <div class="form-group"><label>標準音 A4 頻率 (Hz):</label><input type="number" id="mu_a4" value="440"></div>
-                <div class="form-group"><label>半音偏移量 (相對於 A4):</label><input type="number" id="mu_semitones" value="3" title="例如 C5 是 +3"></div>
-                <button class="btn-exec btn-music" onclick="MusicEngine.calcFrequency()">計算目標頻率</button>
+                <button class="btn-exec btn-music" onclick="MusicEngine.calcChords('res_chord')">生成 I-VII 級和弦表</button>
+                <div class="result-box" id="res_chord"></div>
             </div>
         </div>
     </div>
 
     <div id="m-gacha" class="panel">
         <div class="grid-layout">
+            
             <div class="card g-card">
-                <h3>基礎理論機率 (無保底)</h3>
+                <h3>基礎理論機率</h3>
                 <div class="form-row">
                     <div class="form-group"><label>單抽機率 (%):</label><input type="number" id="g_theo_rate" value="0.6" step="0.1"></div>
-                    <div class="form-group"><label>抽卡次數:</label><input type="number" id="g_theo_pulls" value="50"></div>
+                    <div class="form-group"><label>預計抽數:</label><input type="number" id="g_theo_pulls" value="50"></div>
                 </div>
-                <button class="btn-exec btn-gacha" onclick="GachaEngine.calcTheoretical()">計算至少中一次的機率</button>
+                <button class="btn-exec btn-gacha" onclick="GachaEngine.calcTheoretical('res_theo')">計算至少中獎率</button>
+                <div class="result-box" id="res_theo"></div>
             </div>
 
-            <div class="card g-card">
-                <h3>蒙地卡羅動態模擬器</h3>
+            <div class="card g-card" style="grid-column: 1 / -1;">
+                <h3>高階蒙地卡羅動態模擬器 (抽數規劃專用)</h3>
                 <div class="form-row">
-                    <div class="form-group"><label>基礎率 (%):</label><input type="number" id="g_sim_base" value="0.6" step="0.1"></div>
-                    <div class="form-group"><label>硬保底抽數:</label><input type="number" id="g_sim_hard" value="90"></div>
+                    <div class="form-group"><label>基礎率 (例如 0.6%):</label><input type="number" id="g_sim_base" value="0.6" step="0.1"></div>
+                    <div class="form-group"><label>硬保底抽數 (例如 90):</label><input type="number" id="g_sim_hard" value="90"></div>
+                    <div class="form-group"><label>軟保底起始 (例如 73):</label><input type="number" id="g_sim_soft" value="73"></div>
+                    <div class="form-group">
+                        <label>卡池類型 (UP機率):</label>
+                        <select id="g_sim_up">
+                            <option value="50">角色池 (50/50)</option>
+                            <option value="75">武器/光錐池 (75/25)</option>
+                            <option value="100">必中池 (100%)</option>
+                        </select>
+                    </div>
                 </div>
+                <hr style="border:0; border-top:1px dashed var(--brd-main); margin: 10px 0;">
                 <div class="form-row">
-                    <div class="form-group"><label>軟保底起始:</label><input type="number" id="g_sim_soft" value="73"></div>
-                    <div class="form-group"><label>UP 佔比 (%):</label><input type="number" id="g_sim_up" value="50"></div>
+                    <div class="form-group"><label style="color:#a78bfa;">🎯 目標要抽幾隻 (命座/星魂+1):</label><input type="number" id="g_sim_target" value="1" min="1" max="7"></div>
+                    <div class="form-group"><label style="color:#a78bfa;">📦 目前已墊抽數:</label><input type="number" id="g_sim_current_pity" value="0" min="0"></div>
+                    <div class="form-group">
+                        <label style="color:#a78bfa;">🛡️ 下一金是否必定大保底:</label>
+                        <select id="g_sim_guarantee">
+                            <option value="false">否 (小保底)</option>
+                            <option value="true">是 (大保底)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>樣本數 (建議 10萬):</label><input type="number" id="g_sim_count" value="100000"></div>
                 </div>
-                <div class="form-group"><label>模擬玩家樣本數:</label><input type="number" id="g_sim_count" value="100000"></div>
-                <button class="btn-exec btn-gacha" onclick="GachaEngine.runSimulation()">發動百萬次模擬</button>
+                <button class="btn-exec btn-gacha" id="btn_gacha_sim" onclick="GachaEngine.runAdvancedSimulation('res_sim')">啟動 100,000 次平行宇宙推演</button>
+                <div class="result-box" id="res_sim" style="font-size: 1.05em;"></div>
             </div>
         </div>
     </div>
 
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <span>Sovereign Matrix Terminal v7.0</span>
-            <span id="sys-time">SYS_TIME</span>
-        </div>
-        <div class="terminal-output" id="terminal-out">
-<span class="sys">[System] GrandAbyss Sovereign Matrix initialized successfully.</span>
-<span class="sys">[System] Core modules loaded: Math, Physics, Chemistry, Music, Gacha.</span>
-<span class="sys">[System] Awaiting operator input...</span>
-        </div>
-    </div>
 </div>
 
 <script>
-    // ================= 系統核心 UI 與共用邏輯 =================
-    setInterval(() => {
-        document.getElementById('sys-time').innerText = new Date().toLocaleTimeString();
-    }, 1000);
-
+    // ================= 核心 UI 邏輯 =================
     function switchModule(targetId) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -327,308 +299,209 @@
         document.querySelector(`.nav-btn[data-target="${targetId}"]`).classList.add('active');
     }
 
-    function Log(msg, isError = false) {
-        const term = document.getElementById('terminal-out');
-        const time = new Date().toLocaleTimeString('en-US', {hour12: false});
-        const prefix = `<span style="color:#8b949e">[${time}]</span> `;
-        const content = isError ? `<span class="err">${msg}</span>` : msg;
-        term.innerHTML += `\n${prefix}${content}`;
-        term.scrollTop = term.scrollHeight; // 自動捲動到底部
+    // 全新專屬顯示函數
+    function printResult(elementId, content, isError = false) {
+        const el = document.getElementById(elementId);
+        if (isError) {
+            el.innerHTML = `<span class="err">⚠ 運算錯誤: ${content}</span>`;
+        } else {
+            el.innerHTML = content;
+        }
+        el.classList.add('active');
     }
 
-    // ================= 數學引擎 (MathEngine) =================
+    // ================= 數學引擎 =================
     const MathEngine = {
-        solveQuadratic: () => {
+        solveQuadratic: (resId) => {
             const a = +document.getElementById('m_quad_a').value;
             const b = +document.getElementById('m_quad_b').value;
             const c = +document.getElementById('m_quad_c').value;
-            if(a === 0) return Log("錯誤：二次項係數不能為 0", true);
+            if(a === 0) return printResult(resId, "二次項係數不能為 0", true);
             const D = b*b - 4*a*c;
-            let output = `>> [一元二次方程式] ${a}x² + ${b}x + ${c} = 0\n判別式 Δ = ${D}\n`;
-            if (D > 0) {
-                const rD = Math.sqrt(D);
-                output += `結果: 兩相異實根\n精確解: x = (-(${b}) ± √${D}) / ${2*a}\n數值解: x1 = ${((-b+rD)/(2*a)).toFixed(4)}, x2 = ${((-b-rD)/(2*a)).toFixed(4)}`;
-            } else if (D === 0) {
-                output += `結果: 重根\nx = ${-b/(2*a)}`;
-            } else {
-                output += `結果: 共軛虛根\n精確解: x = (-(${b}) ± √${Math.abs(D)} i) / ${2*a}`;
-            }
-            Log(output);
+            let out = `方程式: ${a}x² + ${b}x + ${c} = 0\n判別式 Δ = ${D}\n\n`;
+            if (D > 0) out += `實數雙根: \nx1 = <span class="highlight">${((-b+Math.sqrt(D))/(2*a)).toFixed(4)}</span>\nx2 = <span class="highlight">${((-b-Math.sqrt(D))/(2*a)).toFixed(4)}</span>`;
+            else if (D === 0) out += `重根: x = <span class="highlight">${-b/(2*a)}</span>`;
+            else out += `共軛虛根: x = <span class="highlight">${-b/(2*a)} ± ${Math.sqrt(Math.abs(D))/(2*a)}i</span>`;
+            printResult(resId, out);
         },
-        calcCalculus: () => {
+        calcCalculus: (resId) => {
             try {
                 const expr = document.getElementById('m_poly_f').value;
                 const c = +document.getElementById('m_poly_c').value;
                 const fc = math.evaluate(expr, {x: c});
                 const deriv = math.derivative(expr, 'x');
                 const slope = deriv.evaluate({x: c});
-                Log(`>> [微積分分析]\n函數 f(x) = ${expr}\n導函數 f'(x) = ${deriv.toString()}\n切點坐標: (${c}, ${fc})\n切線斜率 m = f'(${c}) = ${slope}\n切線方程式: y - ${fc} = ${slope}(x - ${c})`);
-            } catch (e) { Log(`微積分解析失敗: ${e.message}`, true); }
+                printResult(resId, `函數 f(x) = ${expr}\n導函數 f'(x) = ${deriv.toString()}\n切點: (${c}, ${fc})\n切線斜率 m = ${slope}\n\n切線方程式:\n<span class="highlight">y = ${slope}x + ${fc - slope*c}</span>`);
+            } catch (e) { printResult(resId, "微積分解析失敗，請確認多項式格式。", true); }
         },
-        calcCrossProduct: () => {
+        calcCrossProduct: (resId) => {
             try {
                 const A = document.getElementById('m_vec_a').value.split(',').map(Number);
                 const B = document.getElementById('m_vec_b').value.split(',').map(Number);
                 const cross = [ A[1]*B[2]-A[2]*B[1], A[2]*B[0]-A[0]*B[2], A[0]*B[1]-A[1]*B[0] ];
-                Log(`>> [外積運算] A = (${A}), B = (${B})\nA × B = <span class="highlight">(${cross.join(', ')})</span>`);
-            } catch (e) { Log("輸入格式錯誤，請使用逗號分隔。", true); }
+                printResult(resId, `A = (${A})\nB = (${B})\n\n外積 A × B = <span class="highlight">(${cross.join(', ')})</span>`);
+            } catch (e) { printResult(resId, "格式錯誤，請使用逗號分隔。", true); }
         },
-        calcProjection: () => {
-            try {
-                const A = document.getElementById('m_proj_a').value.split(',').map(Number);
-                const B = document.getElementById('m_proj_b').value.split(',').map(Number);
-                const dot = A[0]*B[0] + A[1]*B[1];
-                const lenB2 = B[0]*B[0] + B[1]*B[1];
-                const projX = (dot/lenB2)*B[0]; const projY = (dot/lenB2)*B[1];
-                Log(`>> [內積與投影]\nA · B = ${dot}\nA 在 B 上的正射影 = <span class="highlight">(${projX.toFixed(3)}, ${projY.toFixed(3)})</span>`);
-            } catch (e) { Log("投影運算失敗", true); }
-        },
-        calcMatrix: () => {
-            try {
-                const A = math.matrix(document.getElementById('m_mat_a').value.split(';').map(r => r.split(',').map(Number)));
-                const B = math.matrix(document.getElementById('m_mat_b').value.split(';').map(r => r.split(',').map(Number)));
-                const detA = math.det(A);
-                const prod = math.multiply(A, B);
-                Log(`>> [矩陣演算]\ndet(A) 行列式 = ${detA}\nA × B 的結果矩陣:\n${prod.toString()}`);
-            } catch(e) { Log("矩陣維度不符或格式錯誤。", true); }
-        },
-        calcBayes: () => {
-            const pa = +document.getElementById('m_bayes_pa').value;
-            const pba = +document.getElementById('m_bayes_pba').value;
-            const pbfa = +document.getElementById('m_bayes_pbfa').value;
-            const pb = (pba * pa) + (pbfa * (1 - pa)); // 全機率
-            const pab = (pba * pa) / pb; // 貝氏定理
-            Log(`>> [貝氏定理條件機率]\nP(B) 全機率 = ${pb.toFixed(4)}\nP(A|B) 檢驗為陽性且真實患病的機率 = <span class="highlight">${(pab*100).toFixed(2)}%</span>`);
-        },
-        calcCircleLine: () => {
+        calcCircleLine: (resId) => {
             const [h, k, r] = document.getElementById('m_circle').value.split(',').map(Number);
             const [a, b, c] = document.getElementById('m_line').value.split(',').map(Number);
             const dist = Math.abs(a*h + b*k + c) / Math.sqrt(a*a + b*b);
             let relation = "";
             if (dist > r) relation = "相離 (無交點)";
             else if (dist === r) relation = "相切 (1交點)";
-            else {
-                const chord = 2 * Math.sqrt(r*r - dist*dist);
-                relation = `相割 (2交點), 弦長 = ${chord.toFixed(3)}`;
-            }
-            Log(`>> [圓與直線]\n圓心到直線距離 d = ${dist.toFixed(3)}\n半徑 r = ${r}\n幾何關係: <span class="highlight">${relation}</span>`);
+            else relation = `相割 (2交點), 弦長 = ${(2 * Math.sqrt(r*r - dist*dist)).toFixed(3)}`;
+            printResult(resId, `圓心距 d = ${dist.toFixed(3)}, 半徑 r = ${r}\n關係: <span class="highlight">${relation}</span>`);
         },
-        calcIntegral: () => {
-            try {
-                const expr = document.getElementById('m_int_f').value;
-                let a = document.getElementById('m_int_a').value;
-                let b = document.getElementById('m_int_b').value;
-                a = a === 'pi' ? Math.PI : +a;
-                b = b === 'pi' ? Math.PI : +b;
-                
-                const n = 10000; const dx = (b-a)/n;
-                let sum = 0;
-                for(let i=0; i<n; i++) {
-                    let x = a + i*dx + dx/2; // 中點黎曼和
-                    sum += math.evaluate(expr, {x: x}) * dx;
-                }
-                Log(`>> [數值定積分]\n∫(${a} → ${b}) ${expr} dx ≈ <span class="highlight">${sum.toFixed(5)}</span>`);
-            } catch(e) { Log(`積分錯誤: ${e.message}`, true); }
+        calcBayes: (resId) => {
+            const pa = +document.getElementById('m_bayes_pa').value;
+            const pba = +document.getElementById('m_bayes_pba').value;
+            const pbfa = +document.getElementById('m_bayes_pbfa').value;
+            const pb = (pba * pa) + (pbfa * (1 - pa)); 
+            const pab = (pba * pa) / pb;
+            printResult(resId, `全機率 P(B) = ${pb.toFixed(4)}\n後驗機率 P(A|B) = <span class="highlight">${(pab*100).toFixed(2)}%</span>`);
         }
     };
 
-    // ================= 物理引擎 (PhysEngine) =================
+    // ================= 物理引擎 =================
     const PhysEngine = {
-        calcProjectile: () => {
+        calcProjectile: (resId) => {
             const v0 = +document.getElementById('p_proj_v').value;
             const theta = +document.getElementById('p_proj_deg').value * (Math.PI / 180);
             const g = +document.getElementById('p_proj_g').value;
-            const v0x = v0 * Math.cos(theta);
-            const v0y = v0 * Math.sin(theta);
-            
-            const time = (2 * v0y) / g;
-            const height = (v0y * v0y) / (2 * g);
-            const range = v0x * time;
-            
-            Log(`>> [拋物線運動]\n初速 X 分量: ${v0x.toFixed(2)} m/s, Y 分量: ${v0y.toFixed(2)} m/s\n總飛行時間 (t): <span class="highlight">${time.toFixed(2)} s</span>\n最大高度 (H): <span class="highlight">${height.toFixed(2)} m</span>\n水平射程 (R): <span class="highlight">${range.toFixed(2)} m</span>`);
+            const v0x = v0 * Math.cos(theta); const v0y = v0 * Math.sin(theta);
+            printResult(resId, `Vx: ${v0x.toFixed(2)} m/s, Vy: ${v0y.toFixed(2)} m/s\n飛行時間 t = <span class="highlight">${((2 * v0y) / g).toFixed(2)} s</span>\n最大高度 H = <span class="highlight">${((v0y * v0y) / (2 * g)).toFixed(2)} m</span>\n水平射程 R = <span class="highlight">${(v0x * ((2 * v0y) / g)).toFixed(2)} m</span>`);
         },
-        calcCollision: () => {
+        calcCollision: (resId) => {
             const [m1, v1] = document.getElementById('p_col_1').value.split(',').map(Number);
             const [m2, v2] = document.getElementById('p_col_2').value.split(',').map(Number);
             const v1f = ((m1-m2)*v1 + 2*m2*v2)/(m1+m2);
             const v2f = ((m2-m1)*v2 + 2*m1*v1)/(m1+m2);
-            Log(`>> [一維完全彈性碰撞]\nm1 碰撞後速度: <span class="highlight">${v1f.toFixed(2)} m/s</span>\nm2 碰撞後速度: <span class="highlight">${v2f.toFixed(2)} m/s</span>`);
+            printResult(resId, `m1 末速 = <span class="highlight">${v1f.toFixed(2)} m/s</span>\nm2 末速 = <span class="highlight">${v2f.toFixed(2)} m/s</span>`);
         },
-        calcLorentz: () => {
+        calcLorentz: (resId) => {
             const q = +document.getElementById('p_em_q').value;
             const v = +document.getElementById('p_em_v').value;
             const B = +document.getElementById('p_em_b').value;
             const theta = +document.getElementById('p_em_deg').value * (Math.PI / 180);
             const F = q * v * B * Math.sin(theta);
-            Log(`>> [電磁學: 磁力計算]\nF = qvB sin(θ) = ${q} * ${v} * ${B} * sin(${document.getElementById('p_em_deg').value}°)\n受力 F = <span class="highlight">${F.toExponential(4)} N</span>`);
-        },
-        calcPhotoelectric: () => {
-            const lambda = +document.getElementById('p_photo_wave').value;
-            const W = +document.getElementById('p_photo_w').value;
-            // E = hc/lambda. hc in eV*nm is approx 1240
-            const E_photon = 1240 / lambda;
-            const K_max = E_photon - W;
-            if (K_max < 0) {
-                Log(`>> [光電效應]\n入射光子能量 E = ${E_photon.toFixed(2)} eV\n結果: <span class="err">未發生光電效應 (能量小於功函數 ${W} eV)</span>`);
-            } else {
-                Log(`>> [光電效應]\n入射光子能量 E = ${E_photon.toFixed(2)} eV\n光電子最大動能 K_max = <span class="highlight">${K_max.toFixed(2)} eV</span>`);
-            }
+            printResult(resId, `公式: F = qvB sin(θ)\n磁力 F = <span class="highlight">${F.toExponential(4)} N</span>`);
         }
     };
 
-    // ================= 化學動力 (ChemEngine) =================
+    // ================= 化學與音樂引擎 =================
     const ChemEngine = {
-        calcElectron: () => {
+        calcElectron: (resId) => {
             const Z = +document.getElementById('c_elec_z').value;
-            if(Z < 1 || Z > 36) return Log("目前僅支援 Z=1~36 (氫至氪)", true);
-            const orbitals = [
-                {name: '1s', max: 2}, {name: '2s', max: 2}, {name: '2p', max: 6},
-                {name: '3s', max: 2}, {name: '3p', max: 6}, {name: '4s', max: 2},
-                {name: '3d', max: 10}, {name: '4p', max: 6}
-            ];
-            let remaining = Z;
-            let result = [];
-            for (let orb of orbitals) {
-                if (remaining <= 0) break;
-                let fill = Math.min(remaining, orb.max);
-                // 特例處理 Cr (24) 和 Cu (29)
-                if (Z === 24 && orb.name === '4s') fill = 1;
-                if (Z === 24 && orb.name === '3d') fill = 5;
-                if (Z === 29 && orb.name === '4s') fill = 1;
-                if (Z === 29 && orb.name === '3d') fill = 10;
-                
-                result.push(`${orb.name}<sup>${fill}</sup>`);
-                remaining -= fill;
+            if(Z < 1 || Z > 36) return printResult(resId, "僅支援 Z=1~36", true);
+            const orbs = [{n:'1s',m:2}, {n:'2s',m:2}, {n:'2p',m:6}, {n:'3s',m:2}, {n:'3p',m:6}, {n:'4s',m:2}, {n:'3d',m:10}, {n:'4p',m:6}];
+            let rem = Z, res = [];
+            for (let o of orbs) {
+                if (rem <= 0) break;
+                let fill = Math.min(rem, o.m);
+                if (Z === 24 && o.n === '4s') fill = 1; if (Z === 24 && o.n === '3d') fill = 5;
+                if (Z === 29 && o.n === '4s') fill = 1; if (Z === 29 && o.n === '3d') fill = 10;
+                res.push(`${o.n}<sup>${fill}</sup>`); rem -= fill;
             }
-            Log(`>> [原子軌域] Z = ${Z}\n電子組態: <span class="highlight">${result.join(' ')}</span>`);
+            printResult(resId, `Z = ${Z} 電子組態:\n<span class="highlight">${res.join(' ')}</span>`);
         },
-        calcTitration: () => {
-            const [Macid, Vacid] = document.getElementById('c_ph_acid').value.split(',').map(Number);
-            const [Mbase, Vbase] = document.getElementById('c_ph_base').value.split(',').map(Number);
-            const molesH = Macid * Vacid;
-            const molesOH = Mbase * Vbase;
-            const totalV = Vacid + Vbase;
-            let pH;
-            if (molesH > molesOH) {
-                const H_conc = (molesH - molesOH) / totalV;
-                pH = -Math.log10(H_conc);
-            } else if (molesOH > molesH) {
-                const OH_conc = (molesOH - molesH) / totalV;
-                pH = 14 + Math.log10(OH_conc);
-            } else {
-                pH = 7.0;
-            }
-            Log(`>> [酸鹼中和滴定]\n氫離子毫莫耳數: ${molesH}, 氫氧根毫莫耳數: ${molesOH}\n混合後體積: ${totalV} mL\n最終 pH 值 = <span class="highlight">${pH.toFixed(2)}</span>`);
-        },
-        calcKinetics: () => {
+        calcKinetics: (resId) => {
             const k = +document.getElementById('c_rate_k').value;
-            const a = +document.getElementById('c_rate_a').value;
-            const m = +document.getElementById('c_rate_m').value;
-            const b = +document.getElementById('c_rate_b').value;
-            const n = +document.getElementById('c_rate_n').value;
-            
+            const a = +document.getElementById('c_rate_a').value, m = +document.getElementById('c_rate_m').value;
+            const b = +document.getElementById('c_rate_b').value, n = +document.getElementById('c_rate_n').value;
             const rate = k * Math.pow(a, m) * Math.pow(b, n);
-            Log(`>> [反應速率動力學]\n公式: R = ${k} * (${a})^${m} * (${b})^${n}\n總反應級數 = ${m+n}\n瞬時速率 R = <span class="highlight">${rate.toExponential(4)} M/s</span>`);
+            printResult(resId, `反應總級數 = ${m+n}\n瞬時速率 R = <span class="highlight">${rate.toExponential(4)} M/s</span>`);
         }
     };
 
-    // ================= 聲學樂理 (MusicEngine) =================
     const MusicEngine = {
-        calcChords: () => {
+        calcChords: (resId) => {
             const root = document.getElementById('mu_key').value;
-            // 簡化版的十二平均律陣列與大調音程 (全全半全全全半)
             const notes = ['C','C#','D','D#','E','F','F#','G','G#','A','Bb','B'];
-            const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
-            const rootIndex = notes.indexOf(root);
-            
-            if(rootIndex === -1) return Log("無效的根音。", true);
-            
-            const scaleNotes = majorScaleIntervals.map(i => notes[(rootIndex + i) % 12]);
-            // 大調順階和弦結構: I (Maj), ii (min), iii (min), IV (Maj), V (Maj), vi (min), vii° (dim)
-            const chords = [
-                `I : ${scaleNotes[0]} Maj`,
-                `ii : ${scaleNotes[1]} min`,
-                `iii : ${scaleNotes[2]} min`,
-                `IV : ${scaleNotes[3]} Maj`,
-                `V : ${scaleNotes[4]} Maj`,
-                `vi : ${scaleNotes[5]} min`,
-                `vii°: ${scaleNotes[6]} dim`
-            ];
-            
-            Log(`>> [羅馬數字和弦級數] ${root} 大調\n音階: ${scaleNotes.join(' - ')}\n順階和弦:\n<span class="highlight">${chords.join('\n')}</span>`);
-        },
-        calcFrequency: () => {
-            const a4 = +document.getElementById('mu_a4').value;
-            const n = +document.getElementById('mu_semitones').value;
-            const freq = a4 * Math.pow(2, n / 12);
-            Log(`>> [聲學頻率計算]\n基準頻率 A4 = ${a4} Hz\n偏移 ${n} 個半音的頻率 = <span class="highlight">${freq.toFixed(2)} Hz</span>`);
+            const rootIdx = notes.indexOf(root);
+            const scale = [0, 2, 4, 5, 7, 9, 11].map(i => notes[(rootIdx + i) % 12]);
+            const chords = [`I: ${scale[0]} Maj`, `ii: ${scale[1]} min`, `iii: ${scale[2]} min`, `IV: ${scale[3]} Maj`, `V: ${scale[4]} Maj`, `vi: ${scale[5]} min`, `vii°: ${scale[6]} dim`];
+            printResult(resId, `${root} 大調順階和弦:\n<span class="highlight">${chords.join('  |  ')}</span>`);
         }
     };
 
-    // ================= 抽卡機率 (GachaEngine) =================
+    // ================= 抽卡機率 (全面進化的動態規劃) =================
     const GachaEngine = {
-        calcTheoretical: () => {
+        calcTheoretical: (resId) => {
             const p = +document.getElementById('g_theo_rate').value / 100;
             const n = +document.getElementById('g_theo_pulls').value;
             const prob = 1 - Math.pow(1 - p, n);
-            Log(`>> [基礎機率論]\n單抽機率 ${p*100}%, 投入 ${n} 抽\n至少獲得一次目標的機率 = <span class="highlight">${(prob*100).toFixed(2)}%</span>`);
+            printResult(resId, `${n} 抽內至少出金一次的純機率 = <span class="highlight">${(prob*100).toFixed(2)}%</span>`);
         },
-        runSimulation: () => {
-            const baseRate = +document.getElementById('g_sim_base').value / 100;
-            const hardPity = +document.getElementById('g_sim_hard').value;
-            const softPityStart = +document.getElementById('g_sim_soft').value;
-            const upRate = +document.getElementById('g_sim_up').value / 100;
-            const iterations = +document.getElementById('g_sim_count').value;
-            
-            Log(`>> [啟動蒙地卡羅模擬] 正在進行 ${iterations.toLocaleString()} 次演算...`);
-            
-            // 使用 setTimeout 讓 UI 不會卡死
-            setTimeout(() => {
-                let totalPullsForUp = 0;
-                let won5050 = 0;
-                let lost5050 = 0;
-                
-                // 假設原神/星鐵的線性機率提升斜率
-                const pityStep = (1.0 - baseRate) / (hardPity - softPityStart + 1);
+        
+        runAdvancedSimulation: (resId) => {
+            const btn = document.getElementById('btn_gacha_sim');
+            btn.innerText = "演算中..."; btn.disabled = true;
 
+            setTimeout(() => {
+                const baseRate = +document.getElementById('g_sim_base').value / 100;
+                const hardPity = +document.getElementById('g_sim_hard').value;
+                const softPity = +document.getElementById('g_sim_soft').value;
+                const upRate = +document.getElementById('g_sim_up').value / 100;
+                const targetCopies = +document.getElementById('g_sim_target').value;
+                const initialPity = +document.getElementById('g_sim_current_pity').value;
+                const initialGuarantee = document.getElementById('g_sim_guarantee').value === "true";
+                const iterations = +document.getElementById('g_sim_count').value;
+
+                const pityStep = (1.0 - baseRate) / (hardPity - softPity + 1);
+                let totalPullsArray = new Int32Array(iterations);
+
+                // 執行蒙地卡羅迴圈
                 for(let i=0; i<iterations; i++) {
-                    let gotUp = false;
-                    let currentPity = 0;
-                    let hasGuarantee = false;
-                    
-                    while(!gotUp) {
+                    let copies = 0;
+                    let pullsThisRun = 0;
+                    let currentPity = initialPity;
+                    let hasGuarantee = initialGuarantee;
+
+                    while(copies < targetCopies) {
                         currentPity++;
+                        pullsThisRun++;
                         let currentRate = baseRate;
                         
-                        if (currentPity >= softPityStart) {
-                            currentRate += (currentPity - softPityStart + 1) * pityStep;
-                        }
+                        if (currentPity >= softPity) currentRate += (currentPity - softPity + 1) * pityStep;
                         if (currentPity >= hardPity) currentRate = 1.0;
-                        
-                        // 擲骰子
+
                         if (Math.random() <= currentRate) {
-                            // 出金了！判斷是否歪
                             if (hasGuarantee || Math.random() <= upRate) {
-                                gotUp = true;
-                                if (!hasGuarantee) won5050++;
+                                copies++; // 抽到目標 UP
+                                hasGuarantee = false;
                             } else {
-                                hasGuarantee = true;
-                                lost5050++;
+                                hasGuarantee = true; // 歪了
                             }
-                            totalPullsForUp += currentPity;
-                            currentPity = 0; // 重置保底
+                            currentPity = 0;
                         }
                     }
+                    totalPullsArray[i] = pullsThisRun;
                 }
+
+                // 統計分析
+                totalPullsArray.sort();
+                let sum = 0;
+                for(let i=0; i<iterations; i++) sum += totalPullsArray[i];
                 
-                const avgPulls = totalPullsForUp / iterations;
-                const winRate = (won5050 / (won5050 + lost5050)) * 100;
-                
-                Log(`>> [模擬完成]\n獲得當期 UP 大獎的平均期望抽數 = <span class="highlight">${avgPulls.toFixed(2)} 抽</span>\n小保底不歪機率(包含大保底前置) ≈ ${winRate.toFixed(1)}%`);
-            }, 100);
+                const avgPulls = sum / iterations;
+                const medianPulls = totalPullsArray[Math.floor(iterations * 0.5)];
+                const p10 = totalPullsArray[Math.floor(iterations * 0.1)];  // 歐皇前10%
+                const p90 = totalPullsArray[Math.floor(iterations * 0.9)];  // 非酋前90%
+                const maxPulls = totalPullsArray[iterations - 1];
+
+                const resultHTML = 
+                    `✅ 模擬完成 (${iterations.toLocaleString()} 次宇宙推演)\n` +
+                    `──────── 目標: 獲得 ${targetCopies} 隻 UP ────────\n` +
+                    `平均期望抽數: <span class="highlight" style="color:#a78bfa">${avgPulls.toFixed(1)} 抽</span> (原石/星瓊預算參考)\n` +
+                    `50% 玩家達標: <span class="highlight">${medianPulls} 抽</span> (正常運氣中位數)\n` +
+                    `90% 安全水位: <span class="highlight">${p90} 抽</span> (準備這麼多基本穩拿)\n\n` +
+                    `[趣味數據] 歐皇10%只需 ${p10} 抽，最非紀錄為 ${maxPulls} 抽。`;
+
+                printResult(resId, resultHTML);
+                btn.innerText = "啟動 100,000 次平行宇宙推演"; btn.disabled = false;
+            }, 50);
         }
     };
-
 </script>
 </body>
 </html>
